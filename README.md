@@ -27,6 +27,24 @@ The cat is watching you!
 - **Cross-platform Support**: Works on Linux, macOS, and Windows
 - **Lightweight**: Checks window title once per second, minimal resource usage
 
+## What It Looks Like
+
+```
+╔════════════════════════════════════════════════════════════╗
+║   Cat Window Watcher - Cat is watching you -               ║
+╠════════════════════════════════════════════════════════════╣
+║                                                            ║
+║                                                            ║
+║                       Score: 42                            ║
+║                                                            ║
+║                                                            ║
+║                      GitHub (+10)                          ║
+║                                                            ║
+╚════════════════════════════════════════════════════════════╝
+```
+
+The GUI features a dark theme with a large score display and status showing your current activity.
+
 ## Installation
 
 1. Clone the repository:
@@ -76,12 +94,15 @@ description = "Twitter/X"
 
 Run the application:
 ```bash
+# Method 1: Direct script execution
 python src/main.py
-```
 
-Or with a custom config file:
-```bash
+# Method 2: Run as module
+python -m src
+
+# Method 3: With custom config file
 python src/main.py --config my_config.toml
+python src/main.py -c my_config.toml
 ```
 
 The GUI will display:
