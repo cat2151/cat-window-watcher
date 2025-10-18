@@ -1,0 +1,4 @@
+# Example configuration for cat-window-watcher
+
+# This is a placeholder example file
+# Add your configuration here
