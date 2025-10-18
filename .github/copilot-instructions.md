@@ -112,8 +112,8 @@ cat-window-watcher is a Python-based window monitoring tool that watches for act
 
 ### Python Version
 
-- Maintain compatibility with Python 3.6+
-- Use features available in older Python versions when possible
+- Maintain compatibility with Python 3.12+
+- Use modern Python features available in Python 3.12+
 - Document minimum Python version requirements
 
 ## Code Formatting and Quality
