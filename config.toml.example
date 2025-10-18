@@ -1,0 +1,53 @@
+# Cat Window Watcher Configuration
+# This is a provisional implementation for testing purposes
+
+# Window patterns define regex patterns to match window titles
+# and the score change when that window becomes active
+
+[[window_patterns]]
+# GitHub - increases score when working on GitHub
+regex = "github"
+score = 10
+description = "GitHub"
+
+[[window_patterns]]
+# Twitter/X - decreases score when browsing social media
+regex = "twitter|x\\.com"
+score = -5
+description = "Twitter/X"
+
+[[window_patterns]]
+# Facebook - decreases score when browsing social media
+regex = "facebook"
+score = -5
+description = "Facebook"
+
+[[window_patterns]]
+# Instagram - decreases score when browsing social media
+regex = "instagram"
+score = -5
+description = "Instagram"
+
+[[window_patterns]]
+# Reddit - decreases score when browsing social media
+regex = "reddit"
+score = -3
+description = "Reddit"
+
+[[window_patterns]]
+# Visual Studio Code - increases score when coding
+regex = "visual studio code|vscode"
+score = 8
+description = "VS Code"
+
+[[window_patterns]]
+# Terminal - increases score when using terminal
+regex = "terminal|bash|zsh|powershell"
+score = 5
+description = "Terminal"
+
+[[window_patterns]]
+# YouTube - decreases score when watching videos
+regex = "youtube"
+score = -7
+description = "YouTube"
