@@ -12,7 +12,7 @@ description = "GitHub"
 
 [[window_patterns]]
 # Twitter/X - decreases score when browsing social media
-regex = "twitter|x\\.com"
+regex = 'twitter|x\.com'
 score = -5
 description = "Twitter/X"
 

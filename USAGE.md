@@ -171,18 +171,27 @@ description = "Social Media"
 
 ### 3. Escape Special Characters
 
-Some characters have special meaning in regex. Escape them with `\`:
+Some characters have special meaning in regex. In TOML files, you have two options:
 
-- `.` (dot) → `\\.` (matches literal dot)
-- `+` (plus) → `\\+`
-- `?` (question) → `\\?`
-- `*` (asterisk) → `\\*`
-
+**Option 1: Use single quotes (literal strings, simpler):**
 ```toml
 [[window_patterns]]
-regex = "example\\.com"  # Matches example.com
+regex = 'example\.com'  # Matches example.com (literal dot)
 score = 5
 ```
+
+**Option 2: Use double quotes (escape the backslash):**
+```toml
+[[window_patterns]]
+regex = "example\\.com"  # Matches example.com (double backslash in TOML)
+score = 5
+```
+
+Common regex special characters:
+- `.` (dot) → `\.` or `\\.` (matches literal dot)
+- `+` (plus) → `\+` or `\\+`
+- `?` (question) → `\?` or `\\?`
+- `*` (asterisk) → `\*` or `\\*`
 
 ### 4. Case-Insensitive Matching
 
@@ -218,7 +227,7 @@ pip install pywin32
 If you see an error loading the config:
 
 1. Check the TOML syntax is valid
-2. Ensure all required fields (regex, score) are present
+2. Ensure the required field (regex) is present (score is optional, defaults to 0)
 3. Verify file encoding is UTF-8
 4. Check for typos in the file path
 
@@ -242,6 +251,8 @@ else:
 
 ```bash
 python src/main.py --config my_custom_config.toml
+# or using the short form:
+python src/main.py -c my_custom_config.toml
 ```
 
 ### Multiple Profiles
