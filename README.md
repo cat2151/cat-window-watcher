@@ -2,6 +2,10 @@
 
 A simple, standalone window monitoring tool that tracks your active window and adjusts a score based on what you're doing.
 
+## 状況
+
+agentに生成させた直後です。動作確認はこれから
+
 ## ⚠️ Provisional Implementation Notice
 
 This is a **provisional implementation for testing and verification purposes**. The current implementation focuses on:
@@ -189,14 +193,5 @@ pip install pywin32
 ## License
 
 See LICENSE file for details.
-
-## Contributing
-
-Contributions are welcome! Please ensure code follows the project style:
-1. Run `ruff format` and `ruff check` before committing
-2. Add tests for new features
-3. Update documentation as needed
-
----
 
 *Big Brother is watching you. But this time, it's a cat. 🐱*
