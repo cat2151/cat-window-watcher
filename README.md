@@ -2,9 +2,9 @@
 
 A simple, standalone window monitoring tool that tracks your active window and adjusts a score based on what you're doing.
 
-## 状況
+## WIP
 
-agentに生成させた直後です。動作確認はこれから
+開発中です。ここに書いてあるものは、「それを目指している」というレベルです。実装されていない可能性があります。
 
 ## ⚠️ Provisional Implementation Notice
 
