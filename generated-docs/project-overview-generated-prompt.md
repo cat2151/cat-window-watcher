@@ -1,4 +1,4 @@
-Last updated: 2025-11-10
+Last updated: 2025-11-12
 
 
 # プロジェクト概要生成プロンプト（来訪者向け）
@@ -65,9 +65,9 @@ Last updated: 2025-11-10
 
 A simple, standalone window monitoring tool that tracks your active window and adjusts a score based on what you're doing.
 
-## 状況
+## WIP
 
-agentに生成させた直後です。動作確認はこれから
+開発中です。ここに書いてあるものは、「それを目指している」というレベルです。実装されていない可能性があります。
 
 ## ⚠️ Provisional Implementation Notice
 
@@ -314,4 +314,4 @@ USAGE.md
 
 
 ---
-Generated at: 2025-11-10 07:05:11 JST
+Generated at: 2025-11-12 07:05:54 JST

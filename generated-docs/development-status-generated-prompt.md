@@ -1,4 +1,4 @@
-Last updated: 2025-11-10
+Last updated: 2025-11-12
 
 # 開発状況生成プロンプト（開発者向け）
 
@@ -159,6 +159,7 @@ Last updated: 2025-11-10
 - .github/actions-tmp/generated-docs/callgraph.js
 - .github/actions-tmp/generated-docs/development-status-generated-prompt.md
 - .github/actions-tmp/generated-docs/development-status.md
+- .github/actions-tmp/generated-docs/project-overview-generated-prompt.md
 - .github/actions-tmp/generated-docs/project-overview.md
 - .github/actions-tmp/generated-docs/style.css
 - .github/actions-tmp/issue-notes/10.md
@@ -183,6 +184,7 @@ Last updated: 2025-11-10
 - .github/actions-tmp/issue-notes/28.md
 - .github/actions-tmp/issue-notes/29.md
 - .github/actions-tmp/issue-notes/3.md
+- .github/actions-tmp/issue-notes/30.md
 - .github/actions-tmp/issue-notes/4.md
 - .github/actions-tmp/issue-notes/7.md
 - .github/actions-tmp/issue-notes/8.md
@@ -226,11 +228,43 @@ Last updated: 2025-11-10
 
 ## 最近の変更（過去7日間）
 ### コミット履歴:
-
+b6317a6 Change status to WIP in README
+d4031dd Update project summaries (overview & development status) [auto]
+6bfd855 github-actionsリポジトリの共通ワークフローを導入
+ea0c026 jekyll settings
 
 ### 変更されたファイル:
-
+.editorconfig
+.github/copilot-instructions.md
+.github/workflows/call-daily-project-summary.yml
+.github/workflows/call-issue-note.yml
+.github/workflows/call-translate-readme.yml
+.gitignore
+.pre-commit-config.yaml
+.vscode/settings.json
+README.md
+USAGE.md
+_config.yml
+config.toml.example
+examples/example.txt
+generated-docs/development-status-generated-prompt.md
+generated-docs/development-status.md
+generated-docs/project-overview-generated-prompt.md
+generated-docs/project-overview.md
+pytest.ini
+ruff.toml
+src/__init__.py
+src/__main__.py
+src/config.py
+src/gui.py
+src/main.py
+src/score_tracker.py
+src/window_monitor.py
+tests/test_config.py
+tests/test_dummy.py
+tests/test_score_tracker.py
+tests/test_window_monitor.py
 
 
 ---
-Generated at: 2025-11-10 07:05:11 JST
+Generated at: 2025-11-12 07:05:54 JST
