@@ -1,4 +1,4 @@
-Last updated: 2025-11-12
+Last updated: 2025-11-14
 
 
 # プロジェクト概要生成プロンプト（来訪者向け）
@@ -63,38 +63,43 @@ Last updated: 2025-11-12
 名前: 
 説明: # cat-window-watcher - Cat is watching you -
 
-A simple, standalone window monitoring tool that tracks your active window and adjusts a score based on what you're doing.
+アクティブなウィンドウを監視し、あなたの作業内容に基づいてスコアを調整するシンプルでスタンドアロンなウィンドウ監視ツール。
+
+<p align="left">
+  <a href="README.ja.md"><img src="https://img.shields.io/badge/🇯🇵-Japanese-red.svg" alt="Japanese"></a>
+  <a href="README.md"><img src="https://img.shields.io/badge/🇺🇸-English-blue.svg" alt="English"></a>
+</p>
 
 ## WIP
 
-開発中です。ここに書いてあるものは、「それを目指している」というレベルです。実装されていない可能性があります。
+開発中です。不具合があります。issueを参照ください
 
-## ⚠️ Provisional Implementation Notice
+## ⚠️ 暫定実装についての注意
 
-This is a **provisional implementation for testing and verification purposes**. The current implementation focuses on:
-- Simple, standalone operation (no integration with other apps in this phase)
-- Straightforward logic: checks active window title every 1 second
-- Minimal complexity to facilitate rapid development and testing
+これは**テストと検証のための暫定実装**です。現在の実装は以下に焦点を当てています：
+- シンプルでスタンドアロンな操作（この段階では他のアプリとの統合なし）
+- 分かりやすいロジック：1秒ごとにアクティブなウィンドウタイトルをチェック
+- 迅速な開発とテストを促進するための最小限の複雑さ
 
-Future versions may include optimizations and integrations, but this version prioritizes simplicity and ease of understanding.
+将来のバージョンでは最適化や統合が含まれる可能性がありますが、このバージョンはシンプルさと理解しやすさを優先しています。
 
-## Concept
+## コンセプト
 
-The application monitors which window is currently active and adjusts a score based on configurable patterns:
-- Working on GitHub? Score increases! 🎉
-- Browsing social media? Score decreases... 😿
+アプリケーションは現在アクティブなウィンドウを監視し、設定可能なパターンに基づいてスコアを調整します：
+- GitHubで作業中？スコアが上がります！ 🎉
+- SNSを閲覧中？スコアが下がります... 😿
 
 The cat is watching you!
 
-## Features
+## 機能
 
-- **Simple Score Display**: Shows your current score in a clean tkinter GUI
-- **Regex-based Window Matching**: Configure window title patterns using regular expressions
-- **Configurable Score Values**: Set custom score increase/decrease amounts for each pattern
-- **Cross-platform Support**: Works on Linux, macOS, and Windows
-- **Lightweight**: Checks window title once per second, minimal resource usage
+- **シンプルなスコア表示**: クリーンなtkinter GUIで現在のスコアを表示
+- **正規表現ベースのウィンドウマッチング**: 正規表現を使用してウィンドウタイトルパターンを設定
+- **設定可能なスコア値**: 各パターンに対してカスタムなスコア増減量を設定
+- **クロスプラットフォーム対応**: Linux、macOS、Windowsで動作
+- **軽量**: 1秒に1回ウィンドウタイトルをチェック、最小限のリソース使用量
 
-## What It Looks Like
+## 見た目
 
 ```
 ╔════════════════════════════════════════════════════════════╗
@@ -110,34 +115,34 @@ The cat is watching you!
 ╚════════════════════════════════════════════════════════════╝
 ```
 
-The GUI features a dark theme with a large score display and status showing your current activity.
+GUIはダークテーマで、大きなスコア表示と現在のアクティビティを表示するステータスを備えています。
 
-## Installation
+## インストール
 
-1. Clone the repository:
+1. リポジトリをクローン：
 ```bash
 git clone https://github.com/cat2151/cat-window-watcher.git
 cd cat-window-watcher
 ```
 
-2. Ensure you have Python 3.12+ installed:
+2. Python 3.12以上がインストールされていることを確認：
 ```bash
 python --version
 ```
 
-3. Install dependencies (if needed):
-   - Linux: `xdotool` or `xprop` (usually pre-installed)
-   - macOS: Built-in AppleScript support
-   - Windows: Works with built-in APIs (optional: `pywin32` for better support)
+3. 依存関係をインストール（必要に応じて）：
+   - Linux: `xdotool` または `xprop`（通常はプリインストール済み）
+   - macOS: 内蔵AppleScriptサポート
+   - Windows: 内蔵APIで動作（より良いサポートのために `pywin32` をオプションで使用）
 
-## Configuration
+## 設定
 
-1. Copy the example configuration:
+1. 設定例をコピー：
 ```bash
 cp config.toml.example config.toml
 ```
 
-2. Edit `config.toml` to customize window patterns and scores:
+2. `config.toml`を編集してウィンドウパターンとスコアをカスタマイズ：
 
 ```toml
 [[window_patterns]]
@@ -151,111 +156,111 @@ score = -5
 description = "Twitter/X"
 ```
 
-### Configuration Options
+### 設定オプション
 
-- **regex**: Regular expression pattern to match against window titles (case-insensitive)
-- **score**: Integer value to add to score when pattern matches (can be negative)
-- **description**: Human-readable description shown in the status area
+- **regex**: ウィンドウタイトルにマッチする正規表現パターン（大文字小文字を区別しない）
+- **score**: パターンがマッチしたときにスコアに追加する整数値（負の値も可能）
+- **description**: ステータスエリアに表示される人間が読める説明
 
-## Usage
+## 使用法
 
-Run the application:
+アプリケーションを実行：
 ```bash
-# Method 1: Direct script execution
+# 方法1: スクリプトを直接実行
 python src/main.py
 
-# Method 2: Run as module
+# 方法2: モジュールとして実行
 python -m src
 
-# Method 3: With custom config file
+# 方法3: カスタム設定ファイルで実行
 python src/main.py --config my_config.toml
 python src/main.py -c my_config.toml
 ```
 
-The GUI will display:
-- Current score in large text
-- Status showing the current matched pattern or window title
-- Updates every second automatically
+GUIには以下が表示されます：
+- 現在のスコアを大きなテキストで表示
+- 現在マッチしたパターンまたはウィンドウタイトルを表示するステータス
+- 1秒ごとに自動更新
 
-## Examples
+## 例
 
-### Example 1: Productivity Tracking
+### 例1: 生産性の追跡
 ```toml
 [[window_patterns]]
 regex = "github|gitlab"
 score = 10
-description = "Coding"
+description = "コーディング"
 
 [[window_patterns]]
 regex = "twitter|facebook|instagram"
 score = -5
-description = "Social Media"
+description = "ソーシャルメディア"
 ```
 
-### Example 2: Study Time
+### 例2: 勉強時間
 ```toml
 [[window_patterns]]
 regex = "pdf|documentation|docs"
 score = 8
-description = "Reading"
+description = "読書"
 
 [[window_patterns]]
 regex = "youtube|netflix"
 score = -10
-description = "Entertainment"
+description = "エンターテイメント"
 ```
 
-## Development
+## 開発
 
-### Running Tests
+### テストの実行
 ```bash
 python -m unittest discover tests/ -v
 ```
 
-### Code Formatting
-Format code before committing:
+### コードフォーマット
+コミット前にコードをフォーマット：
 ```bash
 ruff format src/ tests/
 ruff check --fix src/ tests/
 ```
 
-### Linting
-Verify code quality:
+### リンティング
+コード品質の検証：
 ```bash
 ruff format --check src/ tests/
 ruff check src/ tests/
 ```
 
-## Architecture
+## アーキテクチャ
 
-The application consists of several modules:
+アプリケーションはいくつかのモジュールから構成されています：
 
-- **config.py**: Loads and manages TOML configuration
-- **window_monitor.py**: Cross-platform window title detection
-- **score_tracker.py**: Matches window titles against patterns and tracks score
-- **gui.py**: tkinter-based score display interface
-- **main.py**: Application entry point and orchestration
+- **config.py**: TOML設定の読み込みと管理
+- **window_monitor.py**: クロスプラットフォームなウィンドウタイトル検出
+- **score_tracker.py**: ウィンドウタイトルをパターンにマッチさせ、スコアを追跡
+- **gui.py**: tkinterベースのスコア表示インターフェース
+- **main.py**: アプリケーションのエントリポイントとオーケストレーション
 
-## Platform-Specific Notes
+## プラットフォーム固有の注意事項
 
 ### Linux
-Requires `xdotool` or `xprop`:
+`xdotool` または `xprop` が必要：
 ```bash
 sudo apt-get install xdotool  # Debian/Ubuntu
 ```
 
 ### macOS
-Uses built-in AppleScript. No additional dependencies required.
+内蔵AppleScriptを使用。追加の依存関係は不要。
 
 ### Windows
-Works with built-in Windows APIs. For better compatibility, install:
+内蔵Windows APIで動作。より良い互換性のためにインストール：
 ```bash
 pip install pywin32
 ```
 
-## License
+## ライセンス
 
-See LICENSE file for details.
+詳細はLICENSEファイルをご覧ください。
 
 *Big Brother is watching you. But this time, it's a cat. 🐱*
 
@@ -270,13 +275,15 @@ See LICENSE file for details.
 📁 .vscode/
   📊 settings.json
 📄 LICENSE
+📖 README.ja.md
 📖 README.md
-📖 USAGE.md
 📄 _config.yml
 📄 config.toml.example
 📁 examples/
   📄 example.txt
 📁 generated-docs/
+📁 issue-notes/
+  📖 4.md
 📄 pytest.ini
 📄 ruff.toml
 📁 src/
@@ -301,8 +308,9 @@ See LICENSE file for details.
 
 ## プロジェクト構造（ファイル一覧）
 .vscode/settings.json
+README.ja.md
 README.md
-USAGE.md
+issue-notes/4.md
 
 上記の情報を基に、プロンプトで指定された形式でプロジェクト概要を生成してください。
 特に以下の点を重視してください：
@@ -314,4 +322,4 @@ USAGE.md
 
 
 ---
-Generated at: 2025-11-12 07:05:54 JST
+Generated at: 2025-11-14 07:06:06 JST

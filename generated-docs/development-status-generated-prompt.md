@@ -1,4 +1,4 @@
-Last updated: 2025-11-12
+Last updated: 2025-11-14
 
 # 開発状況生成プロンプト（開発者向け）
 
@@ -200,12 +200,13 @@ Last updated: 2025-11-12
 - .pre-commit-config.yaml
 - .vscode/settings.json
 - LICENSE
+- README.ja.md
 - README.md
-- USAGE.md
 - _config.yml
 - config.toml.example
 - examples/example.txt
 - generated-docs/project-overview-generated-prompt.md
+- issue-notes/4.md
 - pytest.ini
 - ruff.toml
 - src/__init__.py
@@ -228,43 +229,32 @@ Last updated: 2025-11-12
 
 ## 最近の変更（過去7日間）
 ### コミット履歴:
+026c5e6 Merge pull request #5 from cat2151/copilot/fix-score-increment-setting
+cc1037f Fix: Enable continuous score tracking for active windows
+24dc9ff Initial plan
+db61028 Add issue note for #4 [auto]
+501b1c6 Merge branch 'main' of github.com:cat2151/cat-window-watcher into main
+1dc18ec 状況を反映
+abc88e5 agent指示書を日本語化した
+7c5f7b7 Update project summaries (overview & development status) [auto]
 b6317a6 Change status to WIP in README
 d4031dd Update project summaries (overview & development status) [auto]
-6bfd855 github-actionsリポジトリの共通ワークフローを導入
-ea0c026 jekyll settings
 
 ### 変更されたファイル:
-.editorconfig
 .github/copilot-instructions.md
 .github/workflows/call-daily-project-summary.yml
-.github/workflows/call-issue-note.yml
-.github/workflows/call-translate-readme.yml
-.gitignore
-.pre-commit-config.yaml
-.vscode/settings.json
+README.ja.md
 README.md
 USAGE.md
 _config.yml
-config.toml.example
-examples/example.txt
 generated-docs/development-status-generated-prompt.md
 generated-docs/development-status.md
 generated-docs/project-overview-generated-prompt.md
 generated-docs/project-overview.md
-pytest.ini
-ruff.toml
-src/__init__.py
-src/__main__.py
-src/config.py
-src/gui.py
-src/main.py
+issue-notes/4.md
 src/score_tracker.py
-src/window_monitor.py
-tests/test_config.py
-tests/test_dummy.py
 tests/test_score_tracker.py
-tests/test_window_monitor.py
 
 
 ---
-Generated at: 2025-11-12 07:05:54 JST
+Generated at: 2025-11-14 07:06:06 JST
