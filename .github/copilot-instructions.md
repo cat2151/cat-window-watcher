@@ -1,18 +1,18 @@
-# GitHub Copilot Instructions for cat-window-watcher
+# cat-window-watcher 向け GitHub Copilot Instructions
 
-## Project Overview
+## プロジェクト概要
 
-cat-window-watcher is a Python-based window monitoring tool that watches for active window changes and performs actions based on window states.
+cat-window-watcher は、アクティブなウィンドウの変化を監視し、ウィンドウの状態に基づいてアクションを実行する Python ベースのウィンドウ監視ツールです。
 
-## Code Style and Standards
+## コードスタイルと規約
 
-### Python Style
+### Python スタイル
 
-- Use Python 3.12+ compatible syntax
-- Follow PEP 8 style guidelines
-- Use descriptive variable and function names
-- Include shebang `#!/usr/bin/env python3` at the top of executable scripts
-- Support both relative and absolute imports for maximum compatibility:
+- Python 3.12+ 互換の構文を使用する
+- PEP 8 スタイルガイドラインに従う
+- 分かりやすい変数名と関数名を使用する
+- 実行可能スクリプトの先頭に shebang `#!/usr/bin/env python3` を含める
+- 最大限の互換性のために相対インポートと絶対インポートの両方をサポートする：
   ```python
   try:
       from .module import Class
@@ -20,136 +20,136 @@ cat-window-watcher is a Python-based window monitoring tool that watches for act
       from module import Class
   ```
 
-### Documentation
+### ドキュメント
 
-- Add docstrings to all classes and public methods
-- Use triple-quoted strings with clear descriptions
-- Include Args, Returns, and Raises sections in docstrings when applicable
-- Example format:
+- 全てのクラスとパブリックメソッドに docstring を追加する
+- 明確な説明でトリプルクォート文字列を使用する
+- 該当する場合は docstring に Args、Returns、Raises セクションを含める
+- 例のフォーマット：
   ```python
   def method_name(self, param):
-      """Brief description.
+      """簡潔な説明。
 
       Args:
-          param: Description of parameter
+          param: パラメータの説明
 
       Returns:
-          type: Description of return value
+          type: 戻り値の説明
 
       Raises:
-          ErrorType: Description of when error is raised
+          ErrorType: エラーが発生する条件の説明
       """
   ```
 
-### Comments
+### コメント
 
-- Add comments to explain complex logic or non-obvious behavior
-- Use inline comments sparingly and only when necessary
-- Prefer self-documenting code over excessive comments
+- 複雑なロジックや自明でない動作を説明するコメントを追加する
+- インラインコメントは控えめに、必要な場合のみ使用する
+- 過剰なコメントよりも自己説明的なコードを優先する
 
-## Testing
+## テスト
 
-### Test Framework
+### テストフレームワーク
 
-- Use Python's built-in `unittest` framework for all tests
-- Place all test files in the `tests/` directory
-- Name test files with prefix `test_` (e.g., `test_feature.py`)
-- Use descriptive test method names starting with `test_`
+- 全てのテストに Python 組み込みの `unittest` フレームワークを使用する
+- 全てのテストファイルを `tests/` ディレクトリに配置する
+- テストファイル名にプレフィックス `test_` を付ける（例：`test_feature.py`）
+- `test_` で始まる分かりやすいテストメソッド名を使用する
 
-### Test Structure
+### テスト構造
 
-- Create a test class inheriting from `unittest.TestCase`
-- Use `setUp()` for test fixtures
-- Use `tearDown()` for cleanup
-- Use `tempfile.mkdtemp()` for temporary test directories
-- Clean up temporary files after tests
+- `unittest.TestCase` を継承したテストクラスを作成する
+- テストフィクスチャには `setUp()` を使用する
+- クリーンアップには `tearDown()` を使用する
+- 一時テストディレクトリには `tempfile.mkdtemp()` を使用する
+- テスト後に一時ファイルをクリーンアップする
 
-### Test Coverage
+### テストカバレッジ
 
-- Write tests for all new features and bug fixes
-- Include both positive and negative test cases
-- Test edge cases and error conditions
-- Validate error messages and exception handling
+- 全ての新機能とバグ修正にテストを書く
+- ポジティブケースとネガティブケースの両方を含める
+- エッジケースとエラー条件をテストする
+- エラーメッセージと例外処理を検証する
 
-## Configuration
+## 設定
 
-### TOML Configuration
+### TOML 設定
 
-- Use TOML format for all configuration files
-- Configuration should support window monitoring settings
+- 全ての設定ファイルに TOML 形式を使用する
+- 設定はウィンドウ監視設定をサポートする必要がある
 
-## Architecture
+## アーキテクチャ
 
-### Module Organization
+### モジュール構成
 
-- Keep modules focused on single responsibilities
-- Use static methods for utility functions that don't require instance state
-- Handle errors gracefully with informative error messages
-- Use `print()` for user-facing output and logging
+- モジュールは単一責任に焦点を当てる
+- インスタンス状態を必要としないユーティリティ関数には静的メソッドを使用する
+- 情報豊富なエラーメッセージで優雅にエラーを処理する
+- ユーザー向け出力とログには `print()` を使用する
 
-## Error Handling
+## エラーハンドリング
 
-### Configuration Errors
+### 設定エラー
 
-- Catch `FileNotFoundError` for missing config files
-- Catch `toml.TomlDecodeError` for invalid TOML syntax
-- Print clear error messages to users
-- Exit with `sys.exit(1)` for fatal errors
+- 設定ファイルが見つからない場合は `FileNotFoundError` をキャッチする
+- 無効な TOML 構文の場合は `toml.TomlDecodeError` をキャッチする
+- ユーザーに明確なエラーメッセージを出力する
+- 致命的なエラーには `sys.exit(1)` で終了する
 
-### Runtime Errors
+### 実行時エラー
 
-- Handle `OSError` for file system operations
-- Catch general exceptions and provide helpful error messages
-- Continue operation when non-fatal errors occur
+- ファイルシステム操作には `OSError` を処理する
+- 一般的な例外をキャッチし、有用なエラーメッセージを提供する
+- 非致命的エラーが発生した場合は動作を継続する
 
-## Compatibility
+## 互換性
 
-### Platform Support
+### プラットフォームサポート
 
-- Support Linux, macOS, and Windows
-- Use `os.path` for cross-platform file path handling
-- Test platform-specific functionality on multiple platforms
+- Linux、macOS、Windows をサポートする
+- クロスプラットフォームのファイルパス処理には `os.path` を使用する
+- プラットフォーム固有の機能を複数のプラットフォームでテストする
 
-### Python Version
+### Python バージョン
 
-- Maintain compatibility with Python 3.12+
-- Use modern Python features available in Python 3.12+
-- Document minimum Python version requirements
+- Python 3.12+ との互換性を維持する
+- Python 3.12+ で利用可能な現代的な Python 機能を使用する
+- 最小 Python バージョン要件を文書化する
 
-## Code Formatting and Quality
+## コードフォーマットと品質
 
-### Before Committing Changes
+### 変更をコミットする前に
 
-**IMPORTANT**: Always run the following commands before committing any Python code changes:
+**重要**: Python コードの変更をコミットする前に、必ず以下のコマンドを実行してください：
 
 ```bash
-# Format code with Ruff
+# Ruff でコードをフォーマット
 ruff format src/ tests/
 
-# Fix auto-fixable lint issues
+# 自動修正可能な lint 問題を修正
 ruff check --fix src/ tests/
 
-# Verify formatting and linting (should pass with no errors)
+# フォーマットと lint の検証（エラーなしで通過する必要がある）
 ruff format --check src/ tests/
 ruff check src/ tests/
 ```
 
-These steps are **mandatory** for all code changes. Failure to format code will result in:
-- PR review delays
-- Manual formatting required by maintainers
-- Potential PR rejection
+これらのステップは全てのコード変更において**必須**です。コードフォーマットを怠ると以下の結果になります：
+- PR レビューの遅延
+- メンテナーによる手動フォーマットが必要
+- PR 拒否の可能性
 
-### Why This Matters
+### なぜこれが重要か
 
-- The project enforces consistent code style using Ruff
-- Manual formatting before commit is the safest and most efficient approach
+- プロジェクトは Ruff を使用して一貫したコードスタイルを強制します
+- コミット前の手動フォーマットが最も安全で効率的なアプローチです
 
-## Best Practices
+## ベストプラクティス
 
-- Write self-documenting code with clear variable names
-- Keep functions small and focused
-- Avoid premature optimization
-- Test changes thoroughly before committing
-- **Always run ruff format and ruff check before committing**
-- Use meaningful commit messages
-- Follow existing code patterns and conventions
+- 明確な変数名で自己説明的なコードを書く
+- 関数を小さく焦点を絞って保つ
+- 早すぎる最適化を避ける
+- コミット前に変更を十分にテストする
+- **コミット前に必ず ruff format と ruff check を実行する**
+- 意味のあるコミットメッセージを使用する
+- 既存のコードパターンと慣例に従う
