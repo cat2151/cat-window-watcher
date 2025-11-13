@@ -59,10 +59,10 @@ class TestScoreTracker(unittest.TestCase):
         self.assertEqual(self.tracker.get_score(), 10)
 
         self.tracker.update("GitHub")
-        self.assertEqual(self.tracker.get_score(), 20)  # Different title, should change
+        self.assertEqual(self.tracker.get_score(), 20)  # Still matches GitHub, +10
 
         self.tracker.update("github.com")
-        self.assertEqual(self.tracker.get_score(), 30)  # Different title, should change
+        self.assertEqual(self.tracker.get_score(), 30)  # Still matches GitHub, +10
 
     def test_no_match(self):
         """Test no score change when no pattern matches."""
@@ -71,15 +71,16 @@ class TestScoreTracker(unittest.TestCase):
         self.assertIsNone(matched)
         self.assertEqual(self.tracker.get_score(), 0)
 
-    def test_same_window_no_update(self):
-        """Test score doesn't change for same window title."""
+    def test_same_window_continuous_update(self):
+        """Test score continues to change for same window title."""
         self.tracker.update("GitHub - Profile")
         self.assertEqual(self.tracker.get_score(), 10)
 
-        # Same window, should not change score
+        # Same window, score should continue to increase
         score_changed, matched = self.tracker.update("GitHub - Profile")
-        self.assertFalse(score_changed)
-        self.assertEqual(self.tracker.get_score(), 10)
+        self.assertTrue(score_changed)
+        self.assertIsNotNone(matched)
+        self.assertEqual(self.tracker.get_score(), 20)
 
     def test_first_pattern_wins(self):
         """Test only first matching pattern is applied."""
@@ -111,6 +112,26 @@ class TestScoreTracker(unittest.TestCase):
         """Test regex with special characters."""
         self.tracker.update("x.com - Home")
         self.assertEqual(self.tracker.get_score(), -5)
+
+    def test_continuous_score_tracking(self):
+        """Test score increases continuously while window remains active."""
+        # Simulate being on GitHub for 5 updates (5 seconds)
+        for i in range(1, 6):
+            score_changed, matched = self.tracker.update("GitHub - Repository")
+            self.assertTrue(score_changed)
+            self.assertIsNotNone(matched)
+            self.assertEqual(matched["description"], "GitHub")
+            self.assertEqual(self.tracker.get_score(), 10 * i)
+
+        # Switch to Twitter
+        self.tracker.update("Twitter - Feed")
+        self.assertEqual(self.tracker.get_score(), 45)  # 50 - 5
+
+        # Stay on Twitter for 3 updates
+        for i in range(2, 5):
+            self.tracker.update("Twitter - Feed")
+            expected_score = 50 - (5 * i)
+            self.assertEqual(self.tracker.get_score(), expected_score)
 
 
 if __name__ == "__main__":
