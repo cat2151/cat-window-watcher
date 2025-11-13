@@ -31,20 +31,19 @@ class ScoreTracker:
         score_changed = False
         self.current_match = None
 
-        # Only update if window title changed
-        if window_title != self.last_window_title:
-            self.last_window_title = window_title
+        # Update last window title
+        self.last_window_title = window_title
 
-            # Check each pattern against window title
-            for pattern in self.window_patterns:
-                regex = pattern.get("regex", "")
-                score_delta = pattern.get("score", 0)
+        # Check each pattern against window title
+        for pattern in self.window_patterns:
+            regex = pattern.get("regex", "")
+            score_delta = pattern.get("score", 0)
 
-                if regex and re.search(regex, window_title, re.IGNORECASE):
-                    self.score += score_delta
-                    self.current_match = pattern
-                    score_changed = True
-                    break  # Only match first pattern
+            if regex and re.search(regex, window_title, re.IGNORECASE):
+                self.score += score_delta
+                self.current_match = pattern
+                score_changed = True
+                break  # Only match first pattern
 
         return score_changed, self.current_match
 
