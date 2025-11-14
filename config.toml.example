@@ -6,7 +6,9 @@
 
 [[window_patterns]]
 # GitHub - increases score when working on GitHub
-regex = "github"
+# Matches both embedded "github" (e.g., "github.com", "GitHub - Profile")
+# and GitHub pages format (e.g., "Pull requests · owner/repo · GitHub")
+regex = "github|· GitHub$"
 score = 10
 description = "GitHub"
 
