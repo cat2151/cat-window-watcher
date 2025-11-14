@@ -1,6 +1,12 @@
 # Cat Window Watcher Configuration
 # This is a provisional implementation for testing purposes
 
+# Default score applied when no window pattern matches
+# This helps detect configuration errors - if patterns are misconfigured,
+# you'll see this score being applied repeatedly
+# Set to 0 to disable (default), or a negative value like -1 to easily spot misconfigurations
+default_score = 0
+
 # Window patterns define regex patterns to match window titles
 # and the score change when that window becomes active
 

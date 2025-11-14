@@ -134,6 +134,112 @@ class TestScoreTracker(unittest.TestCase):
             self.assertEqual(self.tracker.get_score(), expected_score)
 
 
+class TestDefaultScore(unittest.TestCase):
+    """Test cases for default_score functionality."""
+
+    def test_default_score_zero_no_match(self):
+        """Test default_score=0 does not change score when no pattern matches."""
+        patterns = [
+            {"regex": "github", "score": 10, "description": "GitHub"},
+        ]
+        tracker = ScoreTracker(patterns, default_score=0)
+
+        score_changed, matched = tracker.update("Random Window Title")
+        self.assertFalse(score_changed)
+        self.assertIsNone(matched)
+        self.assertEqual(tracker.get_score(), 0)
+
+    def test_default_score_negative_no_match(self):
+        """Test default_score with negative value applies when no pattern matches."""
+        patterns = [
+            {"regex": "github", "score": 10, "description": "GitHub"},
+        ]
+        tracker = ScoreTracker(patterns, default_score=-1)
+
+        score_changed, matched = tracker.update("Random Window Title")
+        self.assertTrue(score_changed)
+        self.assertIsNone(matched)
+        self.assertEqual(tracker.get_score(), -1)
+
+    def test_default_score_positive_no_match(self):
+        """Test default_score with positive value applies when no pattern matches."""
+        patterns = [
+            {"regex": "github", "score": 10, "description": "GitHub"},
+        ]
+        tracker = ScoreTracker(patterns, default_score=5)
+
+        score_changed, matched = tracker.update("Random Window Title")
+        self.assertTrue(score_changed)
+        self.assertIsNone(matched)
+        self.assertEqual(tracker.get_score(), 5)
+
+    def test_default_score_not_applied_when_pattern_matches(self):
+        """Test default_score is NOT applied when a pattern matches."""
+        patterns = [
+            {"regex": "github", "score": 10, "description": "GitHub"},
+        ]
+        tracker = ScoreTracker(patterns, default_score=-1)
+
+        score_changed, matched = tracker.update("GitHub - Profile")
+        self.assertTrue(score_changed)
+        self.assertIsNotNone(matched)
+        self.assertEqual(tracker.get_score(), 10)  # Pattern score, not default
+
+    def test_default_score_accumulates(self):
+        """Test default_score accumulates over multiple updates."""
+        patterns = [
+            {"regex": "github", "score": 10, "description": "GitHub"},
+        ]
+        tracker = ScoreTracker(patterns, default_score=-2)
+
+        # No match 3 times
+        tracker.update("Random Window 1")
+        self.assertEqual(tracker.get_score(), -2)
+
+        tracker.update("Random Window 2")
+        self.assertEqual(tracker.get_score(), -4)
+
+        tracker.update("Random Window 3")
+        self.assertEqual(tracker.get_score(), -6)
+
+    def test_default_score_mixed_with_pattern_matches(self):
+        """Test default_score mixed with pattern matches."""
+        patterns = [
+            {"regex": "github", "score": 10, "description": "GitHub"},
+        ]
+        tracker = ScoreTracker(patterns, default_score=-1)
+
+        # Pattern match
+        tracker.update("GitHub - Repository")
+        self.assertEqual(tracker.get_score(), 10)
+
+        # No match (default score)
+        tracker.update("Random Window")
+        self.assertEqual(tracker.get_score(), 9)  # 10 + (-1)
+
+        # Pattern match again
+        tracker.update("GitHub - Issues")
+        self.assertEqual(tracker.get_score(), 19)  # 9 + 10
+
+        # No match again
+        tracker.update("Another Random Window")
+        self.assertEqual(tracker.get_score(), 18)  # 19 + (-1)
+
+    def test_default_score_helps_detect_misconfiguration(self):
+        """Test default_score helps detect pattern misconfiguration."""
+        # Simulate misconfigured patterns that never match
+        patterns = [
+            {"regex": "zzz_this_never_matches_zzz", "score": 10, "description": "Never"},
+        ]
+        tracker = ScoreTracker(patterns, default_score=-1)
+
+        # User browses various windows, but nothing matches
+        for i in range(1, 6):
+            tracker.update(f"Some Window {i}")
+            # Score keeps decreasing, making it obvious patterns don't match
+            self.assertEqual(tracker.get_score(), -i)
+
+
 class TestGitHubWindowTitlePatterns(unittest.TestCase):
     """Test cases specifically for GitHub window title pattern matching.
 

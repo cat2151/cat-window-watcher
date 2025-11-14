@@ -25,6 +25,7 @@ class Config:
         """
         self.config_path = Path(config_path)
         self.window_patterns = []
+        self.default_score = 0
         self.load_config()
 
     def load_config(self):
@@ -37,6 +38,9 @@ class Config:
         try:
             with open(self.config_path, "rb") as f:
                 config_data = tomllib.load(f)
+
+            # Load default_score (score applied when no pattern matches)
+            self.default_score = config_data.get("default_score", 0)
 
             # Load window patterns with their score values
             self.window_patterns = []
@@ -63,3 +67,11 @@ class Config:
             list: List of pattern dictionaries with regex, score, and description
         """
         return self.window_patterns
+
+    def get_default_score(self):
+        """Get default score for non-matching windows.
+
+        Returns:
+            int: Default score value
+        """
+        return self.default_score
