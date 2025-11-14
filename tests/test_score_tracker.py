@@ -134,5 +134,118 @@ class TestScoreTracker(unittest.TestCase):
             self.assertEqual(self.tracker.get_score(), expected_score)
 
 
+class TestGitHubWindowTitlePatterns(unittest.TestCase):
+    """Test cases specifically for GitHub window title pattern matching.
+
+    Tests the improved regex pattern that matches both:
+    1. Traditional "github" embedded in titles
+    2. GitHub page format: "Content · owner/repo · GitHub"
+    """
+
+    def setUp(self):
+        """Set up test fixtures with improved GitHub pattern."""
+        self.patterns = [
+            {
+                "regex": "github|· GitHub$",
+                "score": 10,
+                "description": "GitHub",
+            },
+        ]
+        self.tracker = ScoreTracker(self.patterns)
+
+    def test_traditional_github_lowercase(self):
+        """Test matching traditional github.com URLs."""
+        score_changed, matched = self.tracker.update("github.com")
+        self.assertTrue(score_changed)
+        self.assertIsNotNone(matched)
+        self.assertEqual(matched["description"], "GitHub")
+        self.assertEqual(self.tracker.get_score(), 10)
+
+    def test_traditional_github_mixed_case(self):
+        """Test matching GitHub with mixed case."""
+        score_changed, matched = self.tracker.update("GitHub - Profile")
+        self.assertTrue(score_changed)
+        self.assertIsNotNone(matched)
+        self.assertEqual(self.tracker.get_score(), 10)
+
+    def test_pull_requests_page(self):
+        """Test matching 'Pull requests · owner/repo · GitHub' format."""
+        score_changed, matched = self.tracker.update("Pull requests · cat2151/cat-window-watcher · GitHub")
+        self.assertTrue(score_changed)
+        self.assertIsNotNone(matched)
+        self.assertEqual(matched["description"], "GitHub")
+        self.assertEqual(self.tracker.get_score(), 10)
+
+    def test_code_page(self):
+        """Test matching 'Code · owner/repo · GitHub' format."""
+        score_changed, matched = self.tracker.update("Code · microsoft/vscode · GitHub")
+        self.assertTrue(score_changed)
+        self.assertIsNotNone(matched)
+        self.assertEqual(self.tracker.get_score(), 10)
+
+    def test_issues_page(self):
+        """Test matching 'Issues · owner/repo · GitHub' format."""
+        score_changed, matched = self.tracker.update("Issues · facebook/react · GitHub")
+        self.assertTrue(score_changed)
+        self.assertIsNotNone(matched)
+        self.assertEqual(self.tracker.get_score(), 10)
+
+    def test_repo_at_branch_format(self):
+        """Test matching 'owner/repo at branch · GitHub' format."""
+        score_changed, matched = self.tracker.update("cat2151/cat-window-watcher at main · GitHub")
+        self.assertTrue(score_changed)
+        self.assertIsNotNone(matched)
+        self.assertEqual(self.tracker.get_score(), 10)
+
+    def test_actions_page(self):
+        """Test matching 'Actions · owner/repo · GitHub' format."""
+        score_changed, matched = self.tracker.update("Actions · torvalds/linux · GitHub")
+        self.assertTrue(score_changed)
+        self.assertIsNotNone(matched)
+        self.assertEqual(self.tracker.get_score(), 10)
+
+    def test_specific_pr_title(self):
+        """Test matching specific PR title format."""
+        score_changed, matched = self.tracker.update(
+            "Add login feature · Pull Request #42 · octocat/Hello-World · GitHub"
+        )
+        self.assertTrue(score_changed)
+        self.assertIsNotNone(matched)
+        self.assertEqual(self.tracker.get_score(), 10)
+
+    def test_file_path_format(self):
+        """Test matching file path format."""
+        score_changed, matched = self.tracker.update("src/utils/helpers.js at main · octocat/Hello-World · GitHub")
+        self.assertTrue(score_changed)
+        self.assertIsNotNone(matched)
+        self.assertEqual(self.tracker.get_score(), 10)
+
+    def test_non_github_not_matched(self):
+        """Test that non-GitHub pages are not matched."""
+        score_changed, matched = self.tracker.update("Random Window Title")
+        self.assertFalse(score_changed)
+        self.assertIsNone(matched)
+        self.assertEqual(self.tracker.get_score(), 0)
+
+    def test_non_github_ending_pattern(self):
+        """Test that other sites with similar ending don't match."""
+        # This should NOT match because it doesn't end with "· GitHub"
+        score_changed, matched = self.tracker.update("Some Page · Other Site")
+        self.assertFalse(score_changed)
+        self.assertIsNone(matched)
+        self.assertEqual(self.tracker.get_score(), 0)
+
+    def test_multiple_github_pages_accumulate_score(self):
+        """Test that browsing multiple GitHub pages accumulates score."""
+        self.tracker.update("Pull requests · cat2151/cat-window-watcher · GitHub")
+        self.assertEqual(self.tracker.get_score(), 10)
+
+        self.tracker.update("Code · microsoft/vscode · GitHub")
+        self.assertEqual(self.tracker.get_score(), 20)
+
+        self.tracker.update("github.com")
+        self.assertEqual(self.tracker.get_score(), 30)
+
+
 if __name__ == "__main__":
     unittest.main()
