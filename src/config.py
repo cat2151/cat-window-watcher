@@ -25,7 +25,7 @@ class Config:
         """
         self.config_path = Path(config_path)
         self.window_patterns = []
-        self.default_score = 0
+        self.default_score = -1
         self.load_config()
 
     def load_config(self):
@@ -40,7 +40,7 @@ class Config:
                 config_data = tomllib.load(f)
 
             # Load default_score (score applied when no pattern matches)
-            self.default_score = config_data.get("default_score", 0)
+            self.default_score = config_data.get("default_score", -1)
 
             # Load window patterns with their score values
             self.window_patterns = []

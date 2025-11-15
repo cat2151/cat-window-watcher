@@ -96,7 +96,7 @@ description = "GitHub"
         self.assertEqual(config.get_default_score(), -1)
 
     def test_default_score_default_value(self):
-        """Test default_score defaults to 0 when not specified."""
+        """Test default_score defaults to -1 when not specified."""
         config_content = """
 [[window_patterns]]
 regex = "github"
@@ -106,7 +106,7 @@ description = "GitHub"
         self.config_path.write_text(config_content)
 
         config = Config(str(self.config_path))
-        self.assertEqual(config.get_default_score(), 0)
+        self.assertEqual(config.get_default_score(), -1)
 
     def test_default_score_positive_value(self):
         """Test default_score with positive value."""

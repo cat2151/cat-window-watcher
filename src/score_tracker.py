@@ -7,12 +7,12 @@ import re
 class ScoreTracker:
     """Track score based on window title matches."""
 
-    def __init__(self, window_patterns, default_score=0):
+    def __init__(self, window_patterns, default_score=-1):
         """Initialize score tracker.
 
         Args:
             window_patterns: List of pattern dictionaries with regex, score, and description
-            default_score: Score to apply when no pattern matches (default: 0)
+            default_score: Score to apply when no pattern matches (default: -1)
         """
         self.window_patterns = window_patterns
         self.default_score = default_score

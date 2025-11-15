@@ -23,7 +23,7 @@ class TestScoreTracker(unittest.TestCase):
             {"regex": "twitter|x\\.com", "score": -5, "description": "Twitter/X"},
             {"regex": "vscode", "score": 8, "description": "VS Code"},
         ]
-        self.tracker = ScoreTracker(self.patterns)
+        self.tracker = ScoreTracker(self.patterns, default_score=0)
 
     def test_initial_score(self):
         """Test initial score is zero."""
@@ -257,7 +257,7 @@ class TestGitHubWindowTitlePatterns(unittest.TestCase):
                 "description": "GitHub",
             },
         ]
-        self.tracker = ScoreTracker(self.patterns)
+        self.tracker = ScoreTracker(self.patterns, default_score=0)
 
     def test_traditional_github_lowercase(self):
         """Test matching traditional github.com URLs."""
