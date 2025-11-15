@@ -77,6 +77,12 @@ cp config.toml.example config.toml
 2. Edit `config.toml` to customize window patterns and scores:
 
 ```toml
+# Default score applied when no pattern matches
+# Helps detect configuration errors - if patterns are misconfigured,
+# you'll see this score being applied repeatedly
+# Set to -1 (default) to easily spot misconfigurations, or 0 to disable
+default_score = -1
+
 [[window_patterns]]
 regex = "github"           # Regex pattern to match window title
 score = 10                 # Score change when this window is active
@@ -90,6 +96,10 @@ description = "Twitter/X"
 
 ### Configuration Options
 
+- **default_score**: Score applied when no pattern matches (default: -1)
+  - Set to -1 (default) to easily detect if your patterns are configured correctly
+  - Set to 0 to have no score change when no pattern matches
+  - If patterns are misconfigured, the score will continuously decrease, making it obvious
 - **regex**: Regular expression pattern to match against window titles (case-insensitive)
 - **score**: Integer value to add to score when pattern matches (can be negative)
 - **description**: Human-readable description shown in the status area

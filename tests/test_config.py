@@ -80,6 +80,64 @@ regex = "test"
         self.assertEqual(patterns[0]["score"], 0)
         self.assertEqual(patterns[0]["description"], "")
 
+    def test_default_score_loading(self):
+        """Test loading default_score from configuration."""
+        config_content = """
+default_score = -1
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertEqual(config.get_default_score(), -1)
+
+    def test_default_score_default_value(self):
+        """Test default_score defaults to -1 when not specified."""
+        config_content = """
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertEqual(config.get_default_score(), -1)
+
+    def test_default_score_positive_value(self):
+        """Test default_score with positive value."""
+        config_content = """
+default_score = 5
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertEqual(config.get_default_score(), 5)
+
+    def test_default_score_zero(self):
+        """Test default_score explicitly set to zero."""
+        config_content = """
+default_score = 0
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertEqual(config.get_default_score(), 0)
+
 
 if __name__ == "__main__":
     unittest.main()

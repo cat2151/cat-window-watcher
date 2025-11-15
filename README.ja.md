@@ -82,6 +82,11 @@ cp config.toml.example config.toml
 2. `config.toml`を編集してウィンドウパターンとスコアをカスタマイズ：
 
 ```toml
+# デフォルトスコア（パターンがマッチしない場合に適用）
+# 設定ミスを検知しやすくするために使用します
+# -1（デフォルト）で設定ミスを簡単に検知、0に設定で無効化
+default_score = -1
+
 [[window_patterns]]
 regex = "github"           # Regex pattern to match window title
 score = 10                 # Score change when this window is active
@@ -95,6 +100,10 @@ description = "Twitter/X"
 
 ### 設定オプション
 
+- **default_score**: パターンがマッチしない場合に適用されるスコア（デフォルト: -1）
+  - -1（デフォルト）に設定すると、パターンが正しく設定されているか確認しやすくなります
+  - 0に設定すると、マッチしない場合はスコアが変化しません
+  - パターンが誤って設定されている場合、スコアが継続的に減少するため、すぐに気づくことができます
 - **regex**: ウィンドウタイトルにマッチする正規表現パターン（大文字小文字を区別しない）
 - **score**: パターンがマッチしたときにスコアに追加する整数値（負の値も可能）
 - **description**: ステータスエリアに表示される人間が読める説明
