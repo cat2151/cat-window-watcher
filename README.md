@@ -1,37 +1,42 @@
 # cat-window-watcher - Cat is watching you -
 
-A simple, standalone window monitoring tool that tracks your active window and adjusts a score based on what you're doing.
+A simple, standalone window monitoring tool that watches active windows and adjusts your score based on your activity.
+
+<p align="left">
+  <a href="README.ja.md"><img src="https://img.shields.io/badge/🇯🇵-Japanese-red.svg" alt="Japanese"></a>
+  <a href="README.md"><img src="https://img.shields.io/badge/🇺🇸-English-blue.svg" alt="English"></a>
+</p>
 
 ## WIP
 
-開発中です。ここに書いてあるものは、「それを目指している」というレベルです。実装されていない可能性があります。
+Under development. There are bugs. Please refer to the issues.
 
-## ⚠️ Provisional Implementation Notice
+## ⚠️ Note on Provisional Implementation
 
-This is a **provisional implementation for testing and verification purposes**. The current implementation focuses on:
-- Simple, standalone operation (no integration with other apps in this phase)
-- Straightforward logic: checks active window title every 1 second
+This is a **provisional implementation for testing and validation**. The current implementation focuses on:
+- Simple, standalone operation (no integration with other apps at this stage)
+- Straightforward logic: checks the active window title every second
 - Minimal complexity to facilitate rapid development and testing
 
-Future versions may include optimizations and integrations, but this version prioritizes simplicity and ease of understanding.
+While future versions may include optimizations and integrations, this version prioritizes simplicity and ease of understanding.
 
 ## Concept
 
-The application monitors which window is currently active and adjusts a score based on configurable patterns:
-- Working on GitHub? Score increases! 🎉
-- Browsing social media? Score decreases... 😿
+The application monitors the currently active window and adjusts a score based on configurable patterns:
+- Working on GitHub? Your score goes up! 🎉
+- Browsing social media? Your score goes down... 😿
 
 The cat is watching you!
 
 ## Features
 
-- **Simple Score Display**: Shows your current score in a clean tkinter GUI
-- **Regex-based Window Matching**: Configure window title patterns using regular expressions
-- **Configurable Score Values**: Set custom score increase/decrease amounts for each pattern
-- **Cross-platform Support**: Works on Linux, macOS, and Windows
-- **Lightweight**: Checks window title once per second, minimal resource usage
+-   **Simple Score Display**: Shows the current score in a clean tkinter GUI
+-   **Regex-based Window Matching**: Configure window title patterns using regular expressions
+-   **Configurable Score Values**: Set custom score increments or decrements for each pattern
+-   **Cross-Platform Compatibility**: Works on Linux, macOS, and Windows
+-   **Lightweight**: Checks window titles once per second, minimal resource usage
 
-## What It Looks Like
+## Appearance
 
 ```
 ╔════════════════════════════════════════════════════════════╗
@@ -47,40 +52,39 @@ The cat is watching you!
 ╚════════════════════════════════════════════════════════════╝
 ```
 
-The GUI features a dark theme with a large score display and status showing your current activity.
+The GUI features a dark theme, a large score display, and a status area showing the current activity.
 
 ## Installation
 
-1. Clone the repository:
+1.  Clone the repository:
 ```bash
 git clone https://github.com/cat2151/cat-window-watcher.git
 cd cat-window-watcher
 ```
 
-2. Ensure you have Python 3.12+ installed:
+2.  Ensure Python 3.12 or higher is installed:
 ```bash
 python --version
 ```
 
-3. Install dependencies (if needed):
-   - Linux: `xdotool` or `xprop` (usually pre-installed)
-   - macOS: Built-in AppleScript support
-   - Windows: Works with built-in APIs (optional: `pywin32` for better support)
+3.  Install dependencies (if necessary):
+    -   Linux: `xdotool` or `xprop` (usually pre-installed)
+    -   macOS: Built-in AppleScript support
+    -   Windows: Works with built-in API (optionally use `pywin32` for better support)
 
 ## Configuration
 
-1. Copy the example configuration:
+1.  Copy the example configuration:
 ```bash
 cp config.toml.example config.toml
 ```
 
-2. Edit `config.toml` to customize window patterns and scores:
+2.  Edit `config.toml` to customize window patterns and scores:
 
 ```toml
-# Default score applied when no pattern matches
-# Helps detect configuration errors - if patterns are misconfigured,
-# you'll see this score being applied repeatedly
-# Set to -1 (default) to easily spot misconfigurations, or 0 to disable
+# Default score (applied when no pattern matches)
+# Used to easily detect misconfigurations
+# -1 (default) makes misconfigurations obvious, set to 0 to disable
 default_score = -1
 
 [[window_patterns]]
@@ -96,33 +100,33 @@ description = "Twitter/X"
 
 ### Configuration Options
 
-- **default_score**: Score applied when no pattern matches (default: -1)
-  - Set to -1 (default) to easily detect if your patterns are configured correctly
-  - Set to 0 to have no score change when no pattern matches
-  - If patterns are misconfigured, the score will continuously decrease, making it obvious
-- **regex**: Regular expression pattern to match against window titles (case-insensitive)
-- **score**: Integer value to add to score when pattern matches (can be negative)
-- **description**: Human-readable description shown in the status area
+-   **default_score**: Score applied when no pattern matches (default: -1)
+    -   Setting to -1 (default) helps in easily verifying if patterns are correctly configured.
+    -   Setting to 0 means the score won't change if no pattern matches.
+    -   If patterns are misconfigured, the score will continuously decrease, making it immediately noticeable.
+-   **regex**: Regular expression pattern to match against the window title (case-insensitive)
+-   **score**: Integer value to add to the score when the pattern matches (can be negative)
+-   **description**: Human-readable description displayed in the status area
 
 ## Usage
 
 Run the application:
 ```bash
-# Method 1: Direct script execution
+# Method 1: Run the script directly
 python src/main.py
 
-# Method 2: Run as module
+# Method 2: Run as a module
 python -m src
 
-# Method 3: With custom config file
+# Method 3: Run with a custom configuration file
 python src/main.py --config my_config.toml
 python src/main.py -c my_config.toml
 ```
 
-The GUI will display:
-- Current score in large text
-- Status showing the current matched pattern or window title
-- Updates every second automatically
+The GUI displays:
+-   The current score in large text
+-   A status indicating the currently matched pattern or window title
+-   Automatic updates every second
 
 ## Examples
 
@@ -167,7 +171,7 @@ ruff check --fix src/ tests/
 ```
 
 ### Linting
-Verify code quality:
+Validate code quality:
 ```bash
 ruff format --check src/ tests/
 ruff check src/ tests/
@@ -177,31 +181,31 @@ ruff check src/ tests/
 
 The application consists of several modules:
 
-- **config.py**: Loads and manages TOML configuration
-- **window_monitor.py**: Cross-platform window title detection
-- **score_tracker.py**: Matches window titles against patterns and tracks score
-- **gui.py**: tkinter-based score display interface
-- **main.py**: Application entry point and orchestration
+-   **config.py**: Handles loading and managing TOML configurations
+-   **window_monitor.py**: Provides cross-platform window title detection
+-   **score_tracker.py**: Matches window titles against patterns and tracks the score
+-   **gui.py**: tkinter-based interface for displaying the score
+-   **main.py**: Application entry point and orchestration
 
 ## Platform-Specific Notes
 
 ### Linux
-Requires `xdotool` or `xprop`:
+`xdotool` or `xprop` is required:
 ```bash
 sudo apt-get install xdotool  # Debian/Ubuntu
 ```
 
 ### macOS
-Uses built-in AppleScript. No additional dependencies required.
+Uses built-in AppleScript. No additional dependencies are required.
 
 ### Windows
-Works with built-in Windows APIs. For better compatibility, install:
+Works with built-in Windows API. For better compatibility, install:
 ```bash
 pip install pywin32
 ```
 
 ## License
 
-See LICENSE file for details.
+See the LICENSE file for details.
 
 *Big Brother is watching you. But this time, it's a cat. 🐱*
