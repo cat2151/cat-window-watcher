@@ -1,48 +1,50 @@
-Last updated: 2025-11-14
+Last updated: 2025-11-16
 
 # Development Status
 
 ## 現在のIssues
-オープン中のIssueはありません。プロジェクトは現在、直近の機能修正（連続スコアトラッキング）が完了し、安定化フェーズに移行しています。今後の開発は、既存機能の堅牢性向上、CI/CDプロセスの最適化、およびドキュメントの最新性維持が主な焦点となります。
+- 現在の開発は、[Issue #16](../issue-notes/16.md) のポモドーロ風スコアリセットや [Issue #15](../issue-notes/15.md) の時間帯別ペナルティ軽減など、スコア計算ロジックの改善とTOMLでの設定化に焦点を当てています。
+- また、[Issue #14](../issue-notes/14.md) のウィンドウ透明化や [Issue #13](../issue-notes/13.md) のスコア表示色変更など、視覚的フィードバックとUIのTOML設定化に関する課題が挙げられています。
+- さらに、[Issue #12](../issue-notes/12.md) の最前面モードの挙動制御や [Issue #11](../issue-notes/11.md) の最前面表示ON/OFFなど、ウィンドウ表示制御のTOML設定化も重要なタスクです。
 
 ## 次の一手候補
-1. 直近のスコアトラッキング機能の継続性テストの強化
-   - 最初の小さな一歩: `tests/test_score_tracker.py` に新しいテストケースを追加し、アクティブウィンドウの継続的なスコアトラッキングのシナリオをカバーする。
-   - Agent実行プロンプト:
-     ```
-     対象ファイル: src/score_tracker.py, tests/test_score_tracker.py
+1.  TOML設定の動的反映を実装する [Issue #8](../issue-notes/8.md)
+    -   最初の小さな一歩: `src/config.py` にTOMLファイルのタイムスタンプを監視し、変更があればリロードする基本的な機構を実装する。
+    -   Agent実行プロンプト:
+        ```
+        対象ファイル: `src/config.py`
 
-     実行内容: 直近のコミット `cc1037f` で修正された `src/score_tracker.py` 内の `enable_continuous_tracking` 機能および関連するスコア更新ロジックを分析し、現在のアクティブウィンドウの継続的なスコアトラッキングが意図通りに機能していることを検証する新しいテストケースを `tests/test_score_tracker.py` に追加してください。特に、ウィンドウ切り替え時、および長時間アクティブな状態でのスコア更新挙動を確認するテストを含めてください。
+        実行内容: `src/config.py` の `Config` クラスに、TOMLファイル (`config.toml`) の最終更新タイムスタンプを定期的にチェックし、変更があれば設定をリロードする機能を追加してください。具体的には、`_last_modified_timestamp` を保持し、`load_config` メソッド内で現在のタイムスタンプと比較するロジックを実装します。変更があった場合のみファイルを再度読み込み、`_last_modified_timestamp` を更新するようにしてください。
 
-     確認事項: 既存のテストスイートとの整合性、および `src/score_tracker.py` の他のメソッドや状態管理への影響がないことを確認してください。
+        確認事項: `Config` クラスの既存の構造と、`src/main.py` での設定読み込み箇所との整合性を確認してください。設定のリロードが無限ループを引き起こさないよう注意し、効率的な監視方法を考慮してください。
 
-     期待する出力: `tests/test_score_tracker.py` に追加された新しいテストケースのコードと、そのテストがカバーするシナリオの説明。
-     ```
+        期待する出力: `src/config.py` の修正されたコードをmarkdown形式で出力してください。また、この機能が正しく動作することを確認するための簡単なテスト方法も記述してください。
+        ```
 
-2. GitHub Actionsの`actions-tmp`ディレクトリ構成の調査と合理化の提案
-   - 最初の小さな一歩: `.github/actions-tmp/` ディレクトリの目的と、そこに配置されているワークフローファイル、およびそれらがメインのワークフローからどのように呼び出されているかを分析する。
-   - Agent実行プロンプト:
-     ```
-     対象ファイル: .github/workflows/call-daily-project-summary.yml, .github/workflows/call-issue-note.yml, .github/workflows/call-translate-readme.yml, .github/actions-tmp/ ディレクトリ下の全ファイル
+2.  最前面表示モードのon/offをTOMLで設定可能にする [Issue #11](../issue-notes/11.md)
+    -   最初の小さな一歩: `config.toml.example` に `[ui]` セクションを追加し、`always_on_top = true` のboolean設定項目を定義する。
+    -   Agent実行プロンプト:
+        ```
+        対象ファイル: `config.toml.example`, `src/config.py`, `src/gui.py`
 
-     実行内容: `.github/actions-tmp/` ディレクトリの役割と、そこに配置されているGitHub Actionsワークフロー（例: `daily-project-summary.yml`, `issue-note.yml`）がどのようにメインのワークフローから呼び出されているかを分析してください。この構成が現在のプロジェクトの目的（特に自動生成されるドキュメントやIssueノート）と合致しているか、または保守性や効率性を向上させるための合理的な改善策（例: ワークフローの集約、パスの簡素化）があるかを検討してください。
+        実行内容: `config.toml.example` に新しいセクション `[ui]` を追加し、`always_on_top = true` (デフォルト値) の設定項目を定義してください。次に、`src/config.py` の `Config` クラスに `always_on_top` プロパティを追加し、TOMLファイルからこの設定を読み込むように実装してください。最後に、`src/gui.py` の `MainWindow` クラスで、`always_on_top` 設定が `True` の場合にウィンドウを常に最前面に表示するようにPyQtの機能を使って設定してください。
 
-     確認事項: 既存のワークフロー（プロジェクトサマリー、Issueノート生成、README翻訳など）が正常に機能していることを前提とし、変更が既存のCI/CDパイプラインに悪影響を与えないことを確認してください。
+        確認事項: 既存のTOML読み込みロジックとの競合がないか、またGUIのウィンドウフラグ設定が適切に行われるかを確認してください。`src/main.py` での設定適用フローも考慮してください。
 
-     期待する出力: `.github/actions-tmp/` 構成の目的、現在の課題、および潜在的な改善案をまとめたMarkdown形式のレポート。
-     ```
+        期待する出力: `config.toml.example`, `src/config.py`, `src/gui.py` の修正されたコードをmarkdown形式で出力してください。
+        ```
 
-3. 主要機能のユーザー向けドキュメント（README/USAGE.md）の最新性検証
-   - 最初の小さな一歩: `README.md` と `USAGE.md` の内容を読み込み、`src/` ディレクトリ内の主要機能（特に `src/score_tracker.py` の継続的なスコアトラッキング機能）と比較し、最新の機能や変更点が適切に反映されているか確認する。
-   - Agent実行プロンプト:
-     ```
-     対象ファイル: README.md, README.ja.md, USAGE.md, src/score_tracker.py, src/window_monitor.py, src/gui.py
+3.  スコアが減少するときにスコア表示を赤い文字にする設定をTOMLで実現可能にする [Issue #13](../issue-notes/13.md)
+    -   最初の小さな一歩: `config.toml.example` の `[ui]` セクション（もしなければ作成）の下に `score_up_color` と `score_down_color` の設定項目を定義する。
+    -   Agent実行プロンプト:
+        ```
+        対象ファイル: `config.toml.example`, `src/config.py`, `src/gui.py`, `src/score_tracker.py`
 
-     実行内容: `README.md` と `USAGE.md` に記載されているプロジェクトの機能説明と使用方法が、現在のソースコード（特に最近修正された `src/score_tracker.py` の継続的なスコアトラッキング機能や、`src/window_monitor.py`, `src/gui.py` の主要なインタラクション）と一致しているか詳細に分析してください。特に、変更や新機能がドキュメントに適切に反映されているか、ユーザーがプロジェクトを理解し使用するために不足している情報はないかを確認してください。
+        実行内容: `config.toml.example` の `[ui]` セクションに `score_up_color = "#00FF00"` (緑色) と `score_down_color = "#FF0000"` (赤色) の設定項目を追加してください。`src/config.py` の `Config` クラスにこれらの色を読み込むプロパティ (`score_up_color`, `score_down_color`) を追加してください。`src/score_tracker.py` でスコアが変動した際に、その変動方向に応じて `src/gui.py` の `MainWindow` クラス内のスコア表示ラベルの色を変更できるよう、状態を渡すメカニズムを実装してください。最終的に `src/gui.py` でスコア表示のテキスト色を動的に変更するロジックを実装してください。
 
-     確認事項: ドキュメントの更新が、プロジェクトの意図された挙動と乖離しないこと、および新規ユーザーがプロジェクトを容易に利用開始できることを確認してください。
+        確認事項: 既存のスコア更新ロジック (`src/score_tracker.py` から `src/gui.py` へのシグナル/スロット連携) に影響を与えないように注意してください。色のフォーマット (例: HEXコード) が適切に処理されることを確認してください。
 
-     期待する出力: ドキュメントと現在のコードベースとの乖離点、およびドキュメントを最新の状態に保つための具体的な修正提案をまとめたMarkdown形式のレポート。
+        期待する出力: `config.toml.example`, `src/config.py`, `src/gui.py`, `src/score_tracker.py` の修正されたコードをmarkdown形式で出力してください。
 
 ---
-Generated at: 2025-11-14 07:06:51 JST
+Generated at: 2025-11-16 07:04:47 JST

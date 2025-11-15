@@ -1,136 +1,128 @@
-Last updated: 2025-11-14
+Last updated: 2025-11-16
 
 # Project Overview
 
 ## プロジェクト概要
-- アクティブなウィンドウを監視し、生産性に基づいてスコアを調整するシンプルなツールです。
-- GitHubでの作業中にスコアを上げ、SNS閲覧時にスコアを下げるなど、カスタマイズ可能です。
-- 「猫が見守る」というコンセプトで、現在の活動を視覚的に表示します。
+- アクティブなウィンドウを監視し、設定されたルールに基づいて生産性スコアを調整するツールです。
+- 正規表現で定義されたパターンにより、GitHub作業時にスコアが上がり、SNS閲覧時にスコアが下がるなど、作業内容に応じたスコア変動を実現します。
+- シンプルなGUIで現在のスコアと活動状況を表示し、Linux、macOS、Windowsのクロスプラットフォームで動作します。
 
 ## 技術スタック
-- フロントエンド: **tkinter** (Pythonの標準GUIライブラリで、シンプルでクリーンなユーザーインターフェースを提供します。)
-- 音楽・オーディオ: (このプロジェクトには音楽・オーディオ関連の技術は使用されていません。)
-- 開発ツール: **Git** (バージョン管理システムとしてソースコードの管理に使用)、**.editorconfig** (異なるエディタ間でのコーディングスタイル統一を支援)、**.vscode/settings.json** (VS Codeのワークスペース固有の設定)、**pre-commit** (コミット前に自動でコード品質チェックやフォーマットを実行するフック管理ツール)。
-- テスト: **unittest** (Python標準のテストフレームワークで、コードの機能テストに使用されます。)
-- ビルドツール: (Pythonスクリプトとして直接実行されるため、特定のビルドツールは使用されていません。Python 3.12以上が実行環境として必要です。)
-- 言語機能: **Python 3.12以上** (プロジェクトの主要開発言語)、**正規表現 (regex)** (ウィンドウタイトルパターンマッチングに利用されます)。
-- 自動化・CI/CD: **pre-commit** (コードコミット前の自動チェックに利用され、品質保持と開発プロセスの自動化に貢献します)。
-- 開発標準: **ruff** (Pythonの高速なリンターおよびフォーマッターで、コード品質の維持と統一されたコーディングスタイルの適用に使用されます。)
+- フロントエンド: `tkinter` (Python標準のGUIライブラリで、シンプルかつクリーンなユーザーインターフェースを構築し、現在のスコアやアクティビティを表示します。)
+- 音楽・オーディオ: (該当する技術はありません。)
+- 開発ツール: `Git` (分散型バージョン管理システムとして、プロジェクトのソースコード管理と変更履歴の追跡に利用されています。), `ruff` (Pythonコードの高速なリンティングとフォーマットを可能にし、コード品質と一貫性を自動的に維持します。), `pre-commit` (コミット前に定義されたスクリプト（例: ruffによるフォーマットやリンティング）を自動実行し、コード品質ゲートを設けるためのフレームワークです。)
+- テスト: `unittest` (Python標準のテストフレームワークで、モジュールや関数の単体テストに使用されています。), `pytest` (柔軟なテスト記述とプラグインによる拡張性を提供し、テストの実行と管理を効率化します。)
+- ビルドツール: (該当する技術はありません。アプリケーションはPythonスクリプトとして直接実行されます。)
+- 言語機能: `Python 3.12以上` (アプリケーションの基盤となるプログラミング言語です。), `正規表現` (ウィンドウタイトルのパターンマッチングに利用され、柔軟なルール設定を可能にします。), `TOML` (人間が読みやすく、シンプルで強力な設定ファイル形式として、ウィンドウパターンやスコア設定のカスタマイズに利用されます。)
+- 自動化・CI/CD: `pre-commit` (コミット前のコード品質チェックやフォーマットを自動化することで、開発ワークフローにおける品質維持を支援します。)
+- 開発標準: `ruff` (コードのスタイル統一、潜在的なバグの検出、一般的なコード品質基準の適用を通じて、プロジェクト全体の開発標準を維持します。)
+- その他（OS固有の依存技術）：
+    - Linux: `xdotool` または `xprop` (アクティブなウィンドウのタイトルを取得するために使用されるLinuxユーティリティです。)
+    - macOS: `AppleScript` (macOSに組み込まれたスクリプティング言語で、ウィンドウ情報の取得に利用されます。)
+    - Windows: `pywin32` (オプション。Windows APIへのPythonインターフェースを提供し、より堅牢なウィンドウ情報の取得をサポートします。)
 
 ## ファイル階層ツリー
 ```
-.editorconfig
-.gitignore
-.pre-commit-config.yaml
-.vscode/
-  settings.json
-LICENSE
-README.ja.md
-README.md
-_config.yml
-config.toml.example
-examples/
-  example.txt
-generated-docs/
-issue-notes/
-  4.md
-pytest.ini
-ruff.toml
-src/
-  __init__.py
-  __main__.py
-  config.py
-  gui.py
-  main.py
-  score_tracker.py
-  window_monitor.py
-tests/
-  test_config.py
-  test_dummy.py
-  test_score_tracker.py
-  test_window_monitor.py
+📄 .editorconfig
+📄 .gitignore
+📄 .pre-commit-config.yaml
+📁 .vscode/
+  📊 settings.json
+📄 LICENSE
+📖 README.ja.md
+📖 README.md
+📄 _config.yml
+📄 config.toml.example
+📁 examples/
+  📄 example.txt
+📁 generated-docs/
+📁 issue-notes/
+  📖 11.md
+  📖 12.md
+  📖 13.md
+  📖 14.md
+  📖 15.md
+  📖 16.md
+  📖 4.md
+  📖 6.md
+  📖 8.md
+  📖 9.md
+📄 pytest.ini
+📄 ruff.toml
+📁 src/
+  📄 __init__.py
+  📄 __main__.py
+  📄 config.py
+  📄 gui.py
+  📄 main.py
+  📄 score_tracker.py
+  📄 window_monitor.py
+📁 tests/
+  📄 test_config.py
+  📄 test_dummy.py
+  📄 test_score_tracker.py
+  📄 test_window_monitor.py
 ```
 
 ## ファイル詳細説明
--   `.editorconfig`: さまざまなエディタやIDEで一貫したコーディングスタイルを定義するための設定ファイルです。
--   `.gitignore`: Gitがバージョン管理の対象から外すファイルやディレクトリを指定するファイルです。
--   `.pre-commit-config.yaml`: `pre-commit`ツールで使用される設定ファイルで、コミット前に実行されるフック（コードフォーマット、リンティングなど）を定義します。
--   `.vscode/settings.json`: Visual Studio Codeエディタのワークスペース固有の設定を定義するファイルです。
--   `LICENSE`: プロジェクトのソフトウェアライセンス情報が記載されています。
--   `README.ja.md`, `README.md`: プロジェクトの概要、インストール方法、使用方法、機能などを説明する日本語版および英語版のドキュメントです。
--   `_config.yml`: 一般的にGitHub Pagesなどの静的サイトジェネレータの設定に使用されるファイルですが、このプロジェクトでの具体的な用途は不明です。
--   `config.toml.example`: アプリケーションの設定ファイル（`config.toml`）の記述例を提供します。ウィンドウパターンやスコア設定のカスタマイズ方法が示されています。
--   `examples/example.txt`: プロジェクトの機能や使用例を示すためのサンプルファイルです。
--   `generated-docs/`: ドキュメント生成ツールによって作成されたドキュメントを格納するためのディレクトリです。
--   `issue-notes/4.md`: 特定のIssue（問題報告や機能要望）に関するメモや詳細情報を記録するためのファイルです。
--   `pytest.ini`: Pythonのテストフレームワークである`pytest`の設定ファイルです。ただし、プロジェクトでは`unittest`が主に利用されています。
--   `ruff.toml`: コードリンターおよびフォーマッターである`ruff`の設定ファイルで、コードの品質基準やフォーマットルールを定義します。
--   `src/__init__.py`: `src`ディレクトリがPythonパッケージであることを示すファイルです。
--   `src/__main__.py`: `python -m src`のようにモジュールとして実行された際のエントリポイントとなるファイルで、通常は`main.py`の関数を呼び出します。
--   `src/config.py`: TOML形式の設定ファイルを読み込み、アプリケーション内で利用可能な形式に変換する役割を担います。
--   `src/gui.py`: `tkinter`ライブラリを使用して、スコア表示などのユーザーインターフェースを構築・管理します。
--   `src/main.py`: アプリケーションの主要なエントリポイントです。設定の読み込み、GUIの初期化、ウィンドウ監視ループの開始など、全体の処理フローをオーケストレーションします。
--   `src/score_tracker.py`: アクティブなウィンドウタイトルを設定されたパターンと照合し、それに基づいてスコアを計算・更新するビジネスロジックを実装します。
--   `src/window_monitor.py`: OSに依存しない形で、現在アクティブなウィンドウのタイトルを取得する機能を提供します。
--   `tests/test_config.py`: `src/config.py`モジュールのテストコードを含みます。
--   `tests/test_dummy.py`: テストフレームワークの動作確認や一時的なテストに使用されるダミーのテストファイルです。
--   `tests/test_score_tracker.py`: `src/score_tracker.py`モジュールのテストコードを含みます。
--   `tests/test_window_monitor.py`: `src/window_monitor.py`モジュールのテストコードを含みます。
+- **`.editorconfig`**: 異なるエディタやIDEを使用する開発者が、プロジェクト全体で一貫したコーディングスタイル（インデント、文字コードなど）を維持するための設定ファイルです。
+- **`.gitignore`**: Gitのバージョン管理システムが無視すべきファイルやディレクトリ（例: ビルド生成物、ログファイル、一時ファイルなど）を指定するためのファイルです。
+- **`.pre-commit-config.yaml`**: `pre-commit`フレームワークの設定ファイルです。コミットが実行される前に、コードのフォーマットやリンティングなどの自動チェックを行うフックを定義します。
+- **`.vscode/settings.json`**: Visual Studio Codeエディタ固有の設定ファイルです。プロジェクト固有のワークスペース設定や推奨される拡張機能の設定などが含まれます。
+- **`LICENSE`**: プロジェクトのソフトウェアライセンス（例: MITライセンス）の詳細が記載されており、ソフトウェアの利用、配布、改変に関する権利と制限を明示します。
+- **`README.ja.md`**: プロジェクトの日本語版の概要、インストール手順、設定方法、使用方法、機能、開発に関する情報などが記述された主要なドキュメントです。
+- **`README.md`**: プロジェクトの英語版の概要、インストール手順、設定方法、使用方法、機能、開発に関する情報などが記述された主要なドキュメントです。
+- **`_config.yml`**: 通常、Jekyllなどの静的サイトジェネレータで使用される設定ファイルであり、GitHub Pagesなどでドキュメントを公開する際の設定が含まれる可能性があります。
+- **`config.toml.example`**: アプリケーションの`config.toml`設定ファイルの例です。ユーザーはこれをコピーして独自のウィンドウパターンやスコアルールをカスタマイズするためのテンプレートとして使用します。
+- **`examples/example.txt`**: 特定の機能の説明やテスト、またはアプリケーションの挙動を示すためのサンプルデータを含むテキストファイルです。
+- **`generated-docs/`**: 自動生成されたドキュメントやレポートを格納するためのディレクトリです。
+- **`issue-notes/`**: 過去のGitHub Issuesに関するメモや詳細な調査結果、解決策の検討などが記録されているディレクトリです。
+- **`pytest.ini`**: `pytest`テストフレームワークの設定ファイルです。テストの検出方法、レポート形式、追加オプションなどをカスタマイズするために使用されます。
+- **`ruff.toml`**: `ruff`リンターおよびフォーマッターの設定ファイルです。Pythonコードの品質チェックルール、スタイルガイド、フォーマットオプションなどを定義します。
+- **`src/__init__.py`**: `src`ディレクトリがPythonパッケージであることを示す空の、または初期化コードを含むファイルです。
+- **`src/__main__.py`**: `python -m src`のように`src`モジュールが直接実行された際のエントリポイントとなるスクリプトです。通常、`main.py`を呼び出してアプリケーションを起動します。
+- **`src/config.py`**: TOML形式の設定ファイル（例: `config.toml`）を読み込み、パースし、アプリケーション全体で利用可能な設定オブジェクトとして提供するモジュールです。
+- **`src/gui.py`**: `tkinter`ライブラリを使用して、現在のスコア、マッチしたパターン、およびアプリケーションのステータスを表示するユーザーインターフェースを構築および管理するモジュールです。
+- **`src/main.py`**: アプリケーションの主要なエントリポイントです。設定の読み込み、ウィンドウ監視の開始、GUIの初期化と周期的な更新ループのオーケストレーションを行います。コマンドライン引数の処理も担います。
+- **`src/score_tracker.py`**: ウィンドウタイトルと正規表現パターンを照合し、設定されたスコアルールに基づいて現在のスコアを計算・更新するロジックを提供するモジュールです。
+- **`src/window_monitor.py`**: OS（Linux, macOS, Windows）に依存しない抽象化レイヤーを提供し、現在アクティブなウィンドウのタイトルを取得する機能を実現するモジュールです。
+- **`tests/test_config.py`**: `src/config.py`モジュールの設定ファイル読み込みとパース機能が正しく動作するかを検証するための単体テストコードです。
+- **`tests/test_dummy.py`**: テスト環境のセットアップ確認や、簡単なテストケースの検証に使用される可能性のあるダミーのテストファイルです。
+- **`tests/test_score_tracker.py`**: `src/score_tracker.py`モジュールのスコア計算ロジック、正規表現パターンマッチング機能が期待通りに動作するかを検証するための単体テストコードです。
+- **`tests/test_window_monitor.py`**: `src/window_monitor.py`モジュールの、異なるOS環境下でのウィンドウタイトル取得機能が正しく動作するかを検証するための単体テストコードです。
 
 ## 関数詳細説明
--   `src/config.py`:
-    -   `load_config(file_path: str) -> dict`: 指定されたTOMLファイルパスから設定を読み込み、辞書形式で返します。
-        -   引数: `file_path` (str): 設定ファイルのパス。
-        -   戻り値: `dict`: 読み込まれた設定データ。
-    -   `get_window_patterns(config_data: dict) -> list[dict]`: 読み込まれた設定データから、ウィンドウ監視パターン（正規表現、スコア、説明）のリストを抽出して返します。
-        -   引数: `config_data` (dict): `load_config`で読み込まれた設定データ。
-        -   戻り値: `list[dict]`: ウィンドウパターンのリスト。
--   `src/window_monitor.py`:
-    -   `get_active_window_title() -> str`: 現在アクティブなウィンドウのタイトルをOS固有のAPIを使用して取得し、文字列で返します。
-        -   引数: なし。
-        -   戻り値: `str`: アクティブなウィンドウのタイトル。
--   `src/score_tracker.py`:
-    -   `ScoreTracker` クラス: ウィンドウパターンに基づいてスコアを追跡・管理します。
-        -   `__init__(patterns: list[dict])`: `ScoreTracker`オブジェクトを初期化します。監視するウィンドウパターンリストを受け取ります。
-            -   引数: `patterns` (list[dict]): `get_window_patterns`で取得したパターンリスト。
-        -   `update_score(window_title: str) -> None`: 指定されたウィンドウタイトルとパターンを比較し、マッチした場合にスコアを更新します。
-            -   引数: `window_title` (str): 現在アクティブなウィンドウのタイトル。
-        -   `get_current_score() -> int`: 現在の累積スコアを返します。
-            -   引数: なし。
-            -   戻り値: `int`: 現在のスコア。
-        -   `get_last_matched_description() -> str`: 最後にマッチしたウィンドウパターンの説明文を返します。
-            -   引数: なし。
-            -   戻り値: `str`: 最後にマッチしたパターンの説明。
--   `src/gui.py`:
-    -   `create_gui(initial_score: int, update_callback: callable) -> tkinter.Tk`: GUIウィンドウを作成し、初期スコアを設定し、更新コールバックを登録します。
-        -   引数: `initial_score` (int): 初期表示スコア。`update_callback` (callable): 定期的にGUIを更新するための関数。
-        -   戻り値: `tkinter.Tk`: 生成されたTkinterルートウィンドウオブジェクト。
-    -   `update_display(root: tkinter.Tk, score_var: tkinter.IntVar, desc_var: tkinter.StringVar, score: int, description: str) -> None`: GUI上のスコアと説明表示を更新します。
-        -   引数: `root` (tkinter.Tk), `score_var` (tkinter.IntVar), `desc_var` (tkinter.StringVar): GUI要素への参照。 `score` (int): 新しいスコア。 `description` (str): 新しい説明。
--   `src/main.py`:
-    -   `main()`: アプリケーションのメイン実行関数です。設定の読み込み、`ScoreTracker`とGUIの初期化、そしてメインの監視ループ（`run_watcher`）を開始します。
-        -   引数: なし。
-        -   戻り値: なし。
-    -   `run_watcher(root: tkinter.Tk, score_tracker: ScoreTracker, score_var: tkinter.IntVar, desc_var: tkinter.StringVar, interval: int = 1000) -> None`: 一定間隔でアクティブなウィンドウを監視し、スコアを更新し、GUIを最新の状態に保つループを実行します。
-        -   引数: `root` (tkinter.Tk): GUIのルートウィンドウ。 `score_tracker` (ScoreTracker): スコア追跡オブジェクト。 `score_var` (tkinter.IntVar): GUIのスコア表示変数。 `desc_var` (tkinter.StringVar): GUIの説明表示変数。 `interval` (int): 監視間隔（ミリ秒）。
+（提供された情報から具体的な関数名は特定できませんが、各モジュールの役割に基づき、想定される主要な機能を持つ関数群を説明します。）
+
+- **`config.py` 内の関数群**:
+    - **役割**: TOML形式の設定ファイルを読み込み、アプリケーションが利用できる形式に変換します。
+    - **主な機能**: 設定ファイルのパスを処理し、指定されたファイルが存在しない場合はデフォルト設定やエラーを返します。設定ファイル内の各セクション（例: `default_score`, `window_patterns`）をパースし、アプリケーションで使用するデータ構造（例: リストや辞書）として提供します。
+- **`window_monitor.py` 内の関数群**:
+    - **役割**: OSに依存しない方法で現在アクティブなウィンドウのタイトルを取得します。
+    - **主な機能**: 現在のOSを判別し、Linux (`xdotool`や`xprop`)、macOS (`AppleScript`)、Windows (`pywin32`または組み込みAPI) のいずれかのプラットフォーム固有のメカニズムを使用して、アクティブウィンドウのタイトル文字列を効率的に取得します。
+- **`score_tracker.py` 内の関数群**:
+    - **役割**: ウィンドウタイトルと設定されたパターンを照合し、スコアを計算・更新します。
+    - **主な機能**: 読み込まれたウィンドウパターンと対応するスコア変動量を内部で管理します。アクティブなウィンドウタイトルを受け取り、設定された正規表現パターンと照合します。マッチしたパターンに基づいてスコアを増減させ、その結果とマッチしたパターンの説明を返します。
+- **`gui.py` 内の関数群**:
+    - **役割**: `tkinter`を用いてユーザーインターフェースを構築し、スコアとアクティビティを表示・更新します。
+    - **主な機能**: メインウィンドウ、スコア表示ラベル、現在のアクティビティ表示ラベルなどのGUIコンポーネントを初期化し配置します。受け取ったスコア値とアクティビティの説明に基づいて、これらのGUIコンポーネントの表示内容を更新します。
+- **`main.py` 内の関数群**:
+    - **役割**: アプリケーションの起動と、各モジュールの機能を統合して全体の流れを制御します。
+    - **主な機能**: コマンドライン引数をパースしてカスタム設定ファイルのパスなどを処理します。`config.py`の関数を呼び出して設定を読み込みます。`gui.py`の関数を呼び出してGUIを初期化します。定期的に`window_monitor.py`の関数を呼び出してウィンドウタイトルを取得し、`score_tracker.py`の関数を呼び出してスコアを更新します。その後、`gui.py`の関数を呼び出してUIを更新する、といったメインループを管理します。
 
 ## 関数呼び出し階層ツリー
 ```
-プロジェクト情報より、関数呼び出し階層の分析は提供されていません。
-しかし、一般的なアプリケーションのフローから以下の呼び出し関係が推測されます。
+[提供された情報からは具体的な関数呼び出し階層ツリーを生成できません。]
 
-main.py::main()
-├── config.py::load_config()
-├── config.py::get_window_patterns()
-├── score_tracker.py::ScoreTracker.__init__()
-├── gui.py::create_gui()
-│   └── gui.py::update_display() (初期表示)
-└── main.py::run_watcher() (メインループ)
-    ├── window_monitor.py::get_active_window_title()
-    ├── score_tracker.py::ScoreTracker.update_score()
-    ├── score_tracker.py::ScoreTracker.get_current_score()
-    ├── score_tracker.py::ScoreTracker.get_last_matched_description()
-    └── gui.py::update_display()
+しかし、プロジェクトの構造から、主な呼び出し関係は以下のようになると推測されます：
+
+`main.py` (エントリポイント、アプリケーションのオーケストレーション)
+  └─ 設定を読み込む関数 (例: `config.py` 内)
+  └─ GUIを初期化する関数 (例: `gui.py` 内)
+  └─ メインループ
+      ├─ アクティブウィンドウタイトルを取得する関数 (例: `window_monitor.py` 内)
+      ├─ スコアを更新する関数 (例: `score_tracker.py` 内)
+      └─ GUIを更新する関数 (例: `gui.py` 内)
 
 ---
-Generated at: 2025-11-14 07:06:29 JST
+Generated at: 2025-11-16 07:04:58 JST

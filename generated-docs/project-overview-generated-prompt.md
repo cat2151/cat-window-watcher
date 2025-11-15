@@ -1,4 +1,4 @@
-Last updated: 2025-11-14
+Last updated: 2025-11-16
 
 
 # プロジェクト概要生成プロンプト（来訪者向け）
@@ -145,6 +145,11 @@ cp config.toml.example config.toml
 2. `config.toml`を編集してウィンドウパターンとスコアをカスタマイズ：
 
 ```toml
+# デフォルトスコア（パターンがマッチしない場合に適用）
+# 設定ミスを検知しやすくするために使用します
+# -1（デフォルト）で設定ミスを簡単に検知、0に設定で無効化
+default_score = -1
+
 [[window_patterns]]
 regex = "github"           # Regex pattern to match window title
 score = 10                 # Score change when this window is active
@@ -158,6 +163,10 @@ description = "Twitter/X"
 
 ### 設定オプション
 
+- **default_score**: パターンがマッチしない場合に適用されるスコア（デフォルト: -1）
+  - -1（デフォルト）に設定すると、パターンが正しく設定されているか確認しやすくなります
+  - 0に設定すると、マッチしない場合はスコアが変化しません
+  - パターンが誤って設定されている場合、スコアが継続的に減少するため、すぐに気づくことができます
 - **regex**: ウィンドウタイトルにマッチする正規表現パターン（大文字小文字を区別しない）
 - **score**: パターンがマッチしたときにスコアに追加する整数値（負の値も可能）
 - **description**: ステータスエリアに表示される人間が読める説明
@@ -283,7 +292,16 @@ pip install pywin32
   📄 example.txt
 📁 generated-docs/
 📁 issue-notes/
+  📖 11.md
+  📖 12.md
+  📖 13.md
+  📖 14.md
+  📖 15.md
+  📖 16.md
   📖 4.md
+  📖 6.md
+  📖 8.md
+  📖 9.md
 📄 pytest.ini
 📄 ruff.toml
 📁 src/
@@ -310,7 +328,16 @@ pip install pywin32
 .vscode/settings.json
 README.ja.md
 README.md
+issue-notes/11.md
+issue-notes/12.md
+issue-notes/13.md
+issue-notes/14.md
+issue-notes/15.md
+issue-notes/16.md
 issue-notes/4.md
+issue-notes/6.md
+issue-notes/8.md
+issue-notes/9.md
 
 上記の情報を基に、プロンプトで指定された形式でプロジェクト概要を生成してください。
 特に以下の点を重視してください：
@@ -322,4 +349,4 @@ issue-notes/4.md
 
 
 ---
-Generated at: 2025-11-14 07:06:06 JST
+Generated at: 2025-11-16 07:04:28 JST
