@@ -453,6 +453,51 @@ description = "GitHub"
         config = Config(str(self.config_path))
         self.assertEqual(config.get_proximity_distance(), 0)
 
+    def test_proximity_distance_invalid_negative(self):
+        """Test proximity_distance with negative value falls back to default."""
+        config_content = """
+proximity_distance = -10
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertEqual(config.get_proximity_distance(), 50)  # Falls back to default
+
+    def test_proximity_distance_invalid_float(self):
+        """Test proximity_distance with float value falls back to default."""
+        config_content = """
+proximity_distance = 50.5
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertEqual(config.get_proximity_distance(), 50)  # Falls back to default
+
+    def test_proximity_distance_invalid_string(self):
+        """Test proximity_distance with string value falls back to default."""
+        config_content = """
+proximity_distance = "fifty"
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertEqual(config.get_proximity_distance(), 50)  # Falls back to default
+
     def test_hide_on_mouse_proximity_reloaded_on_config_change(self):
         """Test that hide_on_mouse_proximity is reloaded when config file changes."""
         config_content = """
