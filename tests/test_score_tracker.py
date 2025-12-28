@@ -353,5 +353,97 @@ class TestGitHubWindowTitlePatterns(unittest.TestCase):
         self.assertEqual(self.tracker.get_score(), 30)
 
 
+class TestConfigUpdate(unittest.TestCase):
+    """Test cases for ScoreTracker configuration updates."""
+
+    def test_update_config_changes_patterns(self):
+        """Test that update_config changes window patterns."""
+        initial_patterns = [
+            {"regex": "github", "score": 10, "description": "GitHub"},
+        ]
+        tracker = ScoreTracker(initial_patterns, default_score=0)
+
+        # Test with initial pattern
+        tracker.update("GitHub - Profile")
+        self.assertEqual(tracker.get_score(), 10)
+
+        # Update configuration with new patterns
+        new_patterns = [
+            {"regex": "twitter", "score": -5, "description": "Twitter"},
+            {"regex": "facebook", "score": -3, "description": "Facebook"},
+        ]
+        tracker.update_config(new_patterns, 0)
+
+        # Old pattern should no longer match
+        score_changed, matched = tracker.update("GitHub - Profile")
+        self.assertFalse(score_changed)
+        self.assertIsNone(matched)
+        self.assertEqual(tracker.get_score(), 10)  # Score unchanged
+
+        # New pattern should match
+        tracker.update("Twitter - Feed")
+        self.assertEqual(tracker.get_score(), 5)  # 10 + (-5)
+
+    def test_update_config_changes_default_score(self):
+        """Test that update_config changes default_score."""
+        patterns = [
+            {"regex": "github", "score": 10, "description": "GitHub"},
+        ]
+        tracker = ScoreTracker(patterns, default_score=-1)
+
+        # Test with initial default score
+        tracker.update("Random Window")
+        self.assertEqual(tracker.get_score(), -1)
+
+        # Update configuration with new default score
+        tracker.update_config(patterns, 5)
+
+        # New default score should apply
+        tracker.update("Another Random Window")
+        self.assertEqual(tracker.get_score(), 4)  # -1 + 5
+
+    def test_update_config_preserves_score(self):
+        """Test that update_config preserves accumulated score."""
+        patterns = [
+            {"regex": "github", "score": 10, "description": "GitHub"},
+        ]
+        tracker = ScoreTracker(patterns, default_score=0)
+
+        # Accumulate some score
+        tracker.update("GitHub - Profile")
+        tracker.update("GitHub - Issues")
+        self.assertEqual(tracker.get_score(), 20)
+
+        # Update configuration
+        new_patterns = [
+            {"regex": "twitter", "score": -5, "description": "Twitter"},
+        ]
+        tracker.update_config(new_patterns, 0)
+
+        # Score should be preserved
+        self.assertEqual(tracker.get_score(), 20)
+
+    def test_update_config_applies_immediately(self):
+        """Test that updated config applies immediately on next update."""
+        patterns = [
+            {"regex": "github", "score": 10, "description": "GitHub"},
+        ]
+        tracker = ScoreTracker(patterns, default_score=0)
+
+        # Update configuration
+        new_patterns = [
+            {"regex": "vscode", "score": 15, "description": "VS Code"},
+        ]
+        tracker.update_config(new_patterns, -2)
+
+        # New pattern should apply immediately
+        tracker.update("VSCode - Editor")
+        self.assertEqual(tracker.get_score(), 15)
+
+        # New default score should apply immediately
+        tracker.update("Random Window")
+        self.assertEqual(tracker.get_score(), 13)  # 15 + (-2)
+
+
 if __name__ == "__main__":
     unittest.main()

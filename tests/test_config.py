@@ -138,6 +138,122 @@ description = "GitHub"
         config = Config(str(self.config_path))
         self.assertEqual(config.get_default_score(), 0)
 
+    def test_is_modified_detects_changes(self):
+        """Test that is_modified() detects file changes."""
+        config_content = """
+default_score = -1
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+        config = Config(str(self.config_path))
+
+        # Initially, file should not be modified
+        self.assertFalse(config.is_modified())
+
+        # Modify the file
+        import time
+
+        time.sleep(0.01)  # Ensure timestamp changes
+        new_content = """
+default_score = 5
+
+[[window_patterns]]
+regex = "twitter"
+score = -5
+description = "Twitter"
+"""
+        self.config_path.write_text(new_content)
+
+        # Now file should be detected as modified
+        self.assertTrue(config.is_modified())
+
+    def test_reload_if_modified_reloads_config(self):
+        """Test that reload_if_modified() reloads the configuration."""
+        config_content = """
+default_score = -1
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+        config = Config(str(self.config_path))
+
+        # Verify initial config
+        self.assertEqual(config.get_default_score(), -1)
+        self.assertEqual(len(config.get_window_patterns()), 1)
+        self.assertEqual(config.get_window_patterns()[0]["regex"], "github")
+
+        # Modify the file
+        import time
+
+        time.sleep(0.01)  # Ensure timestamp changes
+        new_content = """
+default_score = 5
+
+[[window_patterns]]
+regex = "twitter"
+score = -5
+description = "Twitter"
+
+[[window_patterns]]
+regex = "facebook"
+score = -3
+description = "Facebook"
+"""
+        self.config_path.write_text(new_content)
+
+        # Reload configuration
+        reloaded = config.reload_if_modified()
+        self.assertTrue(reloaded)
+
+        # Verify new config was loaded
+        self.assertEqual(config.get_default_score(), 5)
+        self.assertEqual(len(config.get_window_patterns()), 2)
+        self.assertEqual(config.get_window_patterns()[0]["regex"], "twitter")
+        self.assertEqual(config.get_window_patterns()[1]["regex"], "facebook")
+
+    def test_reload_if_modified_returns_false_when_not_modified(self):
+        """Test that reload_if_modified() returns False when file not modified."""
+        config_content = """
+default_score = -1
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+        config = Config(str(self.config_path))
+
+        # Call reload_if_modified without modifying file
+        reloaded = config.reload_if_modified()
+        self.assertFalse(reloaded)
+
+    def test_is_modified_handles_missing_file(self):
+        """Test that is_modified() handles missing file gracefully."""
+        config_content = """
+default_score = -1
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+        config = Config(str(self.config_path))
+
+        # Remove the config file
+        self.config_path.unlink()
+
+        # is_modified should return False when file doesn't exist
+        self.assertFalse(config.is_modified())
+
 
 if __name__ == "__main__":
     unittest.main()

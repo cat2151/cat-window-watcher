@@ -26,6 +26,7 @@ class Config:
         self.config_path = Path(config_path)
         self.window_patterns = []
         self.default_score = -1
+        self._last_modified = None
         self.load_config()
 
     def load_config(self):
@@ -53,12 +54,43 @@ class Config:
                     }
                 )
 
+            # Update last modified timestamp
+            self._last_modified = self.config_path.stat().st_mtime
+
         except FileNotFoundError:
             print(f"Error: Configuration file '{self.config_path}' not found.")
             sys.exit(1)
         except Exception as e:
             print(f"Error: Failed to load configuration: {e}")
             sys.exit(1)
+
+    def is_modified(self):
+        """Check if configuration file has been modified.
+
+        Returns:
+            bool: True if file has been modified since last load, False otherwise
+        """
+        try:
+            current_mtime = self.config_path.stat().st_mtime
+            return current_mtime != self._last_modified
+        except Exception:
+            return False
+
+    def reload_if_modified(self):
+        """Reload configuration if the file has been modified.
+
+        Returns:
+            bool: True if configuration was reloaded, False otherwise
+        """
+        if self.is_modified():
+            try:
+                self.load_config()
+                print(f"Configuration reloaded from '{self.config_path}'")
+                return True
+            except Exception as e:
+                print(f"Warning: Failed to reload configuration: {e}")
+                return False
+        return False
 
     def get_window_patterns(self):
         """Get list of window patterns.

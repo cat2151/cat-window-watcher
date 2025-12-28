@@ -7,16 +7,18 @@ import tkinter as tk
 class ScoreDisplay:
     """Tkinter GUI for displaying score."""
 
-    def __init__(self, score_tracker, window_monitor, update_interval=1000):
+    def __init__(self, score_tracker, window_monitor, config, update_interval=1000):
         """Initialize score display.
 
         Args:
             score_tracker: ScoreTracker instance
             window_monitor: WindowMonitor instance
+            config: Config instance
             update_interval: Update interval in milliseconds (default: 1000ms = 1 second)
         """
         self.score_tracker = score_tracker
         self.window_monitor = window_monitor
+        self.config = config
         self.update_interval = update_interval
 
         # Create main window
@@ -47,6 +49,11 @@ class ScoreDisplay:
 
     def update_display(self):
         """Update the display with current score and window info."""
+        # Check if config file has been modified and reload if necessary
+        if self.config.reload_if_modified():
+            # Update score tracker with new configuration
+            self.score_tracker.update_config(self.config.get_window_patterns(), self.config.get_default_score())
+
         # Get current window title
         window_title = self.window_monitor.get_active_window_title()
 
