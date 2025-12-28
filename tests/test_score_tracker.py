@@ -371,14 +371,18 @@ class TestApplyDefaultScoreMode(unittest.TestCase):
         tracker = ScoreTracker(patterns, default_score=-1, apply_default_score_mode=True)
 
         # Initially mode is enabled - default score applies
-        tracker.update("Random Window")
+        score_changed, matched = tracker.update("Random Window")
+        self.assertTrue(score_changed)
+        self.assertIsNone(matched)
         self.assertEqual(tracker.get_score(), -1)
 
         # Update config to disable mode
         tracker.update_config(patterns, default_score=-1, apply_default_score_mode=False)
 
-        # Now default score should not apply
-        tracker.update("Another Random Window")
+        # Now default score should not apply - using same window title
+        score_changed, matched = tracker.update("Random Window")
+        self.assertFalse(score_changed)
+        self.assertIsNone(matched)
         self.assertEqual(tracker.get_score(), -1)  # Score unchanged
 
 
