@@ -21,15 +21,17 @@ class ScoreDisplay:
         self.config = config
         self.update_interval = update_interval
 
+        # Track previous always_on_top state for dynamic updates
+        self._previous_always_on_top = None
+
         # Create main window
         self.root = tk.Tk()
         self.root.title("Cat Window Watcher - Cat is watching you -")
         self.root.geometry("400x200")
         self.root.configure(bg="#2b2b2b")
 
-        # Apply always_on_top setting if configured
-        if self.config.get_always_on_top():
-            self.root.attributes("-topmost", True)
+        # Apply initial always_on_top setting
+        self._apply_always_on_top()
 
         # Create score label
         self.score_label = tk.Label(
@@ -51,12 +53,24 @@ class ScoreDisplay:
         )
         self.status_label.pack(pady=10)
 
+    def _apply_always_on_top(self):
+        """Apply always_on_top setting to the window."""
+        current_always_on_top = self.config.get_always_on_top()
+
+        # Only update if the setting has changed
+        if current_always_on_top != self._previous_always_on_top:
+            self.root.attributes("-topmost", current_always_on_top)
+            self._previous_always_on_top = current_always_on_top
+
     def update_display(self):
         """Update the display with current score and window info."""
         # Check if config file has been modified and reload if necessary
         if self.config.reload_if_modified():
             # Update score tracker with new configuration
             self.score_tracker.update_config(self.config.get_window_patterns(), self.config.get_default_score())
+
+            # Update always_on_top setting if it changed
+            self._apply_always_on_top()
 
         # Get current window title
         window_title = self.window_monitor.get_active_window_title()

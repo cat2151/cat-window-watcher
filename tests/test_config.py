@@ -182,6 +182,43 @@ description = "GitHub"
         config = Config(str(self.config_path))
         self.assertFalse(config.get_always_on_top())
 
+    def test_always_on_top_reloaded_on_config_change(self):
+        """Test that always_on_top is reloaded when config file changes."""
+        config_content = """
+always_on_top = false
+default_score = -1
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+        config = Config(str(self.config_path))
+
+        # Verify initial config
+        self.assertFalse(config.get_always_on_top())
+
+        # Modify the file to change always_on_top
+        time.sleep(0.01)  # Ensure timestamp changes
+        new_content = """
+always_on_top = true
+default_score = -1
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(new_content)
+
+        # Reload configuration
+        reloaded = config.reload_if_modified()
+        self.assertTrue(reloaded)
+
+        # Verify always_on_top was updated
+        self.assertTrue(config.get_always_on_top())
+
     def test_is_modified_detects_changes(self):
         """Test that is_modified() detects file changes."""
         config_content = """
