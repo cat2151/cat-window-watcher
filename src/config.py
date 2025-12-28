@@ -26,6 +26,7 @@ class Config:
         self.config_path = Path(config_path)
         self.window_patterns = []
         self.default_score = -1
+        self.always_on_top = False
         self._last_modified = None
         self.load_config()
 
@@ -47,6 +48,9 @@ class Config:
             # Load default_score (score applied when no pattern matches)
             default_score = config_data.get("default_score", -1)
 
+            # Load always_on_top setting (whether window should stay on top)
+            always_on_top = config_data.get("always_on_top", False)
+
             # Load window patterns with their score values
             window_patterns = []
             for pattern in config_data.get("window_patterns", []):
@@ -60,6 +64,7 @@ class Config:
 
             # Only update instance attributes after successful parsing
             self.default_score = default_score
+            self.always_on_top = always_on_top
             self.window_patterns = window_patterns
 
             # Update last modified timestamp after successful load
@@ -121,3 +126,11 @@ class Config:
             int: Default score value
         """
         return self.default_score
+
+    def get_always_on_top(self):
+        """Get always_on_top setting.
+
+        Returns:
+            bool: True if window should stay on top, False otherwise
+        """
+        return self.always_on_top

@@ -139,6 +139,49 @@ description = "GitHub"
         config = Config(str(self.config_path))
         self.assertEqual(config.get_default_score(), 0)
 
+    def test_always_on_top_default(self):
+        """Test always_on_top defaults to False when not specified."""
+        config_content = """
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertFalse(config.get_always_on_top())
+
+    def test_always_on_top_true(self):
+        """Test always_on_top set to true."""
+        config_content = """
+always_on_top = true
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertTrue(config.get_always_on_top())
+
+    def test_always_on_top_false(self):
+        """Test always_on_top explicitly set to false."""
+        config_content = """
+always_on_top = false
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertFalse(config.get_always_on_top())
+
     def test_is_modified_detects_changes(self):
         """Test that is_modified() detects file changes."""
         config_content = """

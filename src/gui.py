@@ -27,6 +27,10 @@ class ScoreDisplay:
         self.root.geometry("400x200")
         self.root.configure(bg="#2b2b2b")
 
+        # Apply always_on_top setting if configured
+        if self.config.get_always_on_top():
+            self.root.attributes("-topmost", True)
+
         # Create score label
         self.score_label = tk.Label(
             self.root,
