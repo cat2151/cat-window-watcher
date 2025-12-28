@@ -45,12 +45,12 @@ class Config:
                 config_data = tomllib.load(f)
 
             # Load default_score (score applied when no pattern matches)
-            self.default_score = config_data.get("default_score", -1)
+            default_score = config_data.get("default_score", -1)
 
             # Load window patterns with their score values
-            self.window_patterns = []
+            window_patterns = []
             for pattern in config_data.get("window_patterns", []):
-                self.window_patterns.append(
+                window_patterns.append(
                     {
                         "regex": pattern.get("regex", ""),
                         "score": pattern.get("score", 0),
@@ -58,7 +58,11 @@ class Config:
                     }
                 )
 
-            # Update last modified timestamp
+            # Only update instance attributes after successful parsing
+            self.default_score = default_score
+            self.window_patterns = window_patterns
+
+            # Update last modified timestamp after successful load
             self._last_modified = self.config_path.stat().st_mtime
 
         except FileNotFoundError:
