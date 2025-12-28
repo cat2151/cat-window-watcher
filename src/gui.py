@@ -71,6 +71,10 @@ class ScoreDisplay:
         Returns:
             bool: True if mouse is within proximity distance, False otherwise
         """
+        # Early return if feature is disabled
+        if not self.config.get_always_on_top() or not self.config.get_hide_on_mouse_proximity():
+            return False
+
         # Get mouse position relative to screen
         mouse_x = self.root.winfo_pointerx()
         mouse_y = self.root.winfo_pointery()
