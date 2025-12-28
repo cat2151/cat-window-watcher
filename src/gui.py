@@ -28,7 +28,7 @@ class ScoreDisplay:
         self._mouse_in_proximity = False
 
         # Track previous score for color changes
-        self._previous_score = 0
+        self._previous_score = score_tracker.get_score()
 
         # Create main window
         self.root = tk.Tk()
@@ -39,12 +39,13 @@ class ScoreDisplay:
         # Apply initial always_on_top setting
         self._apply_always_on_top()
 
-        # Create score label
+        # Create score label with initial color
+        initial_color = config.get_score_up_color()
         self.score_label = tk.Label(
             self.root,
             text="Score: 0",
             font=("Arial", 48, "bold"),
-            fg="#ffffff",
+            fg=initial_color,
             bg="#2b2b2b",
         )
         self.score_label.pack(expand=True)
