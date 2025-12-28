@@ -50,6 +50,7 @@ def main():
         score_tracker = ScoreTracker(
             config.get_window_patterns(),
             config.get_default_score(),
+            config.get_apply_default_score_mode(),
             config.get_mild_penalty_mode(),
             config.get_mild_penalty_start_hour(),
             config.get_mild_penalty_end_hour(),

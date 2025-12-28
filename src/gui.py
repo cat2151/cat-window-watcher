@@ -123,6 +123,7 @@ class ScoreDisplay:
             self.score_tracker.update_config(
                 self.config.get_window_patterns(),
                 self.config.get_default_score(),
+                self.config.get_apply_default_score_mode(),
                 self.config.get_mild_penalty_mode(),
                 self.config.get_mild_penalty_start_hour(),
                 self.config.get_mild_penalty_end_hour(),

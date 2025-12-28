@@ -240,6 +240,148 @@ class TestDefaultScore(unittest.TestCase):
             self.assertEqual(tracker.get_score(), -i)
 
 
+class TestApplyDefaultScoreMode(unittest.TestCase):
+    """Test cases for apply_default_score_mode functionality."""
+
+    def test_apply_default_score_mode_enabled_applies_default_score(self):
+        """Test that default_score is applied when mode is enabled and no pattern matches."""
+        patterns = [
+            {"regex": "github", "score": 10, "description": "GitHub"},
+        ]
+        tracker = ScoreTracker(patterns, default_score=-1, apply_default_score_mode=True)
+
+        score_changed, matched = tracker.update("Random Window Title")
+        self.assertTrue(score_changed)
+        self.assertIsNone(matched)
+        self.assertEqual(tracker.get_score(), -1)
+
+    def test_apply_default_score_mode_disabled_does_not_apply_default_score(self):
+        """Test that default_score is NOT applied when mode is disabled."""
+        patterns = [
+            {"regex": "github", "score": 10, "description": "GitHub"},
+        ]
+        tracker = ScoreTracker(patterns, default_score=-1, apply_default_score_mode=False)
+
+        score_changed, matched = tracker.update("Random Window Title")
+        self.assertFalse(score_changed)
+        self.assertIsNone(matched)
+        self.assertEqual(tracker.get_score(), 0)
+
+    def test_apply_default_score_mode_disabled_no_score_accumulation(self):
+        """Test that score does not accumulate when mode is disabled."""
+        patterns = [
+            {"regex": "github", "score": 10, "description": "GitHub"},
+        ]
+        tracker = ScoreTracker(patterns, default_score=-2, apply_default_score_mode=False)
+
+        # No match 3 times - score should stay 0
+        tracker.update("Random Window 1")
+        self.assertEqual(tracker.get_score(), 0)
+
+        tracker.update("Random Window 2")
+        self.assertEqual(tracker.get_score(), 0)
+
+        tracker.update("Random Window 3")
+        self.assertEqual(tracker.get_score(), 0)
+
+    def test_apply_default_score_mode_enabled_accumulates_default_score(self):
+        """Test that default_score accumulates when mode is enabled."""
+        patterns = [
+            {"regex": "github", "score": 10, "description": "GitHub"},
+        ]
+        tracker = ScoreTracker(patterns, default_score=-2, apply_default_score_mode=True)
+
+        # No match 3 times - score should accumulate
+        tracker.update("Random Window 1")
+        self.assertEqual(tracker.get_score(), -2)
+
+        tracker.update("Random Window 2")
+        self.assertEqual(tracker.get_score(), -4)
+
+        tracker.update("Random Window 3")
+        self.assertEqual(tracker.get_score(), -6)
+
+    def test_apply_default_score_mode_disabled_with_pattern_matches(self):
+        """Test that pattern matches still work when mode is disabled."""
+        patterns = [
+            {"regex": "github", "score": 10, "description": "GitHub"},
+        ]
+        tracker = ScoreTracker(patterns, default_score=-1, apply_default_score_mode=False)
+
+        # Pattern match should still work
+        tracker.update("GitHub - Repository")
+        self.assertEqual(tracker.get_score(), 10)
+
+        # No match - score should not change
+        tracker.update("Random Window")
+        self.assertEqual(tracker.get_score(), 10)
+
+        # Pattern match again
+        tracker.update("GitHub - Issues")
+        self.assertEqual(tracker.get_score(), 20)
+
+    def test_apply_default_score_mode_mixed_scenarios(self):
+        """Test mixed scenarios with mode enabled and pattern matches."""
+        patterns = [
+            {"regex": "github", "score": 10, "description": "GitHub"},
+        ]
+        tracker = ScoreTracker(patterns, default_score=-1, apply_default_score_mode=True)
+
+        # Pattern match
+        tracker.update("GitHub - Repository")
+        self.assertEqual(tracker.get_score(), 10)
+
+        # No match (default score applied)
+        tracker.update("Random Window")
+        self.assertEqual(tracker.get_score(), 9)
+
+        # Pattern match again
+        tracker.update("GitHub - Issues")
+        self.assertEqual(tracker.get_score(), 19)
+
+    def test_apply_default_score_mode_disabled_with_positive_default_score(self):
+        """Test that positive default_score is also not applied when mode is disabled."""
+        patterns = [
+            {"regex": "github", "score": 10, "description": "GitHub"},
+        ]
+        tracker = ScoreTracker(patterns, default_score=5, apply_default_score_mode=False)
+
+        score_changed, matched = tracker.update("Random Window Title")
+        self.assertFalse(score_changed)
+        self.assertIsNone(matched)
+        self.assertEqual(tracker.get_score(), 0)
+
+    def test_apply_default_score_mode_disabled_with_zero_default_score(self):
+        """Test mode disabled with default_score=0 (both mechanisms for no change)."""
+        patterns = [
+            {"regex": "github", "score": 10, "description": "GitHub"},
+        ]
+        tracker = ScoreTracker(patterns, default_score=0, apply_default_score_mode=False)
+
+        score_changed, matched = tracker.update("Random Window Title")
+        self.assertFalse(score_changed)
+        self.assertIsNone(matched)
+        self.assertEqual(tracker.get_score(), 0)
+
+    def test_apply_default_score_mode_update_config(self):
+        """Test that update_config changes apply_default_score_mode."""
+        patterns = [
+            {"regex": "github", "score": 10, "description": "GitHub"},
+        ]
+        tracker = ScoreTracker(patterns, default_score=-1, apply_default_score_mode=True)
+
+        # Initially mode is enabled - default score applies
+        tracker.update("Random Window")
+        self.assertEqual(tracker.get_score(), -1)
+
+        # Update config to disable mode
+        tracker.update_config(patterns, default_score=-1, apply_default_score_mode=False)
+
+        # Now default score should not apply
+        tracker.update("Another Random Window")
+        self.assertEqual(tracker.get_score(), -1)  # Score unchanged
+
+
 class TestGitHubWindowTitlePatterns(unittest.TestCase):
     """Test cases specifically for GitHub window title pattern matching.
 
