@@ -38,6 +38,33 @@ class Config:
         self._last_modified = None
         self.load_config()
 
+    @staticmethod
+    def _validate_hex_color(color_value, color_name):
+        """Validate hex color format.
+
+        Args:
+            color_value: Color value to validate
+            color_name: Name of the color setting (for error messages)
+
+        Raises:
+            ValueError: If color format is invalid
+        """
+        if not isinstance(color_value, str):
+            raise ValueError(
+                f"Invalid '{color_name}' value: {color_value!r}. Must be a hex color string (e.g., '#ffffff')."
+            )
+        if not color_value.startswith("#") or len(color_value) != 7:
+            raise ValueError(
+                f"Invalid '{color_name}' value: {color_value!r}. Must be a 7-character hex color string (e.g., '#ffffff')."
+            )
+        try:
+            # Validate hex digits after '#'
+            int(color_value[1:], 16)
+        except ValueError:
+            raise ValueError(
+                f"Invalid '{color_name}' value: {color_value!r}. Must contain valid hex digits after '#' (0-9, a-f)."
+            ) from None
+
     def load_config(self, exit_on_error=True):
         """Load configuration from TOML file.
 
@@ -100,15 +127,9 @@ class Config:
             score_up_color = config_data.get("score_up_color", "#ffffff")
             score_down_color = config_data.get("score_down_color", "#ff0000")
 
-            # Validate color format (basic validation for hex color)
-            if not isinstance(score_up_color, str) or not score_up_color.startswith("#"):
-                raise ValueError(
-                    f"Invalid 'score_up_color' value: {score_up_color!r}. Must be a hex color string (e.g., '#ffffff')."
-                )
-            if not isinstance(score_down_color, str) or not score_down_color.startswith("#"):
-                raise ValueError(
-                    f"Invalid 'score_down_color' value: {score_down_color!r}. Must be a hex color string (e.g., '#ff0000')."
-                )
+            # Validate color format
+            self._validate_hex_color(score_up_color, "score_up_color")
+            self._validate_hex_color(score_down_color, "score_down_color")
 
             # Load window patterns with their score values
             window_patterns = []
