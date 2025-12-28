@@ -57,16 +57,12 @@ class Config:
             hide_on_mouse_proximity = config_data.get("hide_on_mouse_proximity", False)
 
             # Load proximity_distance setting (distance in pixels)
-            # Ensure it is a non-negative integer; fall back to default if invalid
-            proximity_distance_raw = config_data.get("proximity_distance", 50)
-            if isinstance(proximity_distance_raw, int) and proximity_distance_raw >= 0:
-                proximity_distance = proximity_distance_raw
-            else:
-                print(
-                    f"Warning: 'proximity_distance' must be a non-negative integer. "
-                    f"Got {proximity_distance_raw!r}. Using default value 50."
+            # Ensure it is a non-negative integer; raise error if invalid
+            proximity_distance = config_data.get("proximity_distance", 50)
+            if not isinstance(proximity_distance, int) or proximity_distance < 0:
+                raise ValueError(
+                    f"Invalid 'proximity_distance' value: {proximity_distance!r}. Must be a non-negative integer."
                 )
-                proximity_distance = 50
 
             # Load window patterns with their score values
             window_patterns = []

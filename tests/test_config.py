@@ -454,7 +454,7 @@ description = "GitHub"
         self.assertEqual(config.get_proximity_distance(), 0)
 
     def test_proximity_distance_invalid_negative(self):
-        """Test proximity_distance with negative value falls back to default."""
+        """Test proximity_distance with negative value raises SystemExit."""
         config_content = """
 proximity_distance = -10
 
@@ -465,11 +465,11 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
-        self.assertEqual(config.get_proximity_distance(), 50)  # Falls back to default
+        with self.assertRaises(SystemExit):
+            Config(str(self.config_path))
 
     def test_proximity_distance_invalid_float(self):
-        """Test proximity_distance with float value falls back to default."""
+        """Test proximity_distance with float value raises SystemExit."""
         config_content = """
 proximity_distance = 50.5
 
@@ -480,11 +480,11 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
-        self.assertEqual(config.get_proximity_distance(), 50)  # Falls back to default
+        with self.assertRaises(SystemExit):
+            Config(str(self.config_path))
 
     def test_proximity_distance_invalid_string(self):
-        """Test proximity_distance with string value falls back to default."""
+        """Test proximity_distance with string value raises SystemExit."""
         config_content = """
 proximity_distance = "fifty"
 
@@ -495,8 +495,8 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
-        self.assertEqual(config.get_proximity_distance(), 50)  # Falls back to default
+        with self.assertRaises(SystemExit):
+            Config(str(self.config_path))
 
     def test_hide_on_mouse_proximity_reloaded_on_config_change(self):
         """Test that hide_on_mouse_proximity is reloaded when config file changes."""
