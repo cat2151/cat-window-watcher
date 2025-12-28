@@ -641,6 +641,36 @@ description = "GitHub"
         config = Config(str(self.config_path))
         self.assertFalse(config.get_mild_penalty_mode())
 
+    def test_mild_penalty_mode_invalid_string(self):
+        """Test mild_penalty_mode with string value raises SystemExit."""
+        config_content = """
+mild_penalty_mode = "true"
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        with self.assertRaises(SystemExit):
+            Config(str(self.config_path))
+
+    def test_mild_penalty_mode_invalid_integer(self):
+        """Test mild_penalty_mode with integer value raises SystemExit."""
+        config_content = """
+mild_penalty_mode = 1
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        with self.assertRaises(SystemExit):
+            Config(str(self.config_path))
+
     def test_mild_penalty_start_hour_default(self):
         """Test mild_penalty_start_hour defaults to 22 when not specified."""
         config_content = """

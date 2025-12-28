@@ -69,6 +69,8 @@ class Config:
 
             # Load mild_penalty_mode setting (whether to apply mild penalty during specified hours)
             mild_penalty_mode = config_data.get("mild_penalty_mode", False)
+            if not isinstance(mild_penalty_mode, bool):
+                raise ValueError(f"Invalid 'mild_penalty_mode' value: {mild_penalty_mode!r}. Must be a boolean.")
 
             # Load mild_penalty_start_hour setting (start hour for mild penalty, default: 22)
             mild_penalty_start_hour = config_data.get("mild_penalty_start_hour", 22)
