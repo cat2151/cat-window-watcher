@@ -251,6 +251,42 @@ description = "GitHub"
         # is_modified should return False when file doesn't exist
         self.assertFalse(config.is_modified())
 
+    def test_reload_if_modified_handles_invalid_toml(self):
+        """Test that reload_if_modified() handles invalid TOML gracefully."""
+        config_content = """
+default_score = -1
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+        config = Config(str(self.config_path))
+
+        # Verify initial config
+        self.assertEqual(config.get_default_score(), -1)
+        self.assertEqual(len(config.get_window_patterns()), 1)
+        self.assertEqual(config.get_window_patterns()[0]["regex"], "github")
+
+        # Modify the file with invalid TOML
+        time.sleep(0.01)  # Ensure timestamp changes
+        invalid_toml = """
+default_score = -1
+[invalid toml syntax here
+regex = "twitter"
+"""
+        self.config_path.write_text(invalid_toml)
+
+        # Reload should fail and return False
+        reloaded = config.reload_if_modified()
+        self.assertFalse(reloaded)
+
+        # Old configuration should be preserved
+        self.assertEqual(config.get_default_score(), -1)
+        self.assertEqual(len(config.get_window_patterns()), 1)
+        self.assertEqual(config.get_window_patterns()[0]["regex"], "github")
+
 
 if __name__ == "__main__":
     unittest.main()

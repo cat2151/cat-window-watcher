@@ -29,12 +29,16 @@ class Config:
         self._last_modified = None
         self.load_config()
 
-    def load_config(self):
+    def load_config(self, exit_on_error=True):
         """Load configuration from TOML file.
+
+        Args:
+            exit_on_error: If True, exit on error. If False, raise exception.
 
         Raises:
             FileNotFoundError: If config file doesn't exist
             tomllib.TOMLDecodeError: If config file is invalid
+            Exception: If other errors occur during loading
         """
         try:
             with open(self.config_path, "rb") as f:
@@ -58,11 +62,17 @@ class Config:
             self._last_modified = self.config_path.stat().st_mtime
 
         except FileNotFoundError:
-            print(f"Error: Configuration file '{self.config_path}' not found.")
-            sys.exit(1)
+            if exit_on_error:
+                print(f"Error: Configuration file '{self.config_path}' not found.")
+                sys.exit(1)
+            else:
+                raise
         except Exception as e:
-            print(f"Error: Failed to load configuration: {e}")
-            sys.exit(1)
+            if exit_on_error:
+                print(f"Error: Failed to load configuration: {e}")
+                sys.exit(1)
+            else:
+                raise
 
     def is_modified(self):
         """Check if configuration file has been modified.
@@ -84,7 +94,7 @@ class Config:
         """
         if self.is_modified():
             try:
-                self.load_config()
+                self.load_config(exit_on_error=False)
                 print(f"Configuration reloaded from '{self.config_path}'")
                 return True
             except Exception as e:
