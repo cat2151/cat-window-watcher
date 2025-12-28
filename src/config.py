@@ -33,6 +33,8 @@ class Config:
         self.mild_penalty_mode = False
         self.mild_penalty_start_hour = 22
         self.mild_penalty_end_hour = 23
+        self.score_up_color = "#ffffff"
+        self.score_down_color = "#ff0000"
         self._last_modified = None
         self.load_config()
 
@@ -94,6 +96,20 @@ class Config:
                     f"Invalid 'mild_penalty_end_hour' value: {mild_penalty_end_hour!r}. Must be an integer between 0 and 23."
                 )
 
+            # Load score color settings (font color for score increase/decrease)
+            score_up_color = config_data.get("score_up_color", "#ffffff")
+            score_down_color = config_data.get("score_down_color", "#ff0000")
+
+            # Validate color format (basic validation for hex color)
+            if not isinstance(score_up_color, str) or not score_up_color.startswith("#"):
+                raise ValueError(
+                    f"Invalid 'score_up_color' value: {score_up_color!r}. Must be a hex color string (e.g., '#ffffff')."
+                )
+            if not isinstance(score_down_color, str) or not score_down_color.startswith("#"):
+                raise ValueError(
+                    f"Invalid 'score_down_color' value: {score_down_color!r}. Must be a hex color string (e.g., '#ff0000')."
+                )
+
             # Load window patterns with their score values
             window_patterns = []
             for pattern in config_data.get("window_patterns", []):
@@ -114,6 +130,8 @@ class Config:
             self.mild_penalty_mode = mild_penalty_mode
             self.mild_penalty_start_hour = mild_penalty_start_hour
             self.mild_penalty_end_hour = mild_penalty_end_hour
+            self.score_up_color = score_up_color
+            self.score_down_color = score_down_color
             self.window_patterns = window_patterns
 
             # Update last modified timestamp after successful load
@@ -231,3 +249,19 @@ class Config:
             int: End hour for mild penalty mode (0-23)
         """
         return self.mild_penalty_end_hour
+
+    def get_score_up_color(self):
+        """Get score_up_color setting.
+
+        Returns:
+            str: Hex color string for score increase (e.g., '#ffffff')
+        """
+        return self.score_up_color
+
+    def get_score_down_color(self):
+        """Get score_down_color setting.
+
+        Returns:
+            str: Hex color string for score decrease (e.g., '#ff0000')
+        """
+        return self.score_down_color

@@ -27,6 +27,9 @@ class ScoreDisplay:
         # Track mouse proximity state
         self._mouse_in_proximity = False
 
+        # Track previous score for color changes
+        self._previous_score = 0
+
         # Create main window
         self.root = tk.Tk()
         self.root.title("Cat Window Watcher - Cat is watching you -")
@@ -144,6 +147,17 @@ class ScoreDisplay:
         # Update score label
         current_score = self.score_tracker.get_score()
         self.score_label.config(text=f"Score: {current_score}")
+
+        # Update score color based on score change
+        if current_score < self._previous_score:
+            # Score decreased - use score_down_color
+            score_color = self.config.get_score_down_color()
+        else:
+            # Score increased or stayed the same - use score_up_color
+            score_color = self.config.get_score_up_color()
+
+        self.score_label.config(fg=score_color)
+        self._previous_score = current_score
 
         # Update status label
         if matched_pattern:

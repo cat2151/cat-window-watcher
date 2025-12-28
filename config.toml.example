@@ -42,6 +42,12 @@ hide_on_mouse_proximity = false
 # Default: 50 pixels
 proximity_distance = 50
 
+# Score color settings - font color for score display based on score change
+# score_up_color: Color when score increases or stays the same (default: "#ffffff" white)
+# score_down_color: Color when score decreases (default: "#ff0000" red)
+score_up_color = "#ffffff"
+score_down_color = "#ff0000"
+
 # Window patterns define regex patterns to match window titles
 # and the score change when that window becomes active
 
