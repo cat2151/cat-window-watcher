@@ -33,8 +33,37 @@ class Config:
         self.mild_penalty_mode = False
         self.mild_penalty_start_hour = 22
         self.mild_penalty_end_hour = 23
+        self.score_up_color = "#ffffff"
+        self.score_down_color = "#ff0000"
         self._last_modified = None
         self.load_config()
+
+    @staticmethod
+    def _validate_hex_color(color_value, color_name):
+        """Validate hex color format.
+
+        Args:
+            color_value: Color value to validate
+            color_name: Name of the color setting (for error messages)
+
+        Raises:
+            ValueError: If color format is invalid
+        """
+        if not isinstance(color_value, str):
+            raise ValueError(
+                f"Invalid '{color_name}' value: {color_value!r}. Must be a hex color string (e.g., '#ffffff')."
+            )
+        if not color_value.startswith("#") or len(color_value) != 7:
+            raise ValueError(
+                f"Invalid '{color_name}' value: {color_value!r}. Must be a 7-character hex color string (e.g., '#ffffff')."
+            )
+        try:
+            # Validate hex digits after '#'
+            int(color_value[1:], 16)
+        except ValueError:
+            raise ValueError(
+                f"Invalid '{color_name}' value: {color_value!r}. Must contain valid hex digits after '#' (0-9, a-f)."
+            ) from None
 
     def load_config(self, exit_on_error=True):
         """Load configuration from TOML file.
@@ -94,6 +123,14 @@ class Config:
                     f"Invalid 'mild_penalty_end_hour' value: {mild_penalty_end_hour!r}. Must be an integer between 0 and 23."
                 )
 
+            # Load score color settings (font color for score increase/decrease)
+            score_up_color = config_data.get("score_up_color", "#ffffff")
+            score_down_color = config_data.get("score_down_color", "#ff0000")
+
+            # Validate color format
+            self._validate_hex_color(score_up_color, "score_up_color")
+            self._validate_hex_color(score_down_color, "score_down_color")
+
             # Load window patterns with their score values
             window_patterns = []
             for pattern in config_data.get("window_patterns", []):
@@ -114,6 +151,8 @@ class Config:
             self.mild_penalty_mode = mild_penalty_mode
             self.mild_penalty_start_hour = mild_penalty_start_hour
             self.mild_penalty_end_hour = mild_penalty_end_hour
+            self.score_up_color = score_up_color
+            self.score_down_color = score_down_color
             self.window_patterns = window_patterns
 
             # Update last modified timestamp after successful load
@@ -231,3 +270,19 @@ class Config:
             int: End hour for mild penalty mode (0-23)
         """
         return self.mild_penalty_end_hour
+
+    def get_score_up_color(self):
+        """Get score_up_color setting.
+
+        Returns:
+            str: Hex color string for score increase (e.g., '#ffffff')
+        """
+        return self.score_up_color
+
+    def get_score_down_color(self):
+        """Get score_down_color setting.
+
+        Returns:
+            str: Hex color string for score decrease (e.g., '#ff0000')
+        """
+        return self.score_down_color
