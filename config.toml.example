@@ -11,6 +11,17 @@ default_score = -1
 # Set to true to enable, false to disable (default: false)
 always_on_top = false
 
+# Hide on mouse proximity mode - when always_on_top is enabled,
+# hide the window (move to background) when mouse cursor approaches it
+# Set to true to enable, false to disable (default: false)
+# This only works when always_on_top is true
+hide_on_mouse_proximity = false
+
+# Proximity distance in pixels - distance threshold for mouse proximity detection
+# When mouse cursor is within this distance from the window, it will be hidden
+# Default: 50 pixels
+proximity_distance = 50
+
 # Window patterns define regex patterns to match window titles
 # and the score change when that window becomes active
 

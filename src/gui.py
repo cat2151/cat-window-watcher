@@ -24,6 +24,9 @@ class ScoreDisplay:
         # Track previous always_on_top state for dynamic updates
         self._previous_always_on_top = None
 
+        # Track mouse proximity state
+        self._mouse_in_proximity = False
+
         # Create main window
         self.root = tk.Tk()
         self.root.title("Cat Window Watcher - Cat is watching you -")
@@ -62,6 +65,56 @@ class ScoreDisplay:
             self.root.attributes("-topmost", current_always_on_top)
             self._previous_always_on_top = current_always_on_top
 
+    def _is_mouse_in_proximity(self):
+        """Check if mouse is within proximity distance of the window.
+
+        Returns:
+            bool: True if mouse is within proximity distance, False otherwise
+        """
+        # Get mouse position relative to screen
+        mouse_x = self.root.winfo_pointerx()
+        mouse_y = self.root.winfo_pointery()
+
+        # Get window position and dimensions
+        window_x = self.root.winfo_x()
+        window_y = self.root.winfo_y()
+        window_width = self.root.winfo_width()
+        window_height = self.root.winfo_height()
+
+        # Get proximity distance from config
+        proximity_distance = self.config.get_proximity_distance()
+
+        # Calculate if mouse is within proximity distance
+        # Check if mouse is within the expanded bounding box
+        in_proximity = (
+            mouse_x >= window_x - proximity_distance
+            and mouse_x <= window_x + window_width + proximity_distance
+            and mouse_y >= window_y - proximity_distance
+            and mouse_y <= window_y + window_height + proximity_distance
+        )
+
+        return in_proximity
+
+    def _update_proximity_based_topmost(self):
+        """Update window topmost state based on mouse proximity.
+
+        This only applies when both always_on_top and hide_on_mouse_proximity are enabled.
+        """
+        # Only apply proximity-based behavior if both settings are enabled
+        if not self.config.get_always_on_top() or not self.config.get_hide_on_mouse_proximity():
+            return
+
+        # Check if mouse is in proximity
+        mouse_in_proximity = self._is_mouse_in_proximity()
+
+        # Update topmost state if proximity state changed
+        if mouse_in_proximity != self._mouse_in_proximity:
+            self._mouse_in_proximity = mouse_in_proximity
+
+            # If mouse is in proximity, remove topmost (send to back)
+            # If mouse is away, set topmost (bring to front)
+            self.root.attributes("-topmost", not mouse_in_proximity)
+
     def update_display(self):
         """Update the display with current score and window info."""
         # Check if config file has been modified and reload if necessary
@@ -71,6 +124,9 @@ class ScoreDisplay:
 
             # Update always_on_top setting if it changed
             self._apply_always_on_top()
+
+        # Update proximity-based topmost behavior
+        self._update_proximity_based_topmost()
 
         # Get current window title
         window_title = self.window_monitor.get_active_window_title()
