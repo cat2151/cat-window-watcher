@@ -139,6 +139,79 @@ description = "GitHub"
         config = Config(str(self.config_path))
         self.assertEqual(config.get_default_score(), 0)
 
+    def test_apply_default_score_mode_default(self):
+        """Test apply_default_score_mode defaults to True when not specified."""
+        config_content = """
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertTrue(config.get_apply_default_score_mode())
+
+    def test_apply_default_score_mode_true(self):
+        """Test apply_default_score_mode set to true."""
+        config_content = """
+apply_default_score_mode = true
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertTrue(config.get_apply_default_score_mode())
+
+    def test_apply_default_score_mode_false(self):
+        """Test apply_default_score_mode explicitly set to false."""
+        config_content = """
+apply_default_score_mode = false
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertFalse(config.get_apply_default_score_mode())
+
+    def test_apply_default_score_mode_invalid_string(self):
+        """Test apply_default_score_mode with string value raises SystemExit."""
+        config_content = """
+apply_default_score_mode = "true"
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        with self.assertRaises(SystemExit):
+            Config(str(self.config_path))
+
+    def test_apply_default_score_mode_invalid_integer(self):
+        """Test apply_default_score_mode with integer value raises SystemExit."""
+        config_content = """
+apply_default_score_mode = 1
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        with self.assertRaises(SystemExit):
+            Config(str(self.config_path))
+
     def test_always_on_top_default(self):
         """Test always_on_top defaults to False when not specified."""
         config_content = """

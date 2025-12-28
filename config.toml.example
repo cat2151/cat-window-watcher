@@ -7,6 +7,12 @@
 # Set to -1 (default) to easily spot misconfigurations, or 0 to disable
 default_score = -1
 
+# Apply default score mode - control whether default_score is applied
+# This is a mode to enable/disable the application of default_score
+# Set to true (default) to apply default_score when no pattern matches
+# Set to false to not apply any score when no pattern matches (score stays unchanged)
+apply_default_score_mode = true
+
 # Mild penalty mode - limit negative scores to -1 during specified hours
 # This is a provisional implementation for testing purposes
 # Set to true to enable, false to disable (default: false)

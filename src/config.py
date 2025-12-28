@@ -26,6 +26,7 @@ class Config:
         self.config_path = Path(config_path)
         self.window_patterns = []
         self.default_score = -1
+        self.apply_default_score_mode = True
         self.always_on_top = False
         self.hide_on_mouse_proximity = False
         self.proximity_distance = 50
@@ -52,6 +53,13 @@ class Config:
 
             # Load default_score (score applied when no pattern matches)
             default_score = config_data.get("default_score", -1)
+
+            # Load apply_default_score_mode setting (whether to apply default score)
+            apply_default_score_mode = config_data.get("apply_default_score_mode", True)
+            if not isinstance(apply_default_score_mode, bool):
+                raise ValueError(
+                    f"Invalid 'apply_default_score_mode' value: {apply_default_score_mode!r}. Must be a boolean."
+                )
 
             # Load always_on_top setting (whether window should stay on top)
             always_on_top = config_data.get("always_on_top", False)
@@ -99,6 +107,7 @@ class Config:
 
             # Only update instance attributes after successful parsing
             self.default_score = default_score
+            self.apply_default_score_mode = apply_default_score_mode
             self.always_on_top = always_on_top
             self.hide_on_mouse_proximity = hide_on_mouse_proximity
             self.proximity_distance = proximity_distance
@@ -166,6 +175,14 @@ class Config:
             int: Default score value
         """
         return self.default_score
+
+    def get_apply_default_score_mode(self):
+        """Get apply_default_score_mode setting.
+
+        Returns:
+            bool: True if default score should be applied when no pattern matches, False otherwise
+        """
+        return self.apply_default_score_mode
 
     def get_always_on_top(self):
         """Get always_on_top setting.

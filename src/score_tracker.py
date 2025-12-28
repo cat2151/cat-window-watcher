@@ -12,6 +12,7 @@ class ScoreTracker:
         self,
         window_patterns,
         default_score=-1,
+        apply_default_score_mode=True,
         mild_penalty_mode=False,
         mild_penalty_start_hour=22,
         mild_penalty_end_hour=23,
@@ -21,12 +22,14 @@ class ScoreTracker:
         Args:
             window_patterns: List of pattern dictionaries with regex, score, and description
             default_score: Score to apply when no pattern matches (default: -1)
+            apply_default_score_mode: Whether to apply default score when no pattern matches (default: True)
             mild_penalty_mode: Whether to apply mild penalty during specified hours (default: False)
             mild_penalty_start_hour: Start hour for mild penalty mode (default: 22)
             mild_penalty_end_hour: End hour for mild penalty mode (default: 23)
         """
         self.window_patterns = window_patterns
         self.default_score = default_score
+        self.apply_default_score_mode = apply_default_score_mode
         self.mild_penalty_mode = mild_penalty_mode
         self.mild_penalty_start_hour = mild_penalty_start_hour
         self.mild_penalty_end_hour = mild_penalty_end_hour
@@ -38,6 +41,7 @@ class ScoreTracker:
         self,
         window_patterns,
         default_score,
+        apply_default_score_mode=True,
         mild_penalty_mode=False,
         mild_penalty_start_hour=22,
         mild_penalty_end_hour=23,
@@ -47,12 +51,14 @@ class ScoreTracker:
         Args:
             window_patterns: List of pattern dictionaries with regex, score, and description
             default_score: Score to apply when no pattern matches
+            apply_default_score_mode: Whether to apply default score when no pattern matches
             mild_penalty_mode: Whether to apply mild penalty during specified hours
             mild_penalty_start_hour: Start hour for mild penalty mode
             mild_penalty_end_hour: End hour for mild penalty mode
         """
         self.window_patterns = window_patterns
         self.default_score = default_score
+        self.apply_default_score_mode = apply_default_score_mode
         self.mild_penalty_mode = mild_penalty_mode
         self.mild_penalty_start_hour = mild_penalty_start_hour
         self.mild_penalty_end_hour = mild_penalty_end_hour
@@ -118,8 +124,8 @@ class ScoreTracker:
                 score_changed = True
                 break  # Only match first pattern
 
-        # If no pattern matched, apply default score
-        if not self.current_match and self.default_score != 0:
+        # If no pattern matched, apply default score (if mode is enabled)
+        if not self.current_match and self.apply_default_score_mode and self.default_score != 0:
             # Apply mild penalty to default score if applicable
             adjusted_default_score = self._apply_mild_penalty(self.default_score)
             self.score += adjusted_default_score
