@@ -104,6 +104,9 @@ description = "Twitter/X"
     -   Setting to -1 (default) helps in easily verifying if patterns are correctly configured.
     -   Setting to 0 means the score won't change if no pattern matches.
     -   If patterns are misconfigured, the score will continuously decrease, making it immediately noticeable.
+-   **always_on_top**: Whether to keep the window on top of all other windows (default: false)
+    -   Setting to `true` keeps the window always visible above other windows
+    -   Setting to `false` allows normal window behavior
 -   **regex**: Regular expression pattern to match against the window title (case-insensitive)
 -   **score**: Integer value to add to the score when the pattern matches (can be negative)
 -   **description**: Human-readable description displayed in the status area

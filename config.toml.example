@@ -7,6 +7,10 @@
 # Set to -1 (default) to easily spot misconfigurations, or 0 to disable
 default_score = -1
 
+# Always on top mode - keep the window on top of all other windows
+# Set to true to enable, false to disable (default: false)
+always_on_top = false
+
 # Window patterns define regex patterns to match window titles
 # and the score change when that window becomes active
 
