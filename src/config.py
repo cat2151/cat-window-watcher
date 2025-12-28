@@ -27,6 +27,8 @@ class Config:
         self.window_patterns = []
         self.default_score = -1
         self.always_on_top = False
+        self.hide_on_mouse_proximity = False
+        self.proximity_distance = 50
         self._last_modified = None
         self.load_config()
 
@@ -51,6 +53,12 @@ class Config:
             # Load always_on_top setting (whether window should stay on top)
             always_on_top = config_data.get("always_on_top", False)
 
+            # Load hide_on_mouse_proximity setting (hide window when mouse is near)
+            hide_on_mouse_proximity = config_data.get("hide_on_mouse_proximity", False)
+
+            # Load proximity_distance setting (distance in pixels)
+            proximity_distance = config_data.get("proximity_distance", 50)
+
             # Load window patterns with their score values
             window_patterns = []
             for pattern in config_data.get("window_patterns", []):
@@ -65,6 +73,8 @@ class Config:
             # Only update instance attributes after successful parsing
             self.default_score = default_score
             self.always_on_top = always_on_top
+            self.hide_on_mouse_proximity = hide_on_mouse_proximity
+            self.proximity_distance = proximity_distance
             self.window_patterns = window_patterns
 
             # Update last modified timestamp after successful load
@@ -134,3 +144,19 @@ class Config:
             bool: True if window should stay on top, False otherwise
         """
         return self.always_on_top
+
+    def get_hide_on_mouse_proximity(self):
+        """Get hide_on_mouse_proximity setting.
+
+        Returns:
+            bool: True if window should hide when mouse is near, False otherwise
+        """
+        return self.hide_on_mouse_proximity
+
+    def get_proximity_distance(self):
+        """Get proximity_distance setting.
+
+        Returns:
+            int: Distance in pixels to trigger proximity behavior
+        """
+        return self.proximity_distance

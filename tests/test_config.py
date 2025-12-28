@@ -367,6 +367,183 @@ regex = "twitter"
         self.assertEqual(len(config.get_window_patterns()), 1)
         self.assertEqual(config.get_window_patterns()[0]["regex"], "github")
 
+    def test_hide_on_mouse_proximity_default(self):
+        """Test hide_on_mouse_proximity defaults to False when not specified."""
+        config_content = """
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertFalse(config.get_hide_on_mouse_proximity())
+
+    def test_hide_on_mouse_proximity_true(self):
+        """Test hide_on_mouse_proximity set to true."""
+        config_content = """
+hide_on_mouse_proximity = true
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertTrue(config.get_hide_on_mouse_proximity())
+
+    def test_hide_on_mouse_proximity_false(self):
+        """Test hide_on_mouse_proximity explicitly set to false."""
+        config_content = """
+hide_on_mouse_proximity = false
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertFalse(config.get_hide_on_mouse_proximity())
+
+    def test_proximity_distance_default(self):
+        """Test proximity_distance defaults to 50 when not specified."""
+        config_content = """
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertEqual(config.get_proximity_distance(), 50)
+
+    def test_proximity_distance_custom_value(self):
+        """Test proximity_distance with custom value."""
+        config_content = """
+proximity_distance = 100
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertEqual(config.get_proximity_distance(), 100)
+
+    def test_proximity_distance_zero(self):
+        """Test proximity_distance explicitly set to zero."""
+        config_content = """
+proximity_distance = 0
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertEqual(config.get_proximity_distance(), 0)
+
+    def test_hide_on_mouse_proximity_reloaded_on_config_change(self):
+        """Test that hide_on_mouse_proximity is reloaded when config file changes."""
+        config_content = """
+hide_on_mouse_proximity = false
+always_on_top = true
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+        config = Config(str(self.config_path))
+
+        # Verify initial config
+        self.assertFalse(config.get_hide_on_mouse_proximity())
+
+        # Modify the file to change hide_on_mouse_proximity
+        time.sleep(0.01)  # Ensure timestamp changes
+        new_content = """
+hide_on_mouse_proximity = true
+always_on_top = true
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(new_content)
+
+        # Reload configuration
+        reloaded = config.reload_if_modified()
+        self.assertTrue(reloaded)
+
+        # Verify hide_on_mouse_proximity was updated
+        self.assertTrue(config.get_hide_on_mouse_proximity())
+
+    def test_proximity_distance_reloaded_on_config_change(self):
+        """Test that proximity_distance is reloaded when config file changes."""
+        config_content = """
+proximity_distance = 50
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+        config = Config(str(self.config_path))
+
+        # Verify initial config
+        self.assertEqual(config.get_proximity_distance(), 50)
+
+        # Modify the file to change proximity_distance
+        time.sleep(0.01)  # Ensure timestamp changes
+        new_content = """
+proximity_distance = 150
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(new_content)
+
+        # Reload configuration
+        reloaded = config.reload_if_modified()
+        self.assertTrue(reloaded)
+
+        # Verify proximity_distance was updated
+        self.assertEqual(config.get_proximity_distance(), 150)
+
+    def test_all_proximity_settings_together(self):
+        """Test loading all proximity-related settings together."""
+        config_content = """
+always_on_top = true
+hide_on_mouse_proximity = true
+proximity_distance = 75
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertTrue(config.get_always_on_top())
+        self.assertTrue(config.get_hide_on_mouse_proximity())
+        self.assertEqual(config.get_proximity_distance(), 75)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -107,6 +107,14 @@ description = "Twitter/X"
 -   **always_on_top**: Whether to keep the window on top of all other windows (default: false)
     -   Setting to `true` keeps the window always visible above other windows
     -   Setting to `false` allows normal window behavior
+-   **hide_on_mouse_proximity**: Whether to move window to background when mouse approaches (default: false)
+    -   Setting to `true` automatically moves the window to the background when the mouse cursor approaches and returns it to the foreground when the mouse moves away
+    -   Setting to `false` disables this feature
+    -   This feature only works when `always_on_top` is set to `true`
+-   **proximity_distance**: Distance for mouse proximity detection in pixels (default: 50)
+    -   When the mouse cursor comes within this distance from the window, it will move to the background
+    -   Larger values detect the mouse from further away
+    -   Smaller values require the mouse to be closer to the window before reacting
 -   **regex**: Regular expression pattern to match against the window title (case-insensitive)
 -   **score**: Integer value to add to the score when the pattern matches (can be negative)
 -   **description**: Human-readable description displayed in the status area
@@ -158,6 +166,21 @@ regex = "youtube|netflix"
 score = -10
 description = "Entertainment"
 ```
+
+### Example 3: Always-on-Top with Auto-Hide on Mouse Proximity
+```toml
+# Keep window always on top, but automatically move to background when mouse approaches
+always_on_top = true
+hide_on_mouse_proximity = true
+proximity_distance = 50
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+```
+
+With this configuration, the window stays on top by default, but automatically moves to the background when the mouse cursor comes within 50 pixels. When the mouse moves away, it returns to the foreground. This design prevents the window from interfering with your work.
 
 ## Development
 
