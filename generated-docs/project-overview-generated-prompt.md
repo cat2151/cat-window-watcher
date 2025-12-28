@@ -1,4 +1,4 @@
-Last updated: 2025-11-16
+Last updated: 2025-12-29
 
 
 # プロジェクト概要生成プロンプト（来訪者向け）
@@ -167,6 +167,17 @@ description = "Twitter/X"
   - -1（デフォルト）に設定すると、パターンが正しく設定されているか確認しやすくなります
   - 0に設定すると、マッチしない場合はスコアが変化しません
   - パターンが誤って設定されている場合、スコアが継続的に減少するため、すぐに気づくことができます
+- **always_on_top**: ウィンドウを常に最前面に表示するかどうか（デフォルト: false）
+  - `true`に設定すると、ウィンドウが常に他のウィンドウの上に表示されます
+  - `false`に設定すると、通常のウィンドウとして動作します
+- **hide_on_mouse_proximity**: マウスが近づいたときにウィンドウを最背面に移動するかどうか（デフォルト: false）
+  - `true`に設定すると、マウスカーソルがウィンドウに近づいたときに自動的に最背面に移動し、離れると最前面に戻ります
+  - `false`に設定すると、この機能は無効になります
+  - この機能は `always_on_top` が `true` の場合のみ動作します
+- **proximity_distance**: マウス接近検知の距離（ピクセル単位、デフォルト: 50）
+  - マウスカーソルがウィンドウからこの距離以内に入ったときに、ウィンドウを最背面に移動します
+  - 値を大きくすると、より遠くからマウスを検知します
+  - 値を小さくすると、ウィンドウにより近づかないと反応しません
 - **regex**: ウィンドウタイトルにマッチする正規表現パターン（大文字小文字を区別しない）
 - **score**: パターンがマッチしたときにスコアに追加する整数値（負の値も可能）
 - **description**: ステータスエリアに表示される人間が読める説明
@@ -218,6 +229,21 @@ regex = "youtube|netflix"
 score = -10
 description = "エンターテイメント"
 ```
+
+### 例3: 最前面モードでマウス接近時に自動で最背面に移動
+```toml
+# ウィンドウを常に最前面に表示しつつ、マウスが近づいたら自動的に最背面に移動
+always_on_top = true
+hide_on_mouse_proximity = true
+proximity_distance = 50
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+```
+
+この設定により、ウィンドウは通常は最前面に表示されますが、マウスカーソルが50ピクセル以内に近づくと自動的に最背面に移動し、マウスが離れると再び最前面に戻ります。作業の邪魔にならないように設計されています。
 
 ## 開発
 
@@ -298,6 +324,7 @@ pip install pywin32
   📖 14.md
   📖 15.md
   📖 16.md
+  📖 21.md
   📖 4.md
   📖 6.md
   📖 8.md
@@ -315,6 +342,7 @@ pip install pywin32
 📁 tests/
   📄 test_config.py
   📄 test_dummy.py
+  📄 test_gui.py
   📄 test_score_tracker.py
   📄 test_window_monitor.py
 
@@ -334,6 +362,7 @@ issue-notes/13.md
 issue-notes/14.md
 issue-notes/15.md
 issue-notes/16.md
+issue-notes/21.md
 issue-notes/4.md
 issue-notes/6.md
 issue-notes/8.md
@@ -349,4 +378,4 @@ issue-notes/9.md
 
 
 ---
-Generated at: 2025-11-16 07:04:28 JST
+Generated at: 2025-12-29 07:05:31 JST

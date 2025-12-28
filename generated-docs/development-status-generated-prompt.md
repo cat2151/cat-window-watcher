@@ -1,4 +1,4 @@
-Last updated: 2025-11-16
+Last updated: 2025-12-29
 
 # 開発状況生成プロンプト（開発者向け）
 
@@ -107,11 +107,13 @@ Last updated: 2025-11-16
 - .github/actions-tmp/.github/workflows/call-callgraph.yml
 - .github/actions-tmp/.github/workflows/call-daily-project-summary.yml
 - .github/actions-tmp/.github/workflows/call-issue-note.yml
+- .github/actions-tmp/.github/workflows/call-rust-windows-check.yml
 - .github/actions-tmp/.github/workflows/call-translate-readme.yml
 - .github/actions-tmp/.github/workflows/callgraph.yml
 - .github/actions-tmp/.github/workflows/check-recent-human-commit.yml
 - .github/actions-tmp/.github/workflows/daily-project-summary.yml
 - .github/actions-tmp/.github/workflows/issue-note.yml
+- .github/actions-tmp/.github/workflows/rust-windows-check.yml
 - .github/actions-tmp/.github/workflows/translate-readme.yml
 - .github/actions-tmp/.github_automation/callgraph/codeql-queries/callgraph.ql
 - .github/actions-tmp/.github_automation/callgraph/codeql-queries/codeql-pack.lock.yml
@@ -162,6 +164,7 @@ Last updated: 2025-11-16
 - .github/actions-tmp/generated-docs/project-overview-generated-prompt.md
 - .github/actions-tmp/generated-docs/project-overview.md
 - .github/actions-tmp/generated-docs/style.css
+- .github/actions-tmp/googled947dc864c270e07.html
 - .github/actions-tmp/issue-notes/10.md
 - .github/actions-tmp/issue-notes/11.md
 - .github/actions-tmp/issue-notes/12.md
@@ -212,6 +215,7 @@ Last updated: 2025-11-16
 - issue-notes/14.md
 - issue-notes/15.md
 - issue-notes/16.md
+- issue-notes/21.md
 - issue-notes/4.md
 - issue-notes/6.md
 - issue-notes/8.md
@@ -227,10 +231,26 @@ Last updated: 2025-11-16
 - src/window_monitor.py
 - tests/test_config.py
 - tests/test_dummy.py
+- tests/test_gui.py
 - tests/test_score_tracker.py
 - tests/test_window_monitor.py
 
 ## 現在のオープンIssues
+## [Issue #23](../issue-notes/23.md): Add configurable score colors for increase/decrease states
+Issue #13 requests making the score font color configurable, particularly displaying red when score decreases.
+
+## Changes
+
+**Configuration (`config.py`, `config.toml.example`)**
+- Added `score_up_color` (default: `#ffffff`) and `score_down_color` (default: `#ff0000`) TOML settings
+- Implemented hex...
+ラベル: 
+--- issue-notes/23.md の内容 ---
+
+```markdown
+
+```
+
 ## [Issue #16](../issue-notes/16.md): ポモドーロ・テクニックに類似して、今の30分だけ集中、をイメージしやすくするよう、時報の30分区切りごとにスコアを0リセット、をtomlでon/off可能にする
 [issue-notes/16.md](https://github.com/cat2151/cat-window-watcher/blob/main/issue-notes/16.md)
 
@@ -241,21 +261,6 @@ Last updated: 2025-11-16
 ```markdown
 # issue ポモドーロ・テクニックに類似して、今の30分だけ集中、をイメージしやすくするよう、時報の30分区切りごとにスコアを0リセット、をtomlでon/off可能にする #16
 [issues #16](https://github.com/cat2151/cat-window-watcher/issues/16)
-
-
-
-```
-
-## [Issue #15](../issue-notes/15.md): 22:00～23:59の間は、scoreマイナスとなる行為について、マイナス-1固定つまりペナルティをマイルドにする、というモードをtomlでon/off可能にする
-[issue-notes/15.md](https://github.com/cat2151/cat-window-watcher/blob/main/issue-notes/15.md)
-
-...
-ラベル: 
---- issue-notes/15.md の内容 ---
-
-```markdown
-# issue 22:00～23:59の間は、scoreマイナスとなる行為について、マイナス-1つまり軽微なペナルティとなる、というモードをtomlでon/off可能にする #15
-[issues #15](https://github.com/cat2151/cat-window-watcher/issues/15)
 
 
 
@@ -291,144 +296,33 @@ Last updated: 2025-11-16
 
 ```
 
-## [Issue #12](../issue-notes/12.md): 最前面モード時、mouseがcat-window-watcherに近づいたら最背面にし、離れたら最前面に戻すモード、をtomlで設定可能にする
-[issue-notes/12.md](https://github.com/cat2151/cat-window-watcher/blob/main/issue-notes/12.md)
-
-...
-ラベル: 
---- issue-notes/12.md の内容 ---
-
-```markdown
-# issue 最前面モード時、mouseがcat-window-watcherに近づいたら最背面にし、離れたら最前面に戻すモード、をtomlで設定可能にする #12
-[issues #12](https://github.com/cat2151/cat-window-watcher/issues/12)
-
-
-
-```
-
-## [Issue #11](../issue-notes/11.md): 最前面表示モードのon/offをtomlで設定可能にする
-[issue-notes/11.md](https://github.com/cat2151/cat-window-watcher/blob/main/issue-notes/11.md)
-
-...
-ラベル: 
---- issue-notes/11.md の内容 ---
-
-```markdown
-# issue 最前面表示モードのon/offをtomlで設定可能にする #11
-[issues #11](https://github.com/cat2151/cat-window-watcher/issues/11)
-
-
-
-```
-
-## [Issue #8](../issue-notes/8.md): tomlをtimestamp更新監視し、更新されたらアプリ設定に反映する
-[issue-notes/8.md](https://github.com/cat2151/cat-window-watcher/blob/main/issue-notes/8.md)
-
-...
-ラベル: 
---- issue-notes/8.md の内容 ---
-
-```markdown
-# issue tomlをtimestamp更新監視し、更新されたらアプリ設定に反映する #8
-[issues #8](https://github.com/cat2151/cat-window-watcher/issues/8)
-
-
-
-```
-
 ## ドキュメントで言及されているファイルの内容
-### .github/actions-tmp/issue-notes/11.md
-```md
-# issue translate を他projectから使いやすくする #11
-[issues #11](https://github.com/cat2151/github-actions/issues/11)
-
-# ブレインストーミング
-- 課題、個別dirへの移動が必要。
-    - scripts
-- 課題、promptをハードコーディングでなく、promptsに切り出す。
-    - さらに、呼び出し元ymlから任意のpromptsを指定できるようにする。
-- 済、課題、README以外のtranslateも可能にするか検討する
-    - 対策、シンプル優先でREADME決め打ちにする
-        - 理由、README以外の用途となると、複数ファイルをどうGemini APIにわたすか？等、仕様が爆発的にふくらんでいくリスクがある
-        - README以外の用途が明確でないうちは、README決め打ちにするほうがよい
-- docs
-    - call導入手順を書く
-
-# 状況
-- 上記のうち、別dirへの切り分け等は実施済みのはず
-- どうする？
-    - それをここに可視化する。
-
-```
-
-### issue-notes/11.md
-```md
-# issue 最前面表示モードのon/offをtomlで設定可能にする #11
-[issues #11](https://github.com/cat2151/cat-window-watcher/issues/11)
-
-
-
-```
-
-### .github/actions-tmp/issue-notes/12.md
-```md
-# issue project-summary を他projectから使いやすくする #12
-[issues #12](https://github.com/cat2151/github-actions/issues/12)
-
-# 保留、別projectでの検証待ちのもの
-- promptsをcall側ymlで指定可能にする
-  - 保留の理由
-    - YAGNI原則
-      - 現状の共通workflow側のpromptsで問題ないうちは、保留とする
-        - そのままで使える可能性が高い見込み
-      - 検証が必要
-      - 別promptsを実際に書く必要が出たときに、追加実装をする
-# 課題、 docs/ をメンテする
-- 対象は、 daily-summary-setup.md
-- call-daily-project-summary.yml の導入手順を書く
-- どうする？
-  - 次の日次バッチでagent用promptを生成させる
-- 結果
-  - 生成させた
-  - 導入手順をメンテさせた
-  - 人力でさらにメンテした
-  - これでOKと判断する。
-  - あとは必要に応じてissue起票すればよい、今すぐのissue起票は不要（YAGNI原則）、と判断する
-
-# closeとする
-
-```
-
-### issue-notes/12.md
-```md
-# issue 最前面モード時、mouseがcat-window-watcherに近づいたら最背面にし、離れたら最前面に戻すモード、をtomlで設定可能にする #12
-[issues #12](https://github.com/cat2151/cat-window-watcher/issues/12)
-
-
-
-```
-
 ### .github/actions-tmp/issue-notes/13.md
 ```md
+{% raw %}
 # issue issue-note を他projectから使いやすくする #13
 [issues #13](https://github.com/cat2151/github-actions/issues/13)
 
 - docs
     - call導入手順を書く
 
+{% endraw %}
 ```
 
 ### issue-notes/13.md
 ```md
+{% raw %}
 # issue scoreが減少するときは、scoreを赤い文字にする、をtomlで実現可能にする。例えばfont colorをscore upとscore downで個別設定可能とする #13
 [issues #13](https://github.com/cat2151/cat-window-watcher/issues/13)
 
 
 
+{% endraw %}
 ```
 
 ### .github/actions-tmp/issue-notes/14.md
 ```md
+{% raw %}
 # issue Development Status のdocument生成において、最初の小さな一歩 を実現する用のプロンプト生成がされなくなっている #14
 [issues #14](https://github.com/cat2151/github-actions/issues/14)
 
@@ -449,160 +343,23 @@ Last updated: 2025-11-16
 
 ## closeとする
 
+{% endraw %}
 ```
 
 ### issue-notes/14.md
 ```md
+{% raw %}
 # issue 非score upからscore upに転じて10秒経過したら、userのフロー状態への没入をサポートするよう、ウィンドウ全体を1秒ごとに1%ずつ透明に近づける、というモードをtomlでon/off可能にする #14
 [issues #14](https://github.com/cat2151/cat-window-watcher/issues/14)
 
 
 
-```
-
-### .github/actions-tmp/issue-notes/15.md
-```md
-# issue project_summary scripts cjs を分解し、できるだけ1ファイル200行未満にし、agentによるメンテをしやすくする #15
-[issues #15](https://github.com/cat2151/github-actions/issues/15)
-
-# 状況
-- agentに、最初の小さな一歩のAgent実行プロンプトを実行させた
-- 結果、以下を得た：
-    - project_summary_cjs_analysis.md
-- どうする？
-    - 次の一手をagentに生成させてみる（翌日の日次バッチで自動生成させる）
-- 結果
-    - 生成させたpromptをレビューした
-    - promptを修正した
-    - agentに投げた
-    - 結果、GitUtils.cjsを切り出しできた
-    - それをリファクタリングミスがないかチェックさせた
-    - agentによるチェック結果は合格だった
-- どうする？
-    - 次の一手をagentに生成させてみる（翌日の日次バッチで自動生成させる）
-- 結果
-    - 生成させたpromptをレビューした
-        - promptの対象ファイルから project_summary_cjs_analysis.md が漏れていることがわかったので修正した
-    - promptを修正した
-    - agentに投げた
-    - 結果、FileSystemUtils.cjsを切り出しできた
-    - それをリファクタリングミスがないかチェックさせた
-    - agentによるチェック結果は合格だった
-- どうする？
-    - 次の一手をagentに生成させてみる（翌日の日次バッチで自動生成させる）
-- 結果
-    - 生成させたpromptをレビューした
-    - 今回は低品質、NG、と判断した
-    - 判断基準は、project_summary_cjs_analysis.md と乖離してしまっている点。今回はハルシネーションを含んだplanである、と判断した
-    - 人力でpromptを書き、planさせ、plan結果をレビューし、agentに投げた
-    - 結果、CodeAnalyzer.cjsとProjectAnalyzer.cjsを切り出しできた
-- どうする？
-    - 次の一手をagentに生成させてみる（翌日の日次バッチで自動生成させる）
-    - 備考、課題、Geminiに生成させているdocumentは2つある。かなり位置づけが違うものである。
-        - projectのソースファイル分析。
-        - projectのissues分析。
-        - この2つについて、class, cjs, yml まで分割をするかを、あとで検討する。
-        - おそらく、class分割どまりとし、ソースファイル分析結果をissues分析の参考資料としてGeminiのcontextに与える改善をする、がよい、と想定しておく。
-- 課題、エラーで落ちた。昨日は落ちてない。
-    - 原因、昨日のagentのリファクタリング時に、ハルシネーションで、
-        - codeが破壊されていた
-        - run メソッドが削除されていた
-        - 一つ前のrevisionにはrun メソッドがあった
-        - ほかにもcode破壊があったのかは不明、調査省略、明日の日次バッチをtestと調査として利用するつもり
-- どうする？
-    - 単純に一つ前のrevisionからrun メソッドを復活させ、明日の日次バッチをtestと調査として利用する
-- 再発防止策は？
-    - ノーアイデア。昨日それなりにagentにチェックをさせたはずだが根本的な大きなミスが発生していた。
-    - 構文チェックは通っていたが、問題を検知できなかった。
-    - チェックが機能していない、あるいは機能として不足している。
-    - 分析。変更量が大きかったぶんミスのリスクが増えていた。
-    - 対策案。もっと小さく一歩ずつ変更させる。
-    - 対策案。リファクタリング時、いきなりメソッド削除をさせない。
-        - まず全cjsの全メソッドのlistをさせる。
-        - のち、削除対象の重複メソッドのlistをさせる。
-        - そして削除planをさせる。
-        - のち、削除させる。
-        - さらに削除後のメソッドlistをさせる。
-        - そして削除しすぎていないかを削除前後のlist比較でチェックさせる。
-        - これでrunまで削除してしまうのを防止できるかもしれない。
-        - これは人力からみると、おかしな話である。人力なら1つずつ移動をするだけであり、ミスのしようがない。
-        - LLMの典型的なハルシネーション問題の一つである、と認識する
-- 結果は？
-    - test green
-    - run メソッドの人力復活は成功した
-    - 日次バッチで生成した次の一手のpromptを投げた
-    - リファクタリング成功した。ProjectSummaryGenerator を切り出した
-- どうする？
-    - 次の一手をagentに生成させてみる（agentに投げるpromptを、翌日の日次バッチで自動生成させる）
-- 結果
-    - 先に、2つのdocument生成を、1つずつ生成できるよう疎結合にリファクタリング、をしたほうがよさそう
-    - agentにそれを投げた
-    - 成功した、と判断する
-    - 課題、`BaseSummaryGenerator.cjs` は、baseの機能と、`ProjectOverviewGenerator.cjs`専用の機能とが混ざっている。
-        - baseに集約すべきは、`ProjectSummaryCoordinator.cjs`と`ProjectOverviewGenerator.cjs`とが必ずどちらも使う機能、である、と考える。
-        - 対策、明日以降それをagentに投げる
-    - `project_summary_cjs_analysis.md` は削除とする。役目が完了した、と判断する。リファクタリング前のソース構造の分析documentであり、今は存在しているとわかりづらくなる。シンプル優先のため削除とする。
-- どうする？
-    - 次の一手をagentに生成させてみる（agentに投げるpromptを、翌日の日次バッチで自動生成させる）
-- 結果
-    - test green
-    - `BaseSummaryGenerator.cjs` を切り出したのは成功した、と判断する
-    - `BaseSummaryGenerator.cjs` を2分割するため、agentにplanさせた
-    - レビューした
-    - agentに2分割させた
-    - レビューした。OKと判断する
-- どうする？
-    - 次の一手をagentに生成させてみる（agentに投げるpromptを、翌日の日次バッチで自動生成させる）
-- 結果
-    - test green
-    - `BaseSummaryGenerator.cjs` を2分割は成功した、と判断する
-    - issue track機能構造をリファクタリングし、以下にする
-        - development status generator : baseを継承する
-        - issue tracker : 汎用関数群
-    - agentに実施させた
-    - レビューした。OKと判断する
-- どうする？
-    - 次の一手をagentに生成させてみる（agentに投げるpromptを、翌日の日次バッチで自動生成させる）
-- 結果
-    - test green
-    - DevelopmentStatusGeneratorとissue trackerのリファクタリングは成功した、と判断する
-    - ProjectOverview生成機能のリファクタリングをする
-    - agentに実施させた
-    - レビューした。OKと判断する
-- どうする？
-    - 次の一手をagentに生成させてみる（agentに投げるpromptを、翌日の日次バッチで自動生成させる）
-- 結果
-    - test green
-    - ProjectOverview生成機能のリファクタリングは成功した、と判断する
-    - 課題、overviewと、developmentStatusとが混在し、dirが読みづらい。
-    - 対策、shared/、overview/、development/、の3つのdirに切り分ける
-    - agentに分析、planさせ、レビューし、planさせ、実施させた
-    - レビューした。OKと判断する
-- どうする？
-    - 次の一手をagentに生成させてみる（agentに投げるpromptを、翌日の日次バッチで自動生成させる）
-- 結果
-    - test green
-    - shared/、overview/、development/、の3つのdirに切り分けるリファクタリングは成功した、と判断する
-    - agentに、agentがメンテしやすいか？の観点からレビューさせた
-    - 詳細は割愛
-        - `> 最優先で取り組むべきは 設定管理の一元化 と エラーハンドリングの統一 です。これにより、Agentにとって予測可能で理解しやすいコードベースになります。`
-        - それは別issueで、設定変更をマストでやるので、OKと判断する
-- これでagentによるメンテは十分しやすくなった、と判断する
-- closeとする
-
-```
-
-### issue-notes/15.md
-```md
-# issue 22:00～23:59の間は、scoreマイナスとなる行為について、マイナス-1つまり軽微なペナルティとなる、というモードをtomlでon/off可能にする #15
-[issues #15](https://github.com/cat2151/cat-window-watcher/issues/15)
-
-
-
+{% endraw %}
 ```
 
 ### .github/actions-tmp/issue-notes/16.md
 ```md
+{% raw %}
 # issue issue-note / project-summary / translate / callgraph をtonejs-mml-to-jsonから呼び出す #16
 [issues #16](https://github.com/cat2151/github-actions/issues/16)
 
@@ -680,192 +437,47 @@ Last updated: 2025-11-16
 
 # closeとする
 
+{% endraw %}
 ```
 
 ### issue-notes/16.md
 ```md
+{% raw %}
 # issue ポモドーロ・テクニックに類似して、今の30分だけ集中、をイメージしやすくするよう、時報の30分区切りごとにスコアを0リセット、をtomlでon/off可能にする #16
 [issues #16](https://github.com/cat2151/cat-window-watcher/issues/16)
 
 
 
+{% endraw %}
 ```
 
-### .github/actions-tmp/issue-notes/2.md
+### .github/actions-tmp/issue-notes/23.md
 ```md
-# issue GitHub Actions「関数コールグラフhtmlビジュアライズ生成」を共通ワークフロー化する #2
-[issues #2](https://github.com/cat2151/github-actions/issues/2)
+{% raw %}
+# issue issue 17が再発してしまっている #23
+[issues #23](https://github.com/cat2151/github-actions/issues/23)
 
+# 症状は？
+- issue 17と同じ
 
-# prompt
-```
-あなたはGitHub Actionsと共通ワークフローのスペシャリストです。
-このymlファイルを、以下の2つのファイルに分割してください。
-1. 共通ワークフロー       cat2151/github-actions/.github/workflows/callgraph_enhanced.yml
-2. 呼び出し元ワークフロー cat2151/github-actions/.github/workflows/call-callgraph_enhanced.yml
-まずplanしてください
-```
+# どうする？
+- development-status-generated-prompt.md を確認する
+- 結果
+    - >Issue番号を記載する際は、必ず [Issue #番号](issue-notes/番号.md) の形式でMarkdownリンクとして記載してください。
+    - 仮説、これが残っており、ほかの ../ 指定と競合し、どちらかがランダムで選ばれていた
+    - 対策、ここを ../ 指定にする
 
 # 結果
-- indent
-    - linter？がindentのエラーを出しているがyml内容は見た感じOK
-    - テキストエディタとagentの相性問題と判断する
-    - 別のテキストエディタでsaveしなおし、テキストエディタをreload
-    - indentのエラーは解消した
-- LLMレビュー
-    - agent以外の複数のLLMにレビューさせる
-    - prompt
-```
-あなたはGitHub Actionsと共通ワークフローのスペシャリストです。
-以下の2つのファイルをレビューしてください。最優先で、エラーが発生するかどうかだけレビューしてください。エラー以外の改善事項のチェックをするかわりに、エラー発生有無チェックに最大限注力してください。
-
---- 共通ワークフロー
-
-# GitHub Actions Reusable Workflow for Call Graph Generation
-name: Generate Call Graph
-
-# TODO Windowsネイティブでのtestをしていた名残が残っているので、今後整理していく。今はWSL act でtestしており、Windowsネイティブ環境依存問題が解決した
-#  ChatGPTにレビューさせるとそこそこ有用そうな提案が得られたので、今後それをやる予定
-#  agentに自己チェックさせる手も、セカンドオピニオンとして選択肢に入れておく
-
-on:
-  workflow_call:
-
-jobs:
-  check-commits:
-    runs-on: ubuntu-latest
-    outputs:
-      should-run: ${{ steps.check.outputs.should-run }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 50 # 過去のコミットを取得
-
-      - name: Check for user commits in last 24 hours
-        id: check
-        run: |
-          node .github/scripts/callgraph_enhanced/check-commits.cjs
-
-  generate-callgraph:
-    needs: check-commits
-    if: needs.check-commits.outputs.should-run == 'true'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      security-events: write
-      actions: read
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set Git identity
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-      - name: Remove old CodeQL packages cache
-        run: rm -rf ~/.codeql/packages
-
-      - name: Check Node.js version
-        run: |
-          node .github/scripts/callgraph_enhanced/check-node-version.cjs
-
-      - name: Install CodeQL CLI
-        run: |
-          wget https://github.com/github/codeql-cli-binaries/releases/download/v2.22.1/codeql-linux64.zip
-          unzip codeql-linux64.zip
-          sudo mv codeql /opt/codeql
-          echo "/opt/codeql" >> $GITHUB_PATH
-
-      - name: Install CodeQL query packs
-        run: |
-          /opt/codeql/codeql pack install .github/codeql-queries
-
-      - name: Check CodeQL exists
-        run: |
-          node .github/scripts/callgraph_enhanced/check-codeql-exists.cjs
-
-      - name: Verify CodeQL Configuration
-        run: |
-          node .github/scripts/callgraph_enhanced/analyze-codeql.cjs verify-config
-
-      - name: Remove existing CodeQL DB (if any)
-        run: |
-          rm -rf codeql-db
-
-      - name: Perform CodeQL Analysis
-        run: |
-          node .github/scripts/callgraph_enhanced/analyze-codeql.cjs analyze
-
-      - name: Check CodeQL Analysis Results
-        run: |
-          node .github/scripts/callgraph_enhanced/analyze-codeql.cjs check-results
-
-      - name: Debug CodeQL execution
-        run: |
-          node .github/scripts/callgraph_enhanced/analyze-codeql.cjs debug
-
-      - name: Wait for CodeQL results
-        run: |
-          node -e "setTimeout(()=>{}, 10000)"
-
-      - name: Find and process CodeQL results
-        run: |
-          node .github/scripts/callgraph_enhanced/find-process-results.cjs
-
-      - name: Generate HTML graph
-        run: |
-          node .github/scripts/callgraph_enhanced/generate-html-graph.cjs
-
-      - name: Copy files to generated-docs and commit results
-        run: |
-          node .github/scripts/callgraph_enhanced/copy-commit-results.cjs
-
---- 呼び出し元
-# 呼び出し元ワークフロー: call-callgraph_enhanced.yml
-name: Call Call Graph Enhanced
-
-on:
-  schedule:
-    # 毎日午前5時(JST) = UTC 20:00前日
-    - cron: '0 20 * * *'
-  workflow_dispatch:
-
-jobs:
-  call-callgraph-enhanced:
-    # uses: cat2151/github-actions/.github/workflows/callgraph_enhanced.yml
-    uses: ./.github/workflows/callgraph_enhanced.yml # ローカルでのテスト用
-```
-
-# レビュー結果OKと判断する
-- レビュー結果を人力でレビューした形になった
-
-# test
-- #4 同様にローカル WSL + act でtestする
-- エラー。userのtest設計ミス。
-  - scriptの挙動 : src/ がある前提
-  - 今回の共通ワークフローのリポジトリ : src/ がない
-  - 今回testで実現したいこと
-    - 仮のソースでよいので、関数コールグラフを生成させる
-  - 対策
-    - src/ にダミーを配置する
 - test green
-  - ただしcommit pushはしてないので、html内容が0件NG、といったケースの検知はできない
-  - もしそうなったら別issueとしよう
-
-# test green
-
-# commit用に、yml 呼び出し元 uses をlocal用から本番用に書き換える
 
 # closeとする
-- もしhtml内容が0件NG、などになったら、別issueとするつもり
 
+{% endraw %}
 ```
 
 ### .github/actions-tmp/issue-notes/3.md
 ```md
+{% raw %}
 # issue GitHub Actions「issue note生成」を共通ワークフロー化する #3
 [issues #3](https://github.com/cat2151/github-actions/issues/3)
 
@@ -941,10 +553,12 @@ env: で値を渡し、process.env で参照するのが正しい
 - test green
 - closeとする
 
+{% endraw %}
 ```
 
 ### .github/actions-tmp/issue-notes/4.md
 ```md
+{% raw %}
 # issue GitHub Actions「project概要生成」を共通ワークフロー化する #4
 [issues #4](https://github.com/cat2151/github-actions/issues/4)
 
@@ -1085,141 +699,401 @@ jobs:
 
 # closeとする
 
+{% endraw %}
 ```
 
 ### issue-notes/4.md
 ```md
+{% raw %}
 # issue GitHubを開いているあいだ1秒ごとにscoreが増える設定にしているが、増えない #4
 [issues #4](https://github.com/cat2151/cat-window-watcher/issues/4)
 
 
 
+{% endraw %}
 ```
 
-### .github/actions-tmp/issue-notes/8.md
-```md
-# issue 関数コールグラフhtmlビジュアライズ生成の対象ソースファイルを、呼び出し元ymlで指定できるようにする #8
-[issues #8](https://github.com/cat2151/github-actions/issues/8)
+### config.toml.example
+```example
+{% raw %}
+# Cat Window Watcher Configuration
+# This is a provisional implementation for testing purposes
 
-# これまでの課題
-- 以下が決め打ちになっていた
-```
-  const allowedFiles = [
-    'src/main.js',
-    'src/mml2json.js',
-    'src/play.js'
-  ];
-```
+# Default score applied when no window pattern matches
+# This helps detect configuration errors - if patterns are misconfigured,
+# you'll see this score being applied repeatedly
+# Set to -1 (default) to easily spot misconfigurations, or 0 to disable
+default_score = -1
 
-# 対策
-- 呼び出し元ymlで指定できるようにする
+# Apply default score mode - control whether default_score is applied
+# This is a mode to enable/disable the application of default_score
+# Set to true (default) to apply default_score when no pattern matches
+# Set to false to not apply any score when no pattern matches (score stays unchanged)
+apply_default_score_mode = true
 
-# agent
-- agentにやらせることができれば楽なので、初手agentを試した
-- 失敗
-    - ハルシネーションしてscriptを大量破壊した
-- 分析
-    - 修正対象scriptはagentが生成したもの
-    - 低品質な生成結果でありソースが巨大
-    - ハルシネーションで破壊されやすいソース
-    - AIの生成したソースは、必ずしもAIフレンドリーではない
+# Mild penalty mode - limit negative scores to -1 during specified hours
+# This is a provisional implementation for testing purposes
+# Set to true to enable, false to disable (default: false)
+mild_penalty_mode = false
 
-# 人力リファクタリング
-- 低品質コードを、最低限agentが扱えて、ハルシネーションによる大量破壊を防止できる内容、にする
-- 手短にやる
-    - そもそもビジュアライズは、agentに雑に指示してやらせたもので、
-    - 今後別のビジュアライザを選ぶ可能性も高い
-    - 今ここで手間をかけすぎてコンコルド効果（サンクコストバイアス）を増やすのは、project群をトータルで俯瞰して見たとき、損
-- 対象
-    - allowedFiles のあるソース
-        - callgraph-utils.cjs
-            - たかだか300行未満のソースである
-            - この程度でハルシネーションされるのは予想外
-            - やむなし、リファクタリングでソース分割を進める
+# Start hour for mild penalty mode (0-23, default: 22)
+# When mild_penalty_mode is enabled, negative scores will be limited to -1
+# during the time range from mild_penalty_start_hour to mild_penalty_end_hour
+mild_penalty_start_hour = 22
 
-# agentに修正させる
-## prompt
-```
-allowedFilesを引数で受け取るようにしたいです。
-ないならエラー。
-最終的に呼び出し元すべてに波及して修正したいです。
+# End hour for mild penalty mode (0-23, default: 23)
+# The time range is inclusive of both start and end hours
+mild_penalty_end_hour = 23
 
-呼び出し元をたどってエントリポイントも見つけて、
-エントリポイントにおいては、
-引数で受け取ったjsonファイル名 allowedFiles.js から
-jsonファイル allowedFiles.jsonの内容をreadして
-変数 allowedFilesに格納、
-後続処理に引き渡す、としたいです。
+# Always on top mode - keep the window on top of all other windows
+# Set to true to enable, false to disable (default: false)
+always_on_top = false
 
-まずplanしてください。
-planにおいては、修正対象のソースファイル名と関数名を、呼び出し元を遡ってすべて特定し、listしてください。
-```
+# Hide on mouse proximity mode - when always_on_top is enabled,
+# hide the window (move to background) when mouse cursor approaches it
+# Set to true to enable, false to disable (default: false)
+# This only works when always_on_top is true
+hide_on_mouse_proximity = false
 
-# 修正が順調にできた
-- コマンドライン引数から受け取る作りになっていなかったので、そこだけ指示して修正させた
-- yml側は人力で修正した
+# Proximity distance in pixels - distance threshold for mouse proximity detection
+# When mouse cursor is within this distance from the window, it will be hidden
+# Default: 50 pixels
+proximity_distance = 50
 
-# 他のリポジトリから呼び出した場合にバグらないよう修正する
-- 気付いた
-    - 共通ワークフローとして他のリポジトリから使った場合はバグるはず。
-        - ymlから、共通ワークフロー側リポジトリのcheckoutが漏れているので。
-- 他のyml同様に修正する
-- あわせて全体にymlをリファクタリングし、修正しやすくし、今後のyml読み書きの学びにしやすくする
+# Window patterns define regex patterns to match window titles
+# and the score change when that window becomes active
 
-# local WSL + act : test green
+[[window_patterns]]
+# GitHub - increases score when working on GitHub
+# Matches both embedded "github" (e.g., "github.com", "GitHub - Profile")
+# and GitHub pages format (e.g., "Pull requests · owner/repo · GitHub")
+regex = "github|· GitHub$"
+score = 10
+description = "GitHub"
 
-# closeとする
-- もし生成されたhtmlがNGの場合は、別issueとするつもり
+[[window_patterns]]
+# Twitter/X - decreases score when browsing social media
+regex = 'twitter|x\.com'
+score = -5
+description = "Twitter/X"
 
-```
+[[window_patterns]]
+# Facebook - decreases score when browsing social media
+regex = "facebook"
+score = -5
+description = "Facebook"
 
-### issue-notes/8.md
-```md
-# issue tomlをtimestamp更新監視し、更新されたらアプリ設定に反映する #8
-[issues #8](https://github.com/cat2151/cat-window-watcher/issues/8)
+[[window_patterns]]
+# Instagram - decreases score when browsing social media
+regex = "instagram"
+score = -5
+description = "Instagram"
 
+[[window_patterns]]
+# Reddit - decreases score when browsing social media
+regex = "reddit"
+score = -3
+description = "Reddit"
 
+[[window_patterns]]
+# Visual Studio Code - increases score when coding
+regex = "visual studio code|vscode"
+score = 8
+description = "VS Code"
 
+[[window_patterns]]
+# Terminal - increases score when using terminal
+regex = "terminal|bash|zsh|powershell"
+score = 5
+description = "Terminal"
+
+[[window_patterns]]
+# YouTube - decreases score when watching videos
+regex = "youtube"
+score = -7
+description = "YouTube"
+
+{% endraw %}
 ```
 
 ### issue-notes/6.md
 ```md
+{% raw %}
 # issue config.toml.example のgithubについて、githubのサイトを閲覧していても、ウィンドウタイトルにgithubを含まないPull requestsやCodeでgithubサイトと認識されない #6
 [issues #6](https://github.com/cat2151/cat-window-watcher/issues/6)
 
 
 
+{% endraw %}
+```
+
+### src/config.py
+```py
+{% raw %}
+#!/usr/bin/env python3
+"""Configuration module for cat-window-watcher."""
+
+import sys
+from pathlib import Path
+
+try:
+    import tomllib
+except ImportError:
+    import tomli as tomllib
+
+
+class Config:
+    """Configuration manager for window watcher."""
+
+    def __init__(self, config_path: str = "config.toml"):
+        """Initialize configuration.
+
+        Args:
+            config_path: Path to TOML configuration file
+
+        Raises:
+            FileNotFoundError: If config file doesn't exist
+            tomllib.TOMLDecodeError: If config file is invalid
+        """
+        self.config_path = Path(config_path)
+        self.window_patterns = []
+        self.default_score = -1
+        self.apply_default_score_mode = True
+        self.always_on_top = False
+        self.hide_on_mouse_proximity = False
+        self.proximity_distance = 50
+        self.mild_penalty_mode = False
+        self.mild_penalty_start_hour = 22
+        self.mild_penalty_end_hour = 23
+        self._last_modified = None
+        self.load_config()
+
+    def load_config(self, exit_on_error=True):
+        """Load configuration from TOML file.
+
+        Args:
+            exit_on_error: If True, exit on error. If False, raise exception.
+
+        Raises:
+            FileNotFoundError: If config file doesn't exist
+            tomllib.TOMLDecodeError: If config file is invalid
+            Exception: If other errors occur during loading
+        """
+        try:
+            with open(self.config_path, "rb") as f:
+                config_data = tomllib.load(f)
+
+            # Load default_score (score applied when no pattern matches)
+            default_score = config_data.get("default_score", -1)
+
+            # Load apply_default_score_mode setting (whether to apply default score)
+            apply_default_score_mode = config_data.get("apply_default_score_mode", True)
+            if not isinstance(apply_default_score_mode, bool):
+                raise ValueError(
+                    f"Invalid 'apply_default_score_mode' value: {apply_default_score_mode!r}. Must be a boolean."
+                )
+
+            # Load always_on_top setting (whether window should stay on top)
+            always_on_top = config_data.get("always_on_top", False)
+
+            # Load hide_on_mouse_proximity setting (hide window when mouse is near)
+            hide_on_mouse_proximity = config_data.get("hide_on_mouse_proximity", False)
+
+            # Load proximity_distance setting (distance in pixels)
+            # Ensure it is a non-negative integer; raise error if invalid
+            proximity_distance = config_data.get("proximity_distance", 50)
+            if not isinstance(proximity_distance, int) or proximity_distance < 0:
+                raise ValueError(
+                    f"Invalid 'proximity_distance' value: {proximity_distance!r}. Must be a non-negative integer."
+                )
+
+            # Load mild_penalty_mode setting (whether to apply mild penalty during specified hours)
+            mild_penalty_mode = config_data.get("mild_penalty_mode", False)
+            if not isinstance(mild_penalty_mode, bool):
+                raise ValueError(f"Invalid 'mild_penalty_mode' value: {mild_penalty_mode!r}. Must be a boolean.")
+
+            # Load mild_penalty_start_hour setting (start hour for mild penalty, default: 22)
+            mild_penalty_start_hour = config_data.get("mild_penalty_start_hour", 22)
+            if not isinstance(mild_penalty_start_hour, int) or not (0 <= mild_penalty_start_hour <= 23):
+                raise ValueError(
+                    f"Invalid 'mild_penalty_start_hour' value: {mild_penalty_start_hour!r}. Must be an integer between 0 and 23."
+                )
+
+            # Load mild_penalty_end_hour setting (end hour for mild penalty, default: 23)
+            mild_penalty_end_hour = config_data.get("mild_penalty_end_hour", 23)
+            if not isinstance(mild_penalty_end_hour, int) or not (0 <= mild_penalty_end_hour <= 23):
+                raise ValueError(
+                    f"Invalid 'mild_penalty_end_hour' value: {mild_penalty_end_hour!r}. Must be an integer between 0 and 23."
+                )
+
+            # Load window patterns with their score values
+            window_patterns = []
+            for pattern in config_data.get("window_patterns", []):
+                window_patterns.append(
+                    {
+                        "regex": pattern.get("regex", ""),
+                        "score": pattern.get("score", 0),
+                        "description": pattern.get("description", ""),
+                    }
+                )
+
+            # Only update instance attributes after successful parsing
+            self.default_score = default_score
+            self.apply_default_score_mode = apply_default_score_mode
+            self.always_on_top = always_on_top
+            self.hide_on_mouse_proximity = hide_on_mouse_proximity
+            self.proximity_distance = proximity_distance
+            self.mild_penalty_mode = mild_penalty_mode
+            self.mild_penalty_start_hour = mild_penalty_start_hour
+            self.mild_penalty_end_hour = mild_penalty_end_hour
+            self.window_patterns = window_patterns
+
+            # Update last modified timestamp after successful load
+            self._last_modified = self.config_path.stat().st_mtime
+
+        except FileNotFoundError:
+            if exit_on_error:
+                print(f"Error: Configuration file '{self.config_path}' not found.")
+                sys.exit(1)
+            else:
+                raise
+        except Exception as e:
+            if exit_on_error:
+                print(f"Error: Failed to load configuration: {e}")
+                sys.exit(1)
+            else:
+                raise
+
+    def is_modified(self):
+        """Check if configuration file has been modified.
+
+        Returns:
+            bool: True if file has been modified since last load, False otherwise
+        """
+        try:
+            current_mtime = self.config_path.stat().st_mtime
+            return current_mtime != self._last_modified
+        except Exception:
+            return False
+
+    def reload_if_modified(self):
+        """Reload configuration if the file has been modified.
+
+        Returns:
+            bool: True if configuration was reloaded, False otherwise
+        """
+        if self.is_modified():
+            try:
+                self.load_config(exit_on_error=False)
+                print(f"Configuration reloaded from '{self.config_path}'")
+                return True
+            except Exception as e:
+                print(f"Warning: Failed to reload configuration: {e}")
+                return False
+        return False
+
+    def get_window_patterns(self):
+        """Get list of window patterns.
+
+        Returns:
+            list: List of pattern dictionaries with regex, score, and description
+        """
+        return self.window_patterns
+
+    def get_default_score(self):
+        """Get default score for non-matching windows.
+
+        Returns:
+            int: Default score value
+        """
+        return self.default_score
+
+    def get_apply_default_score_mode(self):
+        """Get apply_default_score_mode setting.
+
+        Returns:
+            bool: True if default score should be applied when no pattern matches, False otherwise
+        """
+        return self.apply_default_score_mode
+
+    def get_always_on_top(self):
+        """Get always_on_top setting.
+
+        Returns:
+            bool: True if window should stay on top, False otherwise
+        """
+        return self.always_on_top
+
+    def get_hide_on_mouse_proximity(self):
+        """Get hide_on_mouse_proximity setting.
+
+        Returns:
+            bool: True if window should hide when mouse is near, False otherwise
+        """
+        return self.hide_on_mouse_proximity
+
+    def get_proximity_distance(self):
+        """Get proximity_distance setting.
+
+        Returns:
+            int: Distance in pixels to trigger proximity behavior
+        """
+        return self.proximity_distance
+
+    def get_mild_penalty_mode(self):
+        """Get mild_penalty_mode setting.
+
+        Returns:
+            bool: True if mild penalty mode is enabled, False otherwise
+        """
+        return self.mild_penalty_mode
+
+    def get_mild_penalty_start_hour(self):
+        """Get mild_penalty_start_hour setting.
+
+        Returns:
+            int: Start hour for mild penalty mode (0-23)
+        """
+        return self.mild_penalty_start_hour
+
+    def get_mild_penalty_end_hour(self):
+        """Get mild_penalty_end_hour setting.
+
+        Returns:
+            int: End hour for mild penalty mode (0-23)
+        """
+        return self.mild_penalty_end_hour
+
+{% endraw %}
 ```
 
 ## 最近の変更（過去7日間）
 ### コミット履歴:
-ac26387 Auto-translate README.ja.md to README.md [auto]
-8611501 Merge pull request #10 from cat2151/copilot/define-score-in-toml
-a4ce2fb Change default_score default value from 0 to -1
-9c6f575 Add issue note for #16 [auto]
-1ff3771 Add issue note for #15 [auto]
-6d55260 Add default_score configuration for non-matching windows
-dfec4bb Add issue note for #14 [auto]
-cd84216 Add issue note for #13 [auto]
-38d76bf Add issue note for #12 [auto]
-05046c4 Add issue note for #11 [auto]
+b1fc7df Merge pull request #22 from cat2151/copilot/add-mode-for-score-adjustment
+bf5b754 Improve test_apply_default_score_mode_update_config to verify score_changed and use consistent window title
+34676a8 Add apply_default_score_mode to enable/disable default score application
+4185798 Initial plan
+a90c8cb Add issue note for #21 [auto]
+615a905 Merge pull request #20 from cat2151/copilot/toggle-score-penalty-mode
+21a57fc Add boolean type validation for mild_penalty_mode config
+12c6884 Add mild penalty mode feature with TOML configuration
+1575bda Initial plan
+a05340f Enhance issue 15 notes with implementation details
 
 ### 変更されたファイル:
 README.ja.md
 README.md
 config.toml.example
-issue-notes/12.md
-issue-notes/13.md
-issue-notes/14.md
 issue-notes/15.md
-issue-notes/16.md
+issue-notes/21.md
 src/config.py
 src/gui.py
 src/main.py
 src/score_tracker.py
 tests/test_config.py
+tests/test_gui.py
 tests/test_score_tracker.py
 
 
 ---
-Generated at: 2025-11-16 07:04:28 JST
+Generated at: 2025-12-29 07:05:31 JST
