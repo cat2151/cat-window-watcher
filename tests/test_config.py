@@ -2,6 +2,7 @@
 """Tests for config module."""
 
 import tempfile
+import time
 import unittest
 from pathlib import Path
 
@@ -155,8 +156,6 @@ description = "GitHub"
         self.assertFalse(config.is_modified())
 
         # Modify the file
-        import time
-
         time.sleep(0.01)  # Ensure timestamp changes
         new_content = """
 default_score = 5
@@ -190,8 +189,6 @@ description = "GitHub"
         self.assertEqual(config.get_window_patterns()[0]["regex"], "github")
 
         # Modify the file
-        import time
-
         time.sleep(0.01)  # Ensure timestamp changes
         new_content = """
 default_score = 5
