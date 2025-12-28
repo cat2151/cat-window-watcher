@@ -47,7 +47,13 @@ def main():
         window_monitor = WindowMonitor()
 
         # Create score tracker
-        score_tracker = ScoreTracker(config.get_window_patterns(), config.get_default_score())
+        score_tracker = ScoreTracker(
+            config.get_window_patterns(),
+            config.get_default_score(),
+            config.get_mild_penalty_mode(),
+            config.get_mild_penalty_start_hour(),
+            config.get_mild_penalty_end_hour(),
+        )
 
         # Create and run GUI
         gui = ScoreDisplay(score_tracker, window_monitor, config)

@@ -29,6 +29,9 @@ class Config:
         self.always_on_top = False
         self.hide_on_mouse_proximity = False
         self.proximity_distance = 50
+        self.mild_penalty_mode = False
+        self.mild_penalty_start_hour = 22
+        self.mild_penalty_end_hour = 23
         self._last_modified = None
         self.load_config()
 
@@ -64,6 +67,23 @@ class Config:
                     f"Invalid 'proximity_distance' value: {proximity_distance!r}. Must be a non-negative integer."
                 )
 
+            # Load mild_penalty_mode setting (whether to apply mild penalty during specified hours)
+            mild_penalty_mode = config_data.get("mild_penalty_mode", False)
+
+            # Load mild_penalty_start_hour setting (start hour for mild penalty, default: 22)
+            mild_penalty_start_hour = config_data.get("mild_penalty_start_hour", 22)
+            if not isinstance(mild_penalty_start_hour, int) or not (0 <= mild_penalty_start_hour <= 23):
+                raise ValueError(
+                    f"Invalid 'mild_penalty_start_hour' value: {mild_penalty_start_hour!r}. Must be an integer between 0 and 23."
+                )
+
+            # Load mild_penalty_end_hour setting (end hour for mild penalty, default: 23)
+            mild_penalty_end_hour = config_data.get("mild_penalty_end_hour", 23)
+            if not isinstance(mild_penalty_end_hour, int) or not (0 <= mild_penalty_end_hour <= 23):
+                raise ValueError(
+                    f"Invalid 'mild_penalty_end_hour' value: {mild_penalty_end_hour!r}. Must be an integer between 0 and 23."
+                )
+
             # Load window patterns with their score values
             window_patterns = []
             for pattern in config_data.get("window_patterns", []):
@@ -80,6 +100,9 @@ class Config:
             self.always_on_top = always_on_top
             self.hide_on_mouse_proximity = hide_on_mouse_proximity
             self.proximity_distance = proximity_distance
+            self.mild_penalty_mode = mild_penalty_mode
+            self.mild_penalty_start_hour = mild_penalty_start_hour
+            self.mild_penalty_end_hour = mild_penalty_end_hour
             self.window_patterns = window_patterns
 
             # Update last modified timestamp after successful load
@@ -165,3 +188,27 @@ class Config:
             int: Distance in pixels to trigger proximity behavior
         """
         return self.proximity_distance
+
+    def get_mild_penalty_mode(self):
+        """Get mild_penalty_mode setting.
+
+        Returns:
+            bool: True if mild penalty mode is enabled, False otherwise
+        """
+        return self.mild_penalty_mode
+
+    def get_mild_penalty_start_hour(self):
+        """Get mild_penalty_start_hour setting.
+
+        Returns:
+            int: Start hour for mild penalty mode (0-23)
+        """
+        return self.mild_penalty_start_hour
+
+    def get_mild_penalty_end_hour(self):
+        """Get mild_penalty_end_hour setting.
+
+        Returns:
+            int: End hour for mild penalty mode (0-23)
+        """
+        return self.mild_penalty_end_hour

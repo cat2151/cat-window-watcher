@@ -445,5 +445,259 @@ class TestConfigUpdate(unittest.TestCase):
         self.assertEqual(tracker.get_score(), 13)  # 15 + (-2)
 
 
+class TestMildPenaltyMode(unittest.TestCase):
+    """Test cases for mild penalty mode functionality."""
+
+    def setUp(self):
+        """Set up test fixtures."""
+        self.patterns = [
+            {"regex": "github", "score": 10, "description": "GitHub"},
+            {"regex": "twitter|x\\.com", "score": -5, "description": "Twitter/X"},
+            {"regex": "youtube", "score": -7, "description": "YouTube"},
+        ]
+
+    def test_mild_penalty_mode_disabled(self):
+        """Test that mild penalty mode does not affect scores when disabled."""
+        tracker = ScoreTracker(
+            self.patterns,
+            default_score=-1,
+            mild_penalty_mode=False,
+            mild_penalty_start_hour=22,
+            mild_penalty_end_hour=23,
+        )
+
+        # Negative scores should apply normally
+        tracker.update("Twitter Feed")
+        self.assertEqual(tracker.get_score(), -5)
+
+        tracker.update("YouTube Video")
+        self.assertEqual(tracker.get_score(), -12)  # -5 + (-7)
+
+    def test_mild_penalty_mode_enabled_during_hours(self):
+        """Test that mild penalty mode limits negative scores to -1 during specified hours."""
+        from datetime import datetime
+        from unittest.mock import patch
+
+        tracker = ScoreTracker(
+            self.patterns,
+            default_score=-1,
+            mild_penalty_mode=True,
+            mild_penalty_start_hour=22,
+            mild_penalty_end_hour=23,
+        )
+
+        # Mock datetime to return hour 22 (within mild penalty hours)
+        with patch("src.score_tracker.datetime") as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 1, 22, 30)  # 22:30
+
+            # Negative scores should be limited to -1
+            tracker.update("Twitter Feed")
+            self.assertEqual(tracker.get_score(), -1)
+
+            tracker.update("YouTube Video")
+            self.assertEqual(tracker.get_score(), -2)  # -1 + (-1)
+
+            # Positive scores should not be affected
+            tracker.update("GitHub")
+            self.assertEqual(tracker.get_score(), 8)  # -2 + 10
+
+    def test_mild_penalty_mode_outside_hours(self):
+        """Test that mild penalty mode does not affect scores outside specified hours."""
+        from datetime import datetime
+        from unittest.mock import patch
+
+        tracker = ScoreTracker(
+            self.patterns,
+            default_score=-1,
+            mild_penalty_mode=True,
+            mild_penalty_start_hour=22,
+            mild_penalty_end_hour=23,
+        )
+
+        # Mock datetime to return hour 10 (outside mild penalty hours)
+        with patch("src.score_tracker.datetime") as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 0)  # 10:00
+
+            # Negative scores should apply normally
+            tracker.update("Twitter Feed")
+            self.assertEqual(tracker.get_score(), -5)
+
+            tracker.update("YouTube Video")
+            self.assertEqual(tracker.get_score(), -12)  # -5 + (-7)
+
+    def test_mild_penalty_mode_with_default_score(self):
+        """Test that mild penalty mode applies to default score during specified hours."""
+        from datetime import datetime
+        from unittest.mock import patch
+
+        tracker = ScoreTracker(
+            self.patterns,
+            default_score=-3,
+            mild_penalty_mode=True,
+            mild_penalty_start_hour=22,
+            mild_penalty_end_hour=23,
+        )
+
+        # Mock datetime to return hour 22
+        with patch("src.score_tracker.datetime") as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 1, 22, 0)  # 22:00
+
+            # Default score should be limited to -1
+            tracker.update("Random Window")
+            self.assertEqual(tracker.get_score(), -1)
+
+            tracker.update("Another Random Window")
+            self.assertEqual(tracker.get_score(), -2)  # -1 + (-1)
+
+    def test_mild_penalty_mode_time_range_boundaries(self):
+        """Test mild penalty mode at time range boundaries."""
+        from datetime import datetime
+        from unittest.mock import patch
+
+        tracker = ScoreTracker(
+            self.patterns,
+            default_score=-1,
+            mild_penalty_mode=True,
+            mild_penalty_start_hour=22,
+            mild_penalty_end_hour=23,
+        )
+
+        # Test at start hour (22:00) - should apply mild penalty
+        with patch("src.score_tracker.datetime") as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 1, 22, 0)
+            tracker.reset_score()
+            tracker.update("Twitter Feed")
+            self.assertEqual(tracker.get_score(), -1)
+
+        # Test at end hour (23:59) - should apply mild penalty
+        with patch("src.score_tracker.datetime") as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 1, 23, 59)
+            tracker.reset_score()
+            tracker.update("Twitter Feed")
+            self.assertEqual(tracker.get_score(), -1)
+
+        # Test just before start hour (21:59) - should not apply mild penalty
+        with patch("src.score_tracker.datetime") as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 1, 21, 59)
+            tracker.reset_score()
+            tracker.update("Twitter Feed")
+            self.assertEqual(tracker.get_score(), -5)
+
+        # Test just after end hour (00:00 next day) - should not apply mild penalty
+        with patch("src.score_tracker.datetime") as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 2, 0, 0)
+            tracker.reset_score()
+            tracker.update("Twitter Feed")
+            self.assertEqual(tracker.get_score(), -5)
+
+    def test_mild_penalty_mode_wrapped_time_range(self):
+        """Test mild penalty mode with time range that wraps around midnight."""
+        from datetime import datetime
+        from unittest.mock import patch
+
+        # Time range: 23:00 - 01:00 (wraps around midnight)
+        tracker = ScoreTracker(
+            self.patterns,
+            default_score=-1,
+            mild_penalty_mode=True,
+            mild_penalty_start_hour=23,
+            mild_penalty_end_hour=1,
+        )
+
+        # Test at 23:30 - should apply mild penalty
+        with patch("src.score_tracker.datetime") as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 1, 23, 30)
+            tracker.reset_score()
+            tracker.update("Twitter Feed")
+            self.assertEqual(tracker.get_score(), -1)
+
+        # Test at 00:30 - should apply mild penalty
+        with patch("src.score_tracker.datetime") as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 2, 0, 30)
+            tracker.reset_score()
+            tracker.update("Twitter Feed")
+            self.assertEqual(tracker.get_score(), -1)
+
+        # Test at 01:00 - should apply mild penalty
+        with patch("src.score_tracker.datetime") as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 2, 1, 0)
+            tracker.reset_score()
+            tracker.update("Twitter Feed")
+            self.assertEqual(tracker.get_score(), -1)
+
+        # Test at 02:00 - should not apply mild penalty
+        with patch("src.score_tracker.datetime") as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 2, 2, 0)
+            tracker.reset_score()
+            tracker.update("Twitter Feed")
+            self.assertEqual(tracker.get_score(), -5)
+
+        # Test at 22:00 - should not apply mild penalty
+        with patch("src.score_tracker.datetime") as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 1, 22, 0)
+            tracker.reset_score()
+            tracker.update("Twitter Feed")
+            self.assertEqual(tracker.get_score(), -5)
+
+    def test_mild_penalty_mode_update_config(self):
+        """Test that update_config changes mild penalty mode settings."""
+        tracker = ScoreTracker(
+            self.patterns,
+            default_score=-1,
+            mild_penalty_mode=False,
+            mild_penalty_start_hour=22,
+            mild_penalty_end_hour=23,
+        )
+
+        from datetime import datetime
+        from unittest.mock import patch
+
+        # Mock datetime to return hour 22
+        with patch("src.score_tracker.datetime") as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 1, 22, 30)
+
+            # Initially, mild penalty mode is disabled
+            tracker.update("Twitter Feed")
+            self.assertEqual(tracker.get_score(), -5)
+
+            # Update config to enable mild penalty mode
+            tracker.update_config(
+                self.patterns,
+                default_score=-1,
+                mild_penalty_mode=True,
+                mild_penalty_start_hour=22,
+                mild_penalty_end_hour=23,
+            )
+
+            # Now mild penalty should apply
+            tracker.update("YouTube Video")
+            self.assertEqual(tracker.get_score(), -6)  # -5 + (-1)
+
+    def test_mild_penalty_mode_does_not_affect_positive_scores(self):
+        """Test that mild penalty mode only affects negative scores."""
+        from datetime import datetime
+        from unittest.mock import patch
+
+        tracker = ScoreTracker(
+            self.patterns,
+            default_score=5,
+            mild_penalty_mode=True,
+            mild_penalty_start_hour=22,
+            mild_penalty_end_hour=23,
+        )
+
+        # Mock datetime to return hour 22
+        with patch("src.score_tracker.datetime") as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 1, 22, 30)
+
+            # Positive scores should not be affected
+            tracker.update("GitHub")
+            self.assertEqual(tracker.get_score(), 10)
+
+            # Positive default score should not be affected
+            tracker.update("Random Window")
+            self.assertEqual(tracker.get_score(), 15)  # 10 + 5
+
+
 if __name__ == "__main__":
     unittest.main()

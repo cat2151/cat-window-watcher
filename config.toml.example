@@ -7,6 +7,20 @@
 # Set to -1 (default) to easily spot misconfigurations, or 0 to disable
 default_score = -1
 
+# Mild penalty mode - limit negative scores to -1 during specified hours
+# This is a provisional implementation for testing purposes
+# Set to true to enable, false to disable (default: false)
+mild_penalty_mode = false
+
+# Start hour for mild penalty mode (0-23, default: 22)
+# When mild_penalty_mode is enabled, negative scores will be limited to -1
+# during the time range from mild_penalty_start_hour to mild_penalty_end_hour
+mild_penalty_start_hour = 22
+
+# End hour for mild penalty mode (0-23, default: 23)
+# The time range is inclusive of both start and end hours
+mild_penalty_end_hour = 23
+
 # Always on top mode - keep the window on top of all other windows
 # Set to true to enable, false to disable (default: false)
 always_on_top = false

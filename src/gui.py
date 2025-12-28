@@ -120,7 +120,13 @@ class ScoreDisplay:
         # Check if config file has been modified and reload if necessary
         if self.config.reload_if_modified():
             # Update score tracker with new configuration
-            self.score_tracker.update_config(self.config.get_window_patterns(), self.config.get_default_score())
+            self.score_tracker.update_config(
+                self.config.get_window_patterns(),
+                self.config.get_default_score(),
+                self.config.get_mild_penalty_mode(),
+                self.config.get_mild_penalty_start_hour(),
+                self.config.get_mild_penalty_end_hour(),
+            )
 
             # Update always_on_top setting if it changed
             self._apply_always_on_top()
