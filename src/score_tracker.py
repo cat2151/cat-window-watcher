@@ -20,6 +20,16 @@ class ScoreTracker:
         self.last_window_title = ""
         self.current_match = None
 
+    def update_config(self, window_patterns, default_score):
+        """Update configuration patterns and default score.
+
+        Args:
+            window_patterns: List of pattern dictionaries with regex, score, and description
+            default_score: Score to apply when no pattern matches
+        """
+        self.window_patterns = window_patterns
+        self.default_score = default_score
+
     def update(self, window_title):
         """Update score based on current window title.
 

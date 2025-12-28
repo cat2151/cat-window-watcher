@@ -50,7 +50,7 @@ def main():
         score_tracker = ScoreTracker(config.get_window_patterns(), config.get_default_score())
 
         # Create and run GUI
-        gui = ScoreDisplay(score_tracker, window_monitor)
+        gui = ScoreDisplay(score_tracker, window_monitor, config)
         gui.run()
 
     except Exception as e:

@@ -26,26 +26,31 @@ class Config:
         self.config_path = Path(config_path)
         self.window_patterns = []
         self.default_score = -1
+        self._last_modified = None
         self.load_config()
 
-    def load_config(self):
+    def load_config(self, exit_on_error=True):
         """Load configuration from TOML file.
+
+        Args:
+            exit_on_error: If True, exit on error. If False, raise exception.
 
         Raises:
             FileNotFoundError: If config file doesn't exist
             tomllib.TOMLDecodeError: If config file is invalid
+            Exception: If other errors occur during loading
         """
         try:
             with open(self.config_path, "rb") as f:
                 config_data = tomllib.load(f)
 
             # Load default_score (score applied when no pattern matches)
-            self.default_score = config_data.get("default_score", -1)
+            default_score = config_data.get("default_score", -1)
 
             # Load window patterns with their score values
-            self.window_patterns = []
+            window_patterns = []
             for pattern in config_data.get("window_patterns", []):
-                self.window_patterns.append(
+                window_patterns.append(
                     {
                         "regex": pattern.get("regex", ""),
                         "score": pattern.get("score", 0),
@@ -53,12 +58,53 @@ class Config:
                     }
                 )
 
+            # Only update instance attributes after successful parsing
+            self.default_score = default_score
+            self.window_patterns = window_patterns
+
+            # Update last modified timestamp after successful load
+            self._last_modified = self.config_path.stat().st_mtime
+
         except FileNotFoundError:
-            print(f"Error: Configuration file '{self.config_path}' not found.")
-            sys.exit(1)
+            if exit_on_error:
+                print(f"Error: Configuration file '{self.config_path}' not found.")
+                sys.exit(1)
+            else:
+                raise
         except Exception as e:
-            print(f"Error: Failed to load configuration: {e}")
-            sys.exit(1)
+            if exit_on_error:
+                print(f"Error: Failed to load configuration: {e}")
+                sys.exit(1)
+            else:
+                raise
+
+    def is_modified(self):
+        """Check if configuration file has been modified.
+
+        Returns:
+            bool: True if file has been modified since last load, False otherwise
+        """
+        try:
+            current_mtime = self.config_path.stat().st_mtime
+            return current_mtime != self._last_modified
+        except Exception:
+            return False
+
+    def reload_if_modified(self):
+        """Reload configuration if the file has been modified.
+
+        Returns:
+            bool: True if configuration was reloaded, False otherwise
+        """
+        if self.is_modified():
+            try:
+                self.load_config(exit_on_error=False)
+                print(f"Configuration reloaded from '{self.config_path}'")
+                return True
+            except Exception as e:
+                print(f"Warning: Failed to reload configuration: {e}")
+                return False
+        return False
 
     def get_window_patterns(self):
         """Get list of window patterns.
