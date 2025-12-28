@@ -16,6 +16,7 @@ class ScoreTracker:
         mild_penalty_mode=False,
         mild_penalty_start_hour=22,
         mild_penalty_end_hour=23,
+        reset_score_every_30_minutes=False,
     ):
         """Initialize score tracker.
 
@@ -26,6 +27,7 @@ class ScoreTracker:
             mild_penalty_mode: Whether to apply mild penalty during specified hours (default: False)
             mild_penalty_start_hour: Start hour for mild penalty mode (default: 22)
             mild_penalty_end_hour: End hour for mild penalty mode (default: 23)
+            reset_score_every_30_minutes: Whether to reset score every 30 minutes (default: False)
         """
         self.window_patterns = window_patterns
         self.default_score = default_score
@@ -33,9 +35,11 @@ class ScoreTracker:
         self.mild_penalty_mode = mild_penalty_mode
         self.mild_penalty_start_hour = mild_penalty_start_hour
         self.mild_penalty_end_hour = mild_penalty_end_hour
+        self.reset_score_every_30_minutes = reset_score_every_30_minutes
         self.score = 0
         self.last_window_title = ""
         self.current_match = None
+        self._last_reset_time_slot = self._get_current_time_slot() if reset_score_every_30_minutes else None
 
     def update_config(
         self,
@@ -45,6 +49,7 @@ class ScoreTracker:
         mild_penalty_mode=False,
         mild_penalty_start_hour=22,
         mild_penalty_end_hour=23,
+        reset_score_every_30_minutes=False,
     ):
         """Update configuration patterns and settings.
 
@@ -55,6 +60,7 @@ class ScoreTracker:
             mild_penalty_mode: Whether to apply mild penalty during specified hours
             mild_penalty_start_hour: Start hour for mild penalty mode
             mild_penalty_end_hour: End hour for mild penalty mode
+            reset_score_every_30_minutes: Whether to reset score every 30 minutes
         """
         self.window_patterns = window_patterns
         self.default_score = default_score
@@ -62,6 +68,11 @@ class ScoreTracker:
         self.mild_penalty_mode = mild_penalty_mode
         self.mild_penalty_start_hour = mild_penalty_start_hour
         self.mild_penalty_end_hour = mild_penalty_end_hour
+        self.reset_score_every_30_minutes = reset_score_every_30_minutes
+
+        # Initialize last reset time slot if the feature is newly enabled
+        if reset_score_every_30_minutes and self._last_reset_time_slot is None:
+            self._last_reset_time_slot = self._get_current_time_slot()
 
     def _is_in_mild_penalty_hours(self):
         """Check if current time is within mild penalty hours.
@@ -95,6 +106,29 @@ class ScoreTracker:
             return -1
         return score_delta
 
+    def _get_current_time_slot(self):
+        """Get the current 30-minute time slot as a tuple (hour, half).
+
+        Returns:
+            tuple: (hour, half) where hour is 0-23 and half is 0 (for :00-:29) or 1 (for :30-:59)
+        """
+        now = datetime.now()
+        hour = now.hour
+        half = 0 if now.minute < 30 else 1
+        return (hour, half)
+
+    def _check_and_reset_if_needed(self):
+        """Check if we've entered a new 30-minute time slot and reset score if needed."""
+        if not self.reset_score_every_30_minutes:
+            return
+
+        current_time_slot = self._get_current_time_slot()
+
+        # If time slot has changed, reset the score
+        if self._last_reset_time_slot != current_time_slot:
+            self.score = 0
+            self._last_reset_time_slot = current_time_slot
+
     def update(self, window_title):
         """Update score based on current window title.
 
@@ -105,6 +139,9 @@ class ScoreTracker:
             tuple: (score_changed, current_match) where score_changed is bool
                    and current_match is the matched pattern dict or None
         """
+        # Check if we need to reset score due to 30-minute time slot change
+        self._check_and_reset_if_needed()
+
         score_changed = False
         self.current_match = None
 

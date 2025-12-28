@@ -970,5 +970,122 @@ description = "GitHub"
         self.assertEqual(config.get_mild_penalty_end_hour(), 1)
 
 
+class TestResetScoreEvery30MinutesConfig(unittest.TestCase):
+    """Test cases for reset_score_every_30_minutes configuration."""
+
+    def setUp(self):
+        """Set up test fixtures."""
+        self.temp_dir = tempfile.mkdtemp()
+        self.config_path = Path(self.temp_dir) / "test_config.toml"
+
+    def test_reset_score_every_30_minutes_default(self):
+        """Test reset_score_every_30_minutes defaults to False when not specified."""
+        config_content = """
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertFalse(config.get_reset_score_every_30_minutes())
+
+    def test_reset_score_every_30_minutes_true(self):
+        """Test reset_score_every_30_minutes set to true."""
+        config_content = """
+reset_score_every_30_minutes = true
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertTrue(config.get_reset_score_every_30_minutes())
+
+    def test_reset_score_every_30_minutes_false(self):
+        """Test reset_score_every_30_minutes explicitly set to false."""
+        config_content = """
+reset_score_every_30_minutes = false
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertFalse(config.get_reset_score_every_30_minutes())
+
+    def test_reset_score_every_30_minutes_invalid_integer(self):
+        """Test reset_score_every_30_minutes with integer value raises SystemExit."""
+        config_content = """
+reset_score_every_30_minutes = 1
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        with self.assertRaises(SystemExit):
+            Config(str(self.config_path))
+
+    def test_reset_score_every_30_minutes_invalid_string(self):
+        """Test reset_score_every_30_minutes with string value raises SystemExit."""
+        config_content = """
+reset_score_every_30_minutes = "yes"
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        with self.assertRaises(SystemExit):
+            Config(str(self.config_path))
+
+    def test_reset_score_every_30_minutes_reloaded_on_config_change(self):
+        """Test that reset_score_every_30_minutes is reloaded when config file changes."""
+        config_content = """
+reset_score_every_30_minutes = false
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+        config = Config(str(self.config_path))
+
+        # Verify initial config
+        self.assertFalse(config.get_reset_score_every_30_minutes())
+
+        # Modify the file to change reset_score_every_30_minutes
+        time.sleep(0.01)  # Ensure timestamp changes
+        new_content = """
+reset_score_every_30_minutes = true
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(new_content)
+
+        # Reload configuration
+        reloaded = config.reload_if_modified()
+        self.assertTrue(reloaded)
+
+        # Verify reset_score_every_30_minutes was updated
+        self.assertTrue(config.get_reset_score_every_30_minutes())
+
+
 if __name__ == "__main__":
     unittest.main()

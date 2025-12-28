@@ -35,6 +35,7 @@ class Config:
         self.mild_penalty_end_hour = 23
         self.score_up_color = "#ffffff"
         self.score_down_color = "#ff0000"
+        self.reset_score_every_30_minutes = False
         self._last_modified = None
         self.load_config()
 
@@ -131,6 +132,13 @@ class Config:
             self._validate_hex_color(score_up_color, "score_up_color")
             self._validate_hex_color(score_down_color, "score_down_color")
 
+            # Load reset_score_every_30_minutes setting (reset score at :00 and :30 of each hour)
+            reset_score_every_30_minutes = config_data.get("reset_score_every_30_minutes", False)
+            if not isinstance(reset_score_every_30_minutes, bool):
+                raise ValueError(
+                    f"Invalid 'reset_score_every_30_minutes' value: {reset_score_every_30_minutes!r}. Must be a boolean."
+                )
+
             # Load window patterns with their score values
             window_patterns = []
             for pattern in config_data.get("window_patterns", []):
@@ -153,6 +161,7 @@ class Config:
             self.mild_penalty_end_hour = mild_penalty_end_hour
             self.score_up_color = score_up_color
             self.score_down_color = score_down_color
+            self.reset_score_every_30_minutes = reset_score_every_30_minutes
             self.window_patterns = window_patterns
 
             # Update last modified timestamp after successful load
@@ -286,3 +295,11 @@ class Config:
             str: Hex color string for score decrease (e.g., '#ff0000')
         """
         return self.score_down_color
+
+    def get_reset_score_every_30_minutes(self):
+        """Get reset_score_every_30_minutes setting.
+
+        Returns:
+            bool: True if score should reset every 30 minutes, False otherwise
+        """
+        return self.reset_score_every_30_minutes

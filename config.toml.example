@@ -48,6 +48,12 @@ proximity_distance = 50
 score_up_color = "#ffffff"
 score_down_color = "#ff0000"
 
+# Reset score every 30 minutes mode - similar to Pomodoro Technique
+# When enabled, the score automatically resets to 0 at the top (:00) and bottom (:30) of each hour
+# This helps you focus on "just the next 30 minutes" making it easier to concentrate
+# Set to true to enable, false to disable (default: false)
+reset_score_every_30_minutes = false
+
 # Window patterns define regex patterns to match window titles
 # and the score change when that window becomes active
 
