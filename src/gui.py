@@ -30,6 +30,10 @@ class ScoreDisplay:
         # Track previous score for color changes
         self._previous_score = score_tracker.get_score()
 
+        # Track fade state for flow mode
+        self._current_transparency = 1.0  # 1.0 = fully opaque, 0.0 = fully transparent
+        self._fade_active = False
+
         # Create main window
         self.root = tk.Tk()
         self.root.title("Cat Window Watcher - Cat is watching you -")
@@ -119,6 +123,44 @@ class ScoreDisplay:
             # If mouse is away, set topmost (bring to front)
             self.root.attributes("-topmost", not mouse_in_proximity)
 
+    def _update_window_transparency(self):
+        """Update window transparency based on flow mode state."""
+        if not self.config.get_fade_window_on_flow_mode_enabled():
+            # Mode is disabled, ensure window is fully opaque
+            if self._current_transparency < 1.0:
+                self._current_transparency = 1.0
+                self.root.attributes("-alpha", self._current_transparency)
+            self._fade_active = False
+            return
+
+        # Check if we're in flow state and should start fading
+        flow_duration = self.score_tracker.get_flow_state_duration()
+        flow_delay = self.config.get_flow_mode_delay_seconds()
+
+        if self.score_tracker.is_in_flow_state() and flow_duration >= flow_delay:
+            # We should be fading
+            if not self._fade_active:
+                # Just started fading
+                self._fade_active = True
+
+            # Calculate fade amount per update (update_interval is in ms, fade rate is per second)
+            fade_per_update = (
+                self.config.get_flow_mode_fade_rate_percent_per_second() / 100.0 * (self.update_interval / 1000.0)
+            )
+
+            # Apply fade (decrease transparency)
+            new_transparency = max(0.0, self._current_transparency - fade_per_update)
+
+            if new_transparency != self._current_transparency:
+                self._current_transparency = new_transparency
+                self.root.attributes("-alpha", self._current_transparency)
+        else:
+            # Not in flow state or haven't reached delay yet, reset transparency
+            if self._current_transparency < 1.0 or self._fade_active:
+                self._current_transparency = 1.0
+                self.root.attributes("-alpha", self._current_transparency)
+                self._fade_active = False
+
     def update_display(self):
         """Update the display with current score and window info."""
         # Check if config file has been modified and reload if necessary
@@ -139,6 +181,9 @@ class ScoreDisplay:
 
         # Update proximity-based topmost behavior
         self._update_proximity_based_topmost()
+
+        # Update window transparency based on flow mode
+        self._update_window_transparency()
 
         # Get current window title
         window_title = self.window_monitor.get_active_window_title()
