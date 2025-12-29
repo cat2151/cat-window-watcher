@@ -40,6 +40,8 @@ class ScoreTracker:
         self.last_window_title = ""
         self.current_match = None
         self._last_reset_time_slot = self._get_current_time_slot() if reset_score_every_30_minutes else None
+        self._in_score_up_state = False
+        self._score_up_state_start_time = None
 
     def update_config(
         self,
@@ -144,6 +146,7 @@ class ScoreTracker:
 
         score_changed = False
         self.current_match = None
+        previous_score = self.score
 
         # Update last window title
         self.last_window_title = window_title
@@ -168,7 +171,55 @@ class ScoreTracker:
             self.score += adjusted_default_score
             score_changed = True
 
+        # Update flow state tracking
+        self._update_flow_state(previous_score)
+
         return score_changed, self.current_match
+
+    def _update_flow_state(self, previous_score):
+        """Update flow state based on score changes.
+
+        Args:
+            previous_score: Score before the current update
+        """
+        from datetime import datetime
+
+        current_score = self.score
+        was_in_score_up = self._in_score_up_state
+
+        # Determine if we're currently in score-up state (score increased or stayed same)
+        if current_score >= previous_score:
+            # We're in score-up state
+            if not was_in_score_up:
+                # Transition from non-score-up to score-up
+                self._in_score_up_state = True
+                self._score_up_state_start_time = datetime.now()
+        else:
+            # Score decreased, not in score-up state
+            self._in_score_up_state = False
+            self._score_up_state_start_time = None
+
+    def get_flow_state_duration(self):
+        """Get duration in seconds that we've been in score-up state.
+
+        Returns:
+            float: Duration in seconds, or 0 if not in score-up state
+        """
+        from datetime import datetime
+
+        if not self._in_score_up_state or self._score_up_state_start_time is None:
+            return 0.0
+
+        duration = (datetime.now() - self._score_up_state_start_time).total_seconds()
+        return duration
+
+    def is_in_flow_state(self):
+        """Check if currently in score-up state.
+
+        Returns:
+            bool: True if in score-up state, False otherwise
+        """
+        return self._in_score_up_state
 
     def get_score(self):
         """Get current score.

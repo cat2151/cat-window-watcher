@@ -36,6 +36,9 @@ class Config:
         self.score_up_color = "#ffffff"
         self.score_down_color = "#ff0000"
         self.reset_score_every_30_minutes = False
+        self.fade_window_on_flow_mode_enabled = False
+        self.flow_mode_delay_seconds = 10
+        self.flow_mode_fade_rate_percent_per_second = 1
         self._last_modified = None
         self.load_config()
 
@@ -139,6 +142,31 @@ class Config:
                     f"Invalid 'reset_score_every_30_minutes' value: {reset_score_every_30_minutes!r}. Must be a boolean."
                 )
 
+            # Load fade_window_on_flow_mode_enabled setting (fade window transparency when in flow state)
+            fade_window_on_flow_mode_enabled = config_data.get("fade_window_on_flow_mode_enabled", False)
+            if not isinstance(fade_window_on_flow_mode_enabled, bool):
+                raise ValueError(
+                    f"Invalid 'fade_window_on_flow_mode_enabled' value: {fade_window_on_flow_mode_enabled!r}. Must be a boolean."
+                )
+
+            # Load flow_mode_delay_seconds setting (delay before starting fade in flow mode)
+            flow_mode_delay_seconds = config_data.get("flow_mode_delay_seconds", 10)
+            if not isinstance(flow_mode_delay_seconds, int) or flow_mode_delay_seconds < 0:
+                raise ValueError(
+                    f"Invalid 'flow_mode_delay_seconds' value: {flow_mode_delay_seconds!r}. Must be a non-negative integer."
+                )
+
+            # Load flow_mode_fade_rate_percent_per_second setting (fade rate in percent per second)
+            flow_mode_fade_rate_percent_per_second = config_data.get("flow_mode_fade_rate_percent_per_second", 1)
+            if (
+                not isinstance(flow_mode_fade_rate_percent_per_second, int)
+                or flow_mode_fade_rate_percent_per_second <= 0
+                or flow_mode_fade_rate_percent_per_second > 100
+            ):
+                raise ValueError(
+                    f"Invalid 'flow_mode_fade_rate_percent_per_second' value: {flow_mode_fade_rate_percent_per_second!r}. Must be an integer between 1 and 100."
+                )
+
             # Load window patterns with their score values
             window_patterns = []
             for pattern in config_data.get("window_patterns", []):
@@ -162,6 +190,9 @@ class Config:
             self.score_up_color = score_up_color
             self.score_down_color = score_down_color
             self.reset_score_every_30_minutes = reset_score_every_30_minutes
+            self.fade_window_on_flow_mode_enabled = fade_window_on_flow_mode_enabled
+            self.flow_mode_delay_seconds = flow_mode_delay_seconds
+            self.flow_mode_fade_rate_percent_per_second = flow_mode_fade_rate_percent_per_second
             self.window_patterns = window_patterns
 
             # Update last modified timestamp after successful load
@@ -303,3 +334,27 @@ class Config:
             bool: True if score should reset every 30 minutes, False otherwise
         """
         return self.reset_score_every_30_minutes
+
+    def get_fade_window_on_flow_mode_enabled(self):
+        """Get fade_window_on_flow_mode_enabled setting.
+
+        Returns:
+            bool: True if window should fade when in flow mode, False otherwise
+        """
+        return self.fade_window_on_flow_mode_enabled
+
+    def get_flow_mode_delay_seconds(self):
+        """Get flow_mode_delay_seconds setting.
+
+        Returns:
+            int: Delay in seconds before starting fade in flow mode
+        """
+        return self.flow_mode_delay_seconds
+
+    def get_flow_mode_fade_rate_percent_per_second(self):
+        """Get flow_mode_fade_rate_percent_per_second setting.
+
+        Returns:
+            int: Fade rate in percent per second (1-100)
+        """
+        return self.flow_mode_fade_rate_percent_per_second
