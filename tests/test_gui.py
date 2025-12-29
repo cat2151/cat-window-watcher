@@ -6,15 +6,28 @@ import unittest
 from pathlib import Path
 from unittest.mock import MagicMock
 
+# Try to import from src module
 try:
     from src.config import Config
     from src.score_tracker import ScoreTracker
+
+    try:
+        from src.gui import MAX_WINDOW_TITLE_LENGTH
+    except (ImportError, ModuleNotFoundError):
+        # If tkinter is not available, define the constant here
+        MAX_WINDOW_TITLE_LENGTH = 40
 except ImportError:
     import sys
 
     sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
     from config import Config
     from score_tracker import ScoreTracker
+
+    try:
+        from gui import MAX_WINDOW_TITLE_LENGTH
+    except (ImportError, ModuleNotFoundError):
+        # If tkinter is not available, define the constant here
+        MAX_WINDOW_TITLE_LENGTH = 40
 
 
 class MockScoreDisplay:
@@ -1187,17 +1200,20 @@ class MockScoreDisplayWithStatusLabel(MockScoreDisplay):
         else:
             # No match - always show window title to help users configure patterns
             # Show truncated window title
-            display_title = window_title[:40] + "..." if len(window_title) > 40 else window_title
+            display_title = (
+                window_title[:MAX_WINDOW_TITLE_LENGTH] + "..."
+                if len(window_title) > MAX_WINDOW_TITLE_LENGTH
+                else window_title
+            )
 
             # Check if default score was applied
             default_score = self.score_tracker.default_score
             if default_score != 0:
                 score_sign = "+" if default_score >= 0 else ""
+                score_text = f"({score_sign}{default_score})"
                 # Combine window title with default score information
-                status_text = f"No match: {display_title} ({score_sign}{default_score})"
-                self.status_label.config(
-                    text=status_text if display_title else f"No match ({score_sign}{default_score})"
-                )
+                status_text = f"No match: {display_title} {score_text}" if display_title else f"No match {score_text}"
+                self.status_label.config(text=status_text)
             else:
                 self.status_label.config(text=display_title if display_title else "Watching...")
 
