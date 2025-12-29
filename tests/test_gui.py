@@ -1325,12 +1325,12 @@ description = "GitHub"
 """
         gui = self._create_mock_gui(config_content)
 
-        # Test with long window title (over 40 characters)
+        # Test with long window title (over MAX_WINDOW_TITLE_LENGTH characters)
         long_title = "This is a very long window title that exceeds forty characters"
         gui.update_display_status_logic(long_title)
 
         # Verify status label shows truncated window title with ellipsis
-        expected_text = f"No match: {long_title[:40]}... (-1)"
+        expected_text = f"No match: {long_title[:MAX_WINDOW_TITLE_LENGTH]}... (-1)"
         gui.status_label.config.assert_called_with(text=expected_text)
 
     def test_status_label_truncates_long_window_title_without_default_score(self):
@@ -1345,12 +1345,12 @@ description = "GitHub"
 """
         gui = self._create_mock_gui(config_content)
 
-        # Test with long window title (over 40 characters)
+        # Test with long window title (over MAX_WINDOW_TITLE_LENGTH characters)
         long_title = "This is a very long window title that exceeds forty characters"
         gui.update_display_status_logic(long_title)
 
         # Verify status label shows truncated window title with ellipsis
-        expected_text = f"{long_title[:40]}..."
+        expected_text = f"{long_title[:MAX_WINDOW_TITLE_LENGTH]}..."
         gui.status_label.config.assert_called_with(text=expected_text)
 
     def test_status_label_shows_watching_for_empty_window_title_without_default_score(self):
@@ -1432,8 +1432,8 @@ description = "GitHub"
         gui.update_display_status_logic("GitHub - Issues")
         gui.status_label.config.assert_called_with(text="GitHub (+10)")
 
-    def test_status_label_shows_window_title_exactly_40_chars(self):
-        """Test that window title with exactly 40 characters is not truncated."""
+    def test_status_label_shows_window_title_exactly_max_length(self):
+        """Test that window title with exactly MAX_WINDOW_TITLE_LENGTH characters is not truncated."""
         config_content = """
 default_score = -1
 
@@ -1444,12 +1444,12 @@ description = "GitHub"
 """
         gui = self._create_mock_gui(config_content)
 
-        # Test with exactly 40 characters
-        title_40_chars = "a" * 40
-        gui.update_display_status_logic(title_40_chars)
+        # Test with exactly MAX_WINDOW_TITLE_LENGTH characters
+        title_max_chars = "a" * MAX_WINDOW_TITLE_LENGTH
+        gui.update_display_status_logic(title_max_chars)
 
         # Verify status label shows full window title without ellipsis
-        gui.status_label.config.assert_called_with(text=f"No match: {title_40_chars} (-1)")
+        gui.status_label.config.assert_called_with(text=f"No match: {title_max_chars} (-1)")
 
 
 if __name__ == "__main__":
