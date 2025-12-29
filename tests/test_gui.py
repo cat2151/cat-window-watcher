@@ -69,6 +69,30 @@ class MockScoreDisplay:
             # If mouse is away, set topmost (bring to front)
             self.root.attributes("-topmost", not mouse_in_proximity)
 
+    def _update_score_decreasing_topmost(self):
+        """Update window topmost state based on score decreasing.
+
+        This only applies when always_on_top_while_score_decreasing is enabled.
+        This takes priority over other topmost settings.
+
+        Returns:
+            bool: True if this behavior took control of topmost, False otherwise
+        """
+        # Only apply if the feature is enabled
+        if not self.config.get_always_on_top_while_score_decreasing():
+            return False  # Feature not enabled, no priority taken
+
+        # Check if score is currently decreasing
+        is_decreasing = self.score_tracker.is_score_decreasing()
+
+        if is_decreasing:
+            # Score is decreasing: force topmost to True
+            self.root.attributes("-topmost", True)
+            return True  # Priority taken, topmost is now True
+        else:
+            # Score is not decreasing: let other behaviors control topmost
+            return False  # No priority, let other behaviors take over
+
 
 class TestGuiProximity(unittest.TestCase):
     """Test cases for GUI proximity detection."""
@@ -331,6 +355,150 @@ description = "Test"
 
         result = gui._is_mouse_in_proximity()
         self.assertFalse(result)
+
+
+class TestGuiScoreDecreasingTopmost(unittest.TestCase):
+    """Test cases for GUI score decreasing topmost feature."""
+
+    def setUp(self):
+        """Set up test fixtures."""
+        self.temp_dir = tempfile.mkdtemp()
+        self.config_path = Path(self.temp_dir) / "test_config.toml"
+
+    def _create_mock_gui(self, config_content):
+        """Helper to create a GUI with mocked tkinter components."""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        patterns = config.get_window_patterns()
+        score_tracker = ScoreTracker(
+            patterns,
+            config.get_default_score(),
+            config.get_apply_default_score_mode(),
+        )
+
+        # Create GUI with MockScoreDisplay
+        gui = MockScoreDisplay(score_tracker, config)
+
+        return gui, gui.root
+
+    def test_score_decreasing_topmost_feature_disabled(self):
+        """Test that topmost is not updated when feature is disabled."""
+        config_content = """
+always_on_top_while_score_decreasing = false
+
+[[window_patterns]]
+regex = "test"
+score = -5
+description = "Test"
+"""
+        gui, mock_root = self._create_mock_gui(config_content)
+
+        # Simulate score decrease
+        gui.score_tracker.update("test")
+
+        # Call update
+        result = gui._update_score_decreasing_topmost()
+
+        # Should return False (no priority)
+        self.assertFalse(result)
+
+        # Should not call attributes
+        mock_root.attributes.assert_not_called()
+
+    def test_score_decreasing_topmost_score_decreasing(self):
+        """Test that topmost is set to True when score is decreasing."""
+        config_content = """
+always_on_top_while_score_decreasing = true
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+
+[[window_patterns]]
+regex = "twitter"
+score = -5
+description = "Twitter"
+"""
+        gui, mock_root = self._create_mock_gui(config_content)
+
+        # First increase score
+        gui.score_tracker.update("github")
+        self.assertEqual(gui.score_tracker.get_score(), 10)
+
+        # Then decrease score
+        gui.score_tracker.update("twitter")
+        self.assertEqual(gui.score_tracker.get_score(), 5)
+        self.assertTrue(gui.score_tracker.is_score_decreasing())
+
+        # Call update
+        result = gui._update_score_decreasing_topmost()
+
+        # Should return True (took priority)
+        self.assertTrue(result)
+
+        # Should set topmost to True
+        mock_root.attributes.assert_called_once_with("-topmost", True)
+
+    def test_score_decreasing_topmost_score_increasing(self):
+        """Test that topmost is not controlled when score is increasing."""
+        config_content = """
+always_on_top_while_score_decreasing = true
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        gui, mock_root = self._create_mock_gui(config_content)
+
+        # Increase score
+        gui.score_tracker.update("github")
+        self.assertEqual(gui.score_tracker.get_score(), 10)
+        self.assertFalse(gui.score_tracker.is_score_decreasing())
+
+        # Call update
+        result = gui._update_score_decreasing_topmost()
+
+        # Should return False (no priority)
+        self.assertFalse(result)
+
+        # Should not call attributes
+        mock_root.attributes.assert_not_called()
+
+    def test_score_decreasing_topmost_continuous_decrease(self):
+        """Test that topmost stays True during continuous score decrease."""
+        config_content = """
+always_on_top_while_score_decreasing = true
+
+[[window_patterns]]
+regex = "twitter"
+score = -5
+description = "Twitter"
+"""
+        gui, mock_root = self._create_mock_gui(config_content)
+
+        # First decrease
+        gui.score_tracker.update("twitter")
+        self.assertEqual(gui.score_tracker.get_score(), -5)
+        self.assertTrue(gui.score_tracker.is_score_decreasing())
+
+        result = gui._update_score_decreasing_topmost()
+        self.assertTrue(result)
+        mock_root.attributes.assert_called_with("-topmost", True)
+
+        # Reset mock
+        mock_root.reset_mock()
+
+        # Second decrease
+        gui.score_tracker.update("twitter")
+        self.assertEqual(gui.score_tracker.get_score(), -10)
+        self.assertTrue(gui.score_tracker.is_score_decreasing())
+
+        result = gui._update_score_decreasing_topmost()
+        self.assertTrue(result)
+        mock_root.attributes.assert_called_with("-topmost", True)
 
 
 class MockScoreDisplayWithColorTracking(MockScoreDisplay):
