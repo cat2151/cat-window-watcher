@@ -205,7 +205,8 @@ class ScoreTracker:
             # Score stayed the same: leave score-decreasing state
             self._in_score_decreasing_state = False
         # If current_score == previous_score, we intentionally keep the existing
-        # flow state as-is: maintain if already in flow, remain out otherwise.
+        # flow state as-is (maintain if already in flow, remain out otherwise),
+        # while also clearing any active score-decreasing state.
 
     def get_flow_state_duration(self):
         """Get duration in seconds that we've been in score-up state.

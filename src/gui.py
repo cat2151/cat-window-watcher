@@ -144,7 +144,9 @@ class ScoreDisplay:
             self.root.attributes("-topmost", True)
             return True  # Priority taken, topmost is now True
         else:
-            # Score is not decreasing: let other behaviors control topmost
+            # Score is not decreasing: restore configured topmost behavior
+            # This ensures we don't leave the window stuck in a forced topmost state
+            self._apply_always_on_top()
             return False  # No priority, let other behaviors take over
 
     def _update_window_transparency(self):

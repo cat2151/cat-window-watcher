@@ -24,7 +24,17 @@ class MockScoreDisplay:
         self.score_tracker = score_tracker
         self.config = config
         self._mouse_in_proximity = False
+        self._previous_always_on_top = None
         self.root = MagicMock()
+
+    def _apply_always_on_top(self):
+        """Apply always_on_top setting to the window."""
+        current_always_on_top = self.config.get_always_on_top()
+
+        # Only update if the setting has changed
+        if current_always_on_top != self._previous_always_on_top:
+            self.root.attributes("-topmost", current_always_on_top)
+            self._previous_always_on_top = current_always_on_top
 
     def _is_mouse_in_proximity(self):
         """Check if mouse is within proximity distance of the window."""
@@ -90,7 +100,9 @@ class MockScoreDisplay:
             self.root.attributes("-topmost", True)
             return True  # Priority taken, topmost is now True
         else:
-            # Score is not decreasing: let other behaviors control topmost
+            # Score is not decreasing: restore configured topmost behavior
+            # This ensures we don't leave the window stuck in a forced topmost state
+            self._apply_always_on_top()
             return False  # No priority, let other behaviors take over
 
 
@@ -442,8 +454,9 @@ description = "Twitter"
         mock_root.attributes.assert_called_once_with("-topmost", True)
 
     def test_score_decreasing_topmost_score_increasing(self):
-        """Test that topmost is not controlled when score is increasing."""
+        """Test that topmost is restored to configured value when score is not decreasing."""
         config_content = """
+always_on_top = false
 always_on_top_while_score_decreasing = true
 
 [[window_patterns]]
@@ -464,8 +477,8 @@ description = "GitHub"
         # Should return False (no priority)
         self.assertFalse(result)
 
-        # Should not call attributes
-        mock_root.attributes.assert_not_called()
+        # Should restore topmost to False (always_on_top = false)
+        mock_root.attributes.assert_called_once_with("-topmost", False)
 
     def test_score_decreasing_topmost_continuous_decrease(self):
         """Test that topmost stays True during continuous score decrease."""
@@ -498,6 +511,121 @@ description = "Twitter"
 
         result = gui._update_score_decreasing_topmost()
         self.assertTrue(result)
+        mock_root.attributes.assert_called_with("-topmost", True)
+
+    def test_score_decreasing_topmost_stops_decreasing_restores_state(self):
+        """Test that topmost is properly restored when score stops decreasing."""
+        config_content = """
+always_on_top = false
+always_on_top_while_score_decreasing = true
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+
+[[window_patterns]]
+regex = "twitter"
+score = -5
+description = "Twitter"
+"""
+        gui, mock_root = self._create_mock_gui(config_content)
+
+        # First increase score
+        gui.score_tracker.update("github")
+        self.assertEqual(gui.score_tracker.get_score(), 10)
+
+        # Then decrease score - should set topmost to True
+        gui.score_tracker.update("twitter")
+        self.assertEqual(gui.score_tracker.get_score(), 5)
+        self.assertTrue(gui.score_tracker.is_score_decreasing())
+
+        result = gui._update_score_decreasing_topmost()
+        self.assertTrue(result)
+        mock_root.attributes.assert_called_with("-topmost", True)
+
+        # Reset mock
+        mock_root.reset_mock()
+
+        # Now increase score again - should restore topmost to False (from always_on_top)
+        gui.score_tracker.update("github")
+        self.assertEqual(gui.score_tracker.get_score(), 15)
+        self.assertFalse(gui.score_tracker.is_score_decreasing())
+
+        result = gui._update_score_decreasing_topmost()
+        self.assertFalse(result)
+        # Should restore topmost to False (always_on_top = false)
+        mock_root.attributes.assert_called_with("-topmost", False)
+
+    def test_score_decreasing_topmost_stops_with_always_on_top_true(self):
+        """Test that topmost stays True when score stops decreasing and always_on_top is True."""
+        config_content = """
+always_on_top = true
+always_on_top_while_score_decreasing = true
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+
+[[window_patterns]]
+regex = "twitter"
+score = -5
+description = "Twitter"
+"""
+        gui, mock_root = self._create_mock_gui(config_content)
+
+        # First increase score
+        gui.score_tracker.update("github")
+        self.assertEqual(gui.score_tracker.get_score(), 10)
+
+        # Then decrease score - should set topmost to True
+        gui.score_tracker.update("twitter")
+        self.assertEqual(gui.score_tracker.get_score(), 5)
+        self.assertTrue(gui.score_tracker.is_score_decreasing())
+
+        result = gui._update_score_decreasing_topmost()
+        self.assertTrue(result)
+        mock_root.attributes.assert_called_with("-topmost", True)
+
+        # Reset mock
+        mock_root.reset_mock()
+
+        # Now score stays same - should maintain topmost to True (from always_on_top)
+        # Use apply_default_score_mode = false to avoid changing score
+        config_content_no_default = """
+always_on_top = true
+always_on_top_while_score_decreasing = true
+apply_default_score_mode = false
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+
+[[window_patterns]]
+regex = "twitter"
+score = -5
+description = "Twitter"
+"""
+        # Recreate GUI with updated config
+        self.config_path.write_text(config_content_no_default)
+        gui.config.load_config(exit_on_error=False)
+
+        # Update score tracker with new config
+        gui.score_tracker.update_config(
+            gui.config.get_window_patterns(),
+            gui.config.get_default_score(),
+            gui.config.get_apply_default_score_mode(),
+        )
+
+        gui.score_tracker.update("unknown")
+        self.assertEqual(gui.score_tracker.get_score(), 5)
+        self.assertFalse(gui.score_tracker.is_score_decreasing())
+
+        result = gui._update_score_decreasing_topmost()
+        self.assertFalse(result)
+        # Should keep topmost to True (always_on_top = true)
         mock_root.attributes.assert_called_with("-topmost", True)
 
 
