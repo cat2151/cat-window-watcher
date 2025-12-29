@@ -30,6 +30,7 @@ class Config:
         self.always_on_top = False
         self.hide_on_mouse_proximity = False
         self.proximity_distance = 50
+        self.always_on_top_while_score_decreasing = False
         self.mild_penalty_mode = False
         self.mild_penalty_start_hour = 22
         self.mild_penalty_end_hour = 23
@@ -108,6 +109,13 @@ class Config:
                     f"Invalid 'proximity_distance' value: {proximity_distance!r}. Must be a non-negative integer."
                 )
 
+            # Load always_on_top_while_score_decreasing setting
+            always_on_top_while_score_decreasing = config_data.get("always_on_top_while_score_decreasing", False)
+            if not isinstance(always_on_top_while_score_decreasing, bool):
+                raise ValueError(
+                    f"Invalid 'always_on_top_while_score_decreasing' value: {always_on_top_while_score_decreasing!r}. Must be a boolean."
+                )
+
             # Load mild_penalty_mode setting (whether to apply mild penalty during specified hours)
             mild_penalty_mode = config_data.get("mild_penalty_mode", False)
             if not isinstance(mild_penalty_mode, bool):
@@ -184,6 +192,7 @@ class Config:
             self.always_on_top = always_on_top
             self.hide_on_mouse_proximity = hide_on_mouse_proximity
             self.proximity_distance = proximity_distance
+            self.always_on_top_while_score_decreasing = always_on_top_while_score_decreasing
             self.mild_penalty_mode = mild_penalty_mode
             self.mild_penalty_start_hour = mild_penalty_start_hour
             self.mild_penalty_end_hour = mild_penalty_end_hour
@@ -286,6 +295,14 @@ class Config:
             int: Distance in pixels to trigger proximity behavior
         """
         return self.proximity_distance
+
+    def get_always_on_top_while_score_decreasing(self):
+        """Get always_on_top_while_score_decreasing setting.
+
+        Returns:
+            bool: True if window should stay on top while score decreases, False otherwise
+        """
+        return self.always_on_top_while_score_decreasing
 
     def get_mild_penalty_mode(self):
         """Get mild_penalty_mode setting.

@@ -1315,5 +1315,103 @@ class TestFlowStateTracking(unittest.TestCase):
         self.assertTrue(tracker.is_in_flow_state())
 
 
+class TestScoreDecreasingState(unittest.TestCase):
+    """Test cases for score decreasing state tracking."""
+
+    def test_initial_score_decreasing_state(self):
+        """Test score decreasing state is initially False."""
+        tracker = ScoreTracker([{"regex": "github", "score": 10, "description": "GitHub"}])
+        self.assertFalse(tracker.is_score_decreasing())
+
+    def test_score_decreasing_state_on_score_decrease(self):
+        """Test score decreasing state is True when score decreases."""
+        patterns = [
+            {"regex": "github", "score": 10, "description": "GitHub"},
+            {"regex": "twitter", "score": -5, "description": "Twitter"},
+        ]
+        tracker = ScoreTracker(patterns, default_score=0)
+
+        # Increase score first
+        tracker.update("GitHub")
+        self.assertEqual(tracker.get_score(), 10)
+        self.assertFalse(tracker.is_score_decreasing())
+
+        # Decrease score
+        tracker.update("Twitter")
+        self.assertEqual(tracker.get_score(), 5)
+        self.assertTrue(tracker.is_score_decreasing())
+
+    def test_score_decreasing_state_on_score_increase(self):
+        """Test score decreasing state is False when score increases."""
+        patterns = [
+            {"regex": "github", "score": 10, "description": "GitHub"},
+            {"regex": "twitter", "score": -5, "description": "Twitter"},
+        ]
+        tracker = ScoreTracker(patterns, default_score=0)
+
+        # Decrease score first
+        tracker.update("Twitter")
+        self.assertEqual(tracker.get_score(), -5)
+        self.assertTrue(tracker.is_score_decreasing())
+
+        # Increase score
+        tracker.update("GitHub")
+        self.assertEqual(tracker.get_score(), 5)
+        self.assertFalse(tracker.is_score_decreasing())
+
+    def test_score_decreasing_state_when_score_stays_same(self):
+        """Test score decreasing state is False when score stays the same."""
+        patterns = [
+            {"regex": "github", "score": 10, "description": "GitHub"},
+            {"regex": "twitter", "score": -5, "description": "Twitter"},
+        ]
+        tracker = ScoreTracker(patterns, default_score=0)
+
+        # Decrease score first
+        tracker.update("Twitter")
+        self.assertEqual(tracker.get_score(), -5)
+        self.assertTrue(tracker.is_score_decreasing())
+
+        # Score stays the same (no match, default_score=0)
+        tracker.update("Unknown Window")
+        self.assertEqual(tracker.get_score(), -5)
+        self.assertFalse(tracker.is_score_decreasing())
+
+    def test_score_decreasing_state_continuous_decrease(self):
+        """Test score decreasing state stays True during continuous decrease."""
+        patterns = [{"regex": "twitter", "score": -5, "description": "Twitter"}]
+        tracker = ScoreTracker(patterns, default_score=0)
+
+        # First decrease
+        tracker.update("Twitter")
+        self.assertEqual(tracker.get_score(), -5)
+        self.assertTrue(tracker.is_score_decreasing())
+
+        # Second decrease
+        tracker.update("Twitter")
+        self.assertEqual(tracker.get_score(), -10)
+        self.assertTrue(tracker.is_score_decreasing())
+
+        # Third decrease
+        tracker.update("Twitter")
+        self.assertEqual(tracker.get_score(), -15)
+        self.assertTrue(tracker.is_score_decreasing())
+
+    def test_score_decreasing_state_with_default_score_negative(self):
+        """Test score decreasing state with negative default_score."""
+        patterns = [{"regex": "github", "score": 10, "description": "GitHub"}]
+        tracker = ScoreTracker(patterns, default_score=-1)
+
+        # Start with GitHub (score = 10)
+        tracker.update("GitHub")
+        self.assertEqual(tracker.get_score(), 10)
+        self.assertFalse(tracker.is_score_decreasing())
+
+        # Unknown window applies default_score=-1, decreasing score
+        tracker.update("Unknown Window")
+        self.assertEqual(tracker.get_score(), 9)
+        self.assertTrue(tracker.is_score_decreasing())
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -42,6 +42,11 @@ hide_on_mouse_proximity = false
 # Default: 50 pixels
 proximity_distance = 50
 
+# Always on top while score decreasing mode - keep window on top while score continues to decrease
+# This helps you stay aware when your focus is drifting
+# Set to true to enable, false to disable (default: false)
+always_on_top_while_score_decreasing = false
+
 # Score color settings - font color for score display based on score change
 # score_up_color: Color when score increases or stays the same (default: "#ffffff" white)
 # score_down_color: Color when score decreases (default: "#ff0000" red)

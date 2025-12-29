@@ -662,6 +662,79 @@ description = "GitHub"
         self.assertTrue(config.get_hide_on_mouse_proximity())
         self.assertEqual(config.get_proximity_distance(), 75)
 
+    def test_always_on_top_while_score_decreasing_default(self):
+        """Test always_on_top_while_score_decreasing defaults to False when not specified."""
+        config_content = """
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertFalse(config.get_always_on_top_while_score_decreasing())
+
+    def test_always_on_top_while_score_decreasing_true(self):
+        """Test always_on_top_while_score_decreasing set to true."""
+        config_content = """
+always_on_top_while_score_decreasing = true
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertTrue(config.get_always_on_top_while_score_decreasing())
+
+    def test_always_on_top_while_score_decreasing_false(self):
+        """Test always_on_top_while_score_decreasing explicitly set to false."""
+        config_content = """
+always_on_top_while_score_decreasing = false
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertFalse(config.get_always_on_top_while_score_decreasing())
+
+    def test_always_on_top_while_score_decreasing_invalid_string(self):
+        """Test always_on_top_while_score_decreasing with string value raises SystemExit."""
+        config_content = """
+always_on_top_while_score_decreasing = "yes"
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        with self.assertRaises(SystemExit):
+            Config(str(self.config_path))
+
+    def test_always_on_top_while_score_decreasing_invalid_integer(self):
+        """Test always_on_top_while_score_decreasing with integer value raises SystemExit."""
+        config_content = """
+always_on_top_while_score_decreasing = 1
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        with self.assertRaises(SystemExit):
+            Config(str(self.config_path))
+
 
 class TestMildPenaltyModeConfig(unittest.TestCase):
     """Test cases for mild penalty mode configuration."""
