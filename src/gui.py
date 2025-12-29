@@ -131,6 +131,7 @@ class ScoreDisplay:
                 self.config.get_mild_penalty_mode(),
                 self.config.get_mild_penalty_start_hour(),
                 self.config.get_mild_penalty_end_hour(),
+                self.config.get_reset_score_every_30_minutes(),
             )
 
             # Update always_on_top setting if it changed

@@ -54,6 +54,7 @@ def main():
             config.get_mild_penalty_mode(),
             config.get_mild_penalty_start_hour(),
             config.get_mild_penalty_end_hour(),
+            config.get_reset_score_every_30_minutes(),
         )
 
         # Create and run GUI

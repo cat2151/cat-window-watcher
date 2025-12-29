@@ -115,6 +115,11 @@ description = "Twitter/X"
   - The window moves to the back when the mouse cursor enters within this distance from the window.
   - A larger value detects the mouse from further away.
   - A smaller value requires the mouse to be closer to the window to react.
+- **reset_score_every_30_minutes**: Whether to reset the score to 0 every 30 minutes (default: false)
+  - If set to `true`, the score automatically resets to 0 at :00 and :30 of every hour
+  - If set to `false`, the score continues to accumulate
+  - Similar to the Pomodoro Technique, this helps you focus on "just the next 30 minutes"
+  - Example: Even if your score is 100 at 10:29, it will reset to 0 at 10:30, starting a fresh 30-minute session
 - **regex**: A regular expression pattern to match against window titles (case-insensitive)
 - **score**: An integer value to add to the score when the pattern matches (can be negative)
 - **description**: A human-readable description displayed in the status area
