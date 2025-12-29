@@ -42,6 +42,7 @@ class ScoreTracker:
         self._last_reset_time_slot = self._get_current_time_slot() if reset_score_every_30_minutes else None
         self._in_score_up_state = False
         self._score_up_state_start_time = None
+        self._in_score_decreasing_state = False
 
     def update_config(
         self,
@@ -192,10 +193,17 @@ class ScoreTracker:
             if not was_in_score_up:
                 self._in_score_up_state = True
                 self._score_up_state_start_time = datetime.now()
+            # Score increased: leave score-decreasing state
+            self._in_score_decreasing_state = False
         elif current_score < previous_score:
             # Score decreased: leave flow state
             self._in_score_up_state = False
             self._score_up_state_start_time = None
+            # Score decreased: enter score-decreasing state
+            self._in_score_decreasing_state = True
+        else:
+            # Score stayed the same: leave score-decreasing state
+            self._in_score_decreasing_state = False
         # If current_score == previous_score, we intentionally keep the existing
         # flow state as-is: maintain if already in flow, remain out otherwise.
 
@@ -218,6 +226,14 @@ class ScoreTracker:
             bool: True if in score-up state, False otherwise
         """
         return self._in_score_up_state
+
+    def is_score_decreasing(self):
+        """Check if score is currently decreasing.
+
+        Returns:
+            bool: True if score is decreasing, False otherwise
+        """
+        return self._in_score_decreasing_state
 
     def get_score(self):
         """Get current score.

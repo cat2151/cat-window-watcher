@@ -123,6 +123,30 @@ class ScoreDisplay:
             # If mouse is away, set topmost (bring to front)
             self.root.attributes("-topmost", not mouse_in_proximity)
 
+    def _update_score_decreasing_topmost(self):
+        """Update window topmost state based on score decreasing.
+
+        This only applies when always_on_top_while_score_decreasing is enabled.
+        This takes priority over other topmost settings.
+
+        Returns:
+            bool: True if this behavior took control of topmost, False otherwise
+        """
+        # Only apply if the feature is enabled
+        if not self.config.get_always_on_top_while_score_decreasing():
+            return False  # Feature not enabled, no priority taken
+
+        # Check if score is currently decreasing
+        is_decreasing = self.score_tracker.is_score_decreasing()
+
+        if is_decreasing:
+            # Score is decreasing: force topmost to True
+            self.root.attributes("-topmost", True)
+            return True  # Priority taken, topmost is now True
+        else:
+            # Score is not decreasing: let other behaviors control topmost
+            return False  # No priority, let other behaviors take over
+
     def _update_window_transparency(self):
         """Update window transparency based on flow mode state."""
         if not self.config.get_fade_window_on_flow_mode_enabled():
@@ -179,17 +203,21 @@ class ScoreDisplay:
             # Update always_on_top setting if it changed
             self._apply_always_on_top()
 
-        # Update proximity-based topmost behavior
-        self._update_proximity_based_topmost()
-
-        # Update window transparency based on flow mode
-        self._update_window_transparency()
-
         # Get current window title
         window_title = self.window_monitor.get_active_window_title()
 
         # Update score
         score_changed, matched_pattern = self.score_tracker.update(window_title)
+
+        # Update score-decreasing-based topmost behavior (after score update)
+        # This has highest priority - if it takes control, skip other topmost updates
+        if not self._update_score_decreasing_topmost():
+            # Score decreasing didn't take priority, apply other topmost behaviors
+            # Update proximity-based topmost behavior
+            self._update_proximity_based_topmost()
+
+        # Update window transparency based on flow mode
+        self._update_window_transparency()
 
         # Update score label
         current_score = self.score_tracker.get_score()
