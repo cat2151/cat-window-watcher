@@ -115,6 +115,11 @@ description = "Twitter/X"
   - When the mouse cursor enters this distance from the window, the window moves to the back.
   - Increasing the value detects the mouse from a greater distance.
   - Decreasing the value makes it react only when the mouse is closer to the window.
+- **always_on_top_while_score_decreasing**: Keep window on top while score continues to decrease (default: false)
+  - If set to `true`, the window will automatically stay on top whenever your score is decreasing.
+  - If set to `false`, this feature is disabled.
+  - This helps you stay aware when your focus is drifting (e.g., browsing social media).
+  - This takes priority over other topmost settings when the score is decreasing.
 - **reset_score_every_30_minutes**: Whether to reset the score to 0 every 30 minutes (default: false)
   - If set to `true`, the score will automatically reset to 0 at 00 and 30 minutes past the hour.
   - If set to `false`, the score will continue to accumulate.
