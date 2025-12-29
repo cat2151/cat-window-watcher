@@ -576,5 +576,293 @@ description = "Twitter"
         self.assertEqual(color, "#ff0000")
 
 
+class MockScoreDisplayWithTransparency(MockScoreDisplay):
+    """Extended mock for testing window transparency updates."""
+
+    def __init__(self, score_tracker, config, update_interval=1000):
+        super().__init__(score_tracker, config)
+        self.update_interval = update_interval
+        self._current_transparency = 1.0
+        self._fade_active = False
+
+    def _update_window_transparency(self):
+        """Update window transparency based on flow mode state."""
+        if not self.config.get_fade_window_on_flow_mode_enabled():
+            # Mode is disabled, ensure window is fully opaque
+            if self._current_transparency < 1.0:
+                self._current_transparency = 1.0
+                self.root.attributes("-alpha", self._current_transparency)
+            self._fade_active = False
+            return
+
+        # Check if we're in flow state and should start fading
+        flow_duration = self.score_tracker.get_flow_state_duration()
+        flow_delay = self.config.get_flow_mode_delay_seconds()
+
+        if self.score_tracker.is_in_flow_state() and flow_duration >= flow_delay:
+            # We should be fading
+            if not self._fade_active:
+                # Just started fading
+                self._fade_active = True
+
+            # Calculate fade amount per update (update_interval is in ms, fade rate is per second)
+            fade_per_update = (
+                self.config.get_flow_mode_fade_rate_percent_per_second() / 100.0 * (self.update_interval / 1000.0)
+            )
+
+            # Apply fade (decrease transparency)
+            new_transparency = max(0.0, self._current_transparency - fade_per_update)
+
+            if new_transparency != self._current_transparency:
+                self._current_transparency = new_transparency
+                self.root.attributes("-alpha", self._current_transparency)
+        else:
+            # Not in flow state or haven't reached delay yet, reset transparency
+            if self._current_transparency < 1.0 or self._fade_active:
+                self._current_transparency = 1.0
+                self.root.attributes("-alpha", self._current_transparency)
+                self._fade_active = False
+
+
+class TestGuiTransparencyUpdate(unittest.TestCase):
+    """Test cases for GUI window transparency updates in flow mode."""
+
+    def setUp(self):
+        """Set up test fixtures."""
+        self.temp_dir = tempfile.mkdtemp()
+        self.config_path = Path(self.temp_dir) / "test_config.toml"
+
+    def tearDown(self):
+        """Clean up test fixtures."""
+        import shutil
+
+        shutil.rmtree(self.temp_dir, ignore_errors=True)
+
+    def _create_mock_gui(self, config_content):
+        """Create a mock GUI with given configuration."""
+        self.config_path.write_text(config_content)
+        config = Config(str(self.config_path))
+        patterns = [
+            {"regex": "github", "score": 10, "description": "GitHub"},
+            {"regex": "twitter", "score": -5, "description": "Twitter"},
+        ]
+        score_tracker = ScoreTracker(patterns, default_score=0)
+        gui = MockScoreDisplayWithTransparency(score_tracker, config)
+        return gui
+
+    def test_transparency_disabled_stays_opaque(self):
+        """Test that transparency stays at 1.0 when fade mode is disabled."""
+        config_content = """
+fade_window_on_flow_mode_enabled = false
+flow_mode_delay_seconds = 5
+flow_mode_fade_rate_percent_per_second = 10
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        gui = self._create_mock_gui(config_content)
+
+        # Enter flow state
+        gui.score_tracker.update("github.com")
+        self.assertTrue(gui.score_tracker.is_in_flow_state())
+
+        # Update transparency
+        gui._update_window_transparency()
+
+        # Should remain fully opaque
+        self.assertEqual(gui._current_transparency, 1.0)
+        self.assertFalse(gui._fade_active)
+
+    def test_transparency_fade_activates_after_delay(self):
+        """Test that fade activates after flow state duration exceeds delay."""
+        from datetime import datetime
+        from unittest.mock import patch
+
+        config_content = """
+fade_window_on_flow_mode_enabled = true
+flow_mode_delay_seconds = 5
+flow_mode_fade_rate_percent_per_second = 10
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        gui = self._create_mock_gui(config_content)
+
+        # Enter flow state
+        with patch("src.score_tracker.datetime") as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 0, 0)
+            gui.score_tracker.update("github.com")
+            self.assertTrue(gui.score_tracker.is_in_flow_state())
+
+        # Before delay: should not fade
+        with patch("src.score_tracker.datetime") as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 0, 3)
+            gui._update_window_transparency()
+            self.assertEqual(gui._current_transparency, 1.0)
+            self.assertFalse(gui._fade_active)
+
+        # After delay: should start fading
+        with patch("src.score_tracker.datetime") as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 0, 6)
+            gui._update_window_transparency()
+            self.assertTrue(gui._fade_active)
+            # With 10% fade rate and 1000ms interval, should fade 10% per update
+            self.assertAlmostEqual(gui._current_transparency, 0.9, delta=0.01)
+
+    def test_transparency_calculation_correct_fade_rate(self):
+        """Test that transparency decreases at correct fade rate."""
+        from datetime import datetime
+        from unittest.mock import patch
+
+        config_content = """
+fade_window_on_flow_mode_enabled = true
+flow_mode_delay_seconds = 0
+flow_mode_fade_rate_percent_per_second = 20
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        gui = self._create_mock_gui(config_content)
+
+        # Enter flow state
+        with patch("src.score_tracker.datetime") as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 0, 0)
+            gui.score_tracker.update("github.com")
+
+        # First update: 20% fade
+        with patch("src.score_tracker.datetime") as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 0, 1)
+            gui._update_window_transparency()
+            self.assertAlmostEqual(gui._current_transparency, 0.8, delta=0.01)
+
+        # Second update: another 20% fade
+        with patch("src.score_tracker.datetime") as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 0, 2)
+            gui._update_window_transparency()
+            self.assertAlmostEqual(gui._current_transparency, 0.6, delta=0.01)
+
+    def test_transparency_resets_on_exit_flow_state(self):
+        """Test that transparency resets to 1.0 when exiting flow state."""
+        from datetime import datetime
+        from unittest.mock import patch
+
+        config_content = """
+fade_window_on_flow_mode_enabled = true
+flow_mode_delay_seconds = 0
+flow_mode_fade_rate_percent_per_second = 10
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+
+[[window_patterns]]
+regex = "twitter"
+score = -20
+description = "Twitter"
+"""
+        gui = self._create_mock_gui(config_content)
+
+        # Enter flow state and fade
+        with patch("src.score_tracker.datetime") as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 0, 0)
+            gui.score_tracker.update("github.com")
+            gui._update_window_transparency()
+            self.assertAlmostEqual(gui._current_transparency, 0.9, delta=0.01)
+
+        # Exit flow state
+        gui.score_tracker.update("twitter.com")
+        self.assertFalse(gui.score_tracker.is_in_flow_state())
+
+        # Transparency should reset
+        gui._update_window_transparency()
+        self.assertEqual(gui._current_transparency, 1.0)
+        self.assertFalse(gui._fade_active)
+        gui.root.attributes.assert_called_with("-alpha", 1.0)
+
+    def test_transparency_minimum_zero(self):
+        """Test that transparency doesn't go below 0.0."""
+        from datetime import datetime
+        from unittest.mock import patch
+
+        config_content = """
+fade_window_on_flow_mode_enabled = true
+flow_mode_delay_seconds = 0
+flow_mode_fade_rate_percent_per_second = 100
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        gui = self._create_mock_gui(config_content)
+
+        # Enter flow state
+        with patch("src.score_tracker.datetime") as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 0, 0)
+            gui.score_tracker.update("github.com")
+
+        # Multiple updates with 100% fade rate should reach 0.0 and stay there
+        for i in range(1, 5):
+            with patch("src.score_tracker.datetime") as mock_datetime:
+                mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 0, i)
+                gui._update_window_transparency()
+
+        self.assertEqual(gui._current_transparency, 0.0)
+
+    def test_transparency_update_interval_affects_fade(self):
+        """Test that update interval affects fade calculation."""
+        from datetime import datetime
+        from unittest.mock import patch
+
+        config_content = """
+fade_window_on_flow_mode_enabled = true
+flow_mode_delay_seconds = 0
+flow_mode_fade_rate_percent_per_second = 10
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        gui = self._create_mock_gui(config_content)
+        gui.update_interval = 500  # 500ms instead of 1000ms
+
+        # Enter flow state
+        with patch("src.score_tracker.datetime") as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 0, 0)
+            gui.score_tracker.update("github.com")
+
+        # With 500ms interval and 10% per second, should fade 5% per update
+        with patch("src.score_tracker.datetime") as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 0, 1)
+            gui._update_window_transparency()
+            self.assertAlmostEqual(gui._current_transparency, 0.95, delta=0.01)
+
+    def test_transparency_no_change_when_already_at_target(self):
+        """Test that transparency doesn't change when already at target state."""
+        config_content = """
+fade_window_on_flow_mode_enabled = false
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        gui = self._create_mock_gui(config_content)
+
+        # Already at 1.0, mode disabled
+        gui._update_window_transparency()
+
+        # Should not call attributes if no change
+        gui.root.attributes.assert_not_called()
+
+
 if __name__ == "__main__":
     unittest.main()
