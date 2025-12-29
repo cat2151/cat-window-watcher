@@ -1162,6 +1162,18 @@ class TestFlowStateTracking(unittest.TestCase):
         tracker.update("Random Window")
         self.assertTrue(tracker.is_in_flow_state())
 
+    def test_flow_state_does_not_enter_when_score_stays_zero(self):
+        """Test that flow state does not enter when score stays at zero."""
+        tracker = ScoreTracker(self.patterns, default_score=0)
+
+        # No match, score stays at 0
+        tracker.update("Random Window 1")
+        self.assertFalse(tracker.is_in_flow_state())
+
+        # Another no match, score still stays at 0
+        tracker.update("Random Window 2")
+        self.assertFalse(tracker.is_in_flow_state())
+
     def test_flow_state_exits_on_score_decrease(self):
         """Test that flow state becomes false when score decreases."""
         tracker = ScoreTracker(self.patterns, default_score=0)

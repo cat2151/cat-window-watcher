@@ -185,17 +185,19 @@ class ScoreTracker:
         current_score = self.score
         was_in_score_up = self._in_score_up_state
 
-        # Determine if we're currently in score-up state (score increased or stayed same)
-        if current_score >= previous_score:
-            # We're in score-up state
+        # Enter flow (score-up) state only when score actually increases.
+        # Maintain flow state when score does not decrease and we are already in flow.
+        if current_score > previous_score:
+            # Score increased: transition from non-score-up to score-up if needed
             if not was_in_score_up:
-                # Transition from non-score-up to score-up
                 self._in_score_up_state = True
                 self._score_up_state_start_time = datetime.now()
-        else:
-            # Score decreased, not in score-up state
+        elif current_score < previous_score:
+            # Score decreased: leave flow state
             self._in_score_up_state = False
             self._score_up_state_start_time = None
+        # If current_score == previous_score, we intentionally keep the existing
+        # flow state as-is: maintain if already in flow, remain out otherwise.
 
     def get_flow_state_duration(self):
         """Get duration in seconds that we've been in score-up state.
