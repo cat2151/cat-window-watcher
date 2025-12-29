@@ -186,7 +186,7 @@ class ScoreTracker:
         was_in_score_up = self._in_score_up_state
 
         # Enter flow (score-up) state only when score actually increases.
-        # Maintain flow state when score does not decrease and we are already in flow.
+        # Once in flow, maintain it when score stays equal (but not on initial equal scores).
         if current_score > previous_score:
             # Score increased: transition from non-score-up to score-up if needed
             if not was_in_score_up:
