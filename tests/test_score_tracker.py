@@ -1196,19 +1196,19 @@ class TestFlowStateTracking(unittest.TestCase):
 
         # Enter flow state
         start_time = datetime(2024, 1, 1, 10, 0, 0)
-        with patch("datetime.datetime") as mock_datetime_class:
+        with patch("src.score_tracker.datetime") as mock_datetime_class:
             mock_datetime_class.now.return_value = start_time
             tracker.update("GitHub")
             self.assertTrue(tracker.is_in_flow_state())
 
         # Check duration after 5 seconds
-        with patch("datetime.datetime") as mock_datetime_class:
+        with patch("src.score_tracker.datetime") as mock_datetime_class:
             mock_datetime_class.now.return_value = datetime(2024, 1, 1, 10, 0, 5)
             duration = tracker.get_flow_state_duration()
             self.assertAlmostEqual(duration, 5.0, delta=0.1)
 
         # Check duration after 10 seconds
-        with patch("datetime.datetime") as mock_datetime_class:
+        with patch("src.score_tracker.datetime") as mock_datetime_class:
             mock_datetime_class.now.return_value = datetime(2024, 1, 1, 10, 0, 10)
             duration = tracker.get_flow_state_duration()
             self.assertAlmostEqual(duration, 10.0, delta=0.1)
@@ -1222,13 +1222,13 @@ class TestFlowStateTracking(unittest.TestCase):
 
         # Enter flow state and wait
         start_time = datetime(2024, 1, 1, 10, 0, 0)
-        with patch("datetime.datetime") as mock_datetime_class:
+        with patch("src.score_tracker.datetime") as mock_datetime_class:
             mock_datetime_class.now.return_value = start_time
             tracker.update("GitHub")
             self.assertTrue(tracker.is_in_flow_state())
 
         # Wait 10 seconds
-        with patch("datetime.datetime") as mock_datetime_class:
+        with patch("src.score_tracker.datetime") as mock_datetime_class:
             mock_datetime_class.now.return_value = datetime(2024, 1, 1, 10, 0, 10)
             duration = tracker.get_flow_state_duration()
             self.assertAlmostEqual(duration, 10.0, delta=0.1)
@@ -1246,13 +1246,13 @@ class TestFlowStateTracking(unittest.TestCase):
         tracker = ScoreTracker(self.patterns, default_score=0)
 
         # Enter flow state
-        with patch("datetime.datetime") as mock_datetime_class:
+        with patch("src.score_tracker.datetime") as mock_datetime_class:
             mock_datetime_class.now.return_value = datetime(2024, 1, 1, 10, 0, 0)
             tracker.update("GitHub")
             self.assertTrue(tracker.is_in_flow_state())
 
         # Wait 10 seconds
-        with patch("datetime.datetime") as mock_datetime_class:
+        with patch("src.score_tracker.datetime") as mock_datetime_class:
             mock_datetime_class.now.return_value = datetime(2024, 1, 1, 10, 0, 10)
             self.assertAlmostEqual(tracker.get_flow_state_duration(), 10.0, delta=0.1)
 
@@ -1261,13 +1261,13 @@ class TestFlowStateTracking(unittest.TestCase):
         self.assertFalse(tracker.is_in_flow_state())
 
         # Re-enter flow state (should restart timer)
-        with patch("datetime.datetime") as mock_datetime_class:
+        with patch("src.score_tracker.datetime") as mock_datetime_class:
             mock_datetime_class.now.return_value = datetime(2024, 1, 1, 10, 0, 15)
             tracker.update("GitHub")
             self.assertTrue(tracker.is_in_flow_state())
 
         # Check duration is from new start time
-        with patch("datetime.datetime") as mock_datetime_class:
+        with patch("src.score_tracker.datetime") as mock_datetime_class:
             mock_datetime_class.now.return_value = datetime(2024, 1, 1, 10, 0, 20)
             duration = tracker.get_flow_state_duration()
             self.assertAlmostEqual(duration, 5.0, delta=0.1)

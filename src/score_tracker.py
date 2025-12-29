@@ -182,8 +182,6 @@ class ScoreTracker:
         Args:
             previous_score: Score before the current update
         """
-        from datetime import datetime
-
         current_score = self.score
         was_in_score_up = self._in_score_up_state
 
@@ -205,8 +203,6 @@ class ScoreTracker:
         Returns:
             float: Duration in seconds, or 0 if not in score-up state
         """
-        from datetime import datetime
-
         if not self._in_score_up_state or self._score_up_state_start_time is None:
             return 0.0
 
