@@ -28,14 +28,14 @@ mild_penalty_start_hour = 22
 mild_penalty_end_hour = 23
 
 # Always on top mode - keep the window on top of all other windows
-# Set to true to enable, false to disable (default: false)
-always_on_top = false
+# Set to true to enable, false to disable (default: true)
+always_on_top = true
 
 # Hide on mouse proximity mode - when always_on_top is enabled,
 # hide the window (move to background) when mouse cursor approaches it
-# Set to true to enable, false to disable (default: false)
+# Set to true to enable, false to disable (default: true)
 # This only works when always_on_top is true
-hide_on_mouse_proximity = false
+hide_on_mouse_proximity = true
 
 # Proximity distance in pixels - distance threshold for mouse proximity detection
 # When mouse cursor is within this distance from the window, it will be hidden
@@ -44,8 +44,8 @@ proximity_distance = 50
 
 # Always on top while score decreasing mode - keep window on top while score continues to decrease
 # This helps you stay aware when your focus is drifting
-# Set to true to enable, false to disable (default: false)
-always_on_top_while_score_decreasing = false
+# Set to true to enable, false to disable (default: true)
+always_on_top_while_score_decreasing = true
 
 # Score color settings - font color for score display based on score change
 # score_up_color: Color when score increases or stays the same (default: "#ffffff" white)
@@ -56,8 +56,8 @@ score_down_color = "#ff0000"
 # Reset score every 30 minutes mode - similar to Pomodoro Technique
 # When enabled, the score automatically resets to 0 at the top (:00) and bottom (:30) of each hour
 # This helps you focus on "just the next 30 minutes" making it easier to concentrate
-# Set to true to enable, false to disable (default: false)
-reset_score_every_30_minutes = false
+# Set to true to enable, false to disable (default: true)
+reset_score_every_30_minutes = true
 
 # Fade window on flow mode - gradually make window transparent when in flow state
 # When enabled, after being in score-up state for flow_mode_delay_seconds,

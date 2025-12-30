@@ -27,16 +27,16 @@ class Config:
         self.window_patterns = []
         self.default_score = -1
         self.apply_default_score_mode = True
-        self.always_on_top = False
-        self.hide_on_mouse_proximity = False
+        self.always_on_top = True
+        self.hide_on_mouse_proximity = True
         self.proximity_distance = 50
-        self.always_on_top_while_score_decreasing = False
+        self.always_on_top_while_score_decreasing = True
         self.mild_penalty_mode = False
         self.mild_penalty_start_hour = 22
         self.mild_penalty_end_hour = 23
         self.score_up_color = "#ffffff"
         self.score_down_color = "#ff0000"
-        self.reset_score_every_30_minutes = False
+        self.reset_score_every_30_minutes = True
         self.fade_window_on_flow_mode_enabled = False
         self.flow_mode_delay_seconds = 10
         self.flow_mode_fade_rate_percent_per_second = 1
@@ -97,10 +97,10 @@ class Config:
                 )
 
             # Load always_on_top setting (whether window should stay on top)
-            always_on_top = config_data.get("always_on_top", False)
+            always_on_top = config_data.get("always_on_top", True)
 
             # Load hide_on_mouse_proximity setting (hide window when mouse is near)
-            hide_on_mouse_proximity = config_data.get("hide_on_mouse_proximity", False)
+            hide_on_mouse_proximity = config_data.get("hide_on_mouse_proximity", True)
 
             # Load proximity_distance setting (distance in pixels)
             # Ensure it is a non-negative integer; raise error if invalid
@@ -111,7 +111,7 @@ class Config:
                 )
 
             # Load always_on_top_while_score_decreasing setting
-            always_on_top_while_score_decreasing = config_data.get("always_on_top_while_score_decreasing", False)
+            always_on_top_while_score_decreasing = config_data.get("always_on_top_while_score_decreasing", True)
             if not isinstance(always_on_top_while_score_decreasing, bool):
                 raise ValueError(
                     f"Invalid 'always_on_top_while_score_decreasing' value: {always_on_top_while_score_decreasing!r}. Must be a boolean."
@@ -145,7 +145,7 @@ class Config:
             self._validate_hex_color(score_down_color, "score_down_color")
 
             # Load reset_score_every_30_minutes setting (reset score at :00 and :30 of each hour)
-            reset_score_every_30_minutes = config_data.get("reset_score_every_30_minutes", False)
+            reset_score_every_30_minutes = config_data.get("reset_score_every_30_minutes", True)
             if not isinstance(reset_score_every_30_minutes, bool):
                 raise ValueError(
                     f"Invalid 'reset_score_every_30_minutes' value: {reset_score_every_30_minutes!r}. Must be a boolean."
