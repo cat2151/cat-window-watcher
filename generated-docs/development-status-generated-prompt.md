@@ -1,4 +1,4 @@
-Last updated: 2025-12-30
+Last updated: 2025-12-31
 
 # 開発状況生成プロンプト（開発者向け）
 
@@ -218,7 +218,14 @@ Last updated: 2025-12-30
 - issue-notes/21.md
 - issue-notes/26.md
 - issue-notes/27.md
+- issue-notes/29.md
+- issue-notes/31.md
+- issue-notes/33.md
+- issue-notes/34.md
+- issue-notes/37.md
+- issue-notes/39.md
 - issue-notes/4.md
+- issue-notes/40.md
 - issue-notes/6.md
 - issue-notes/8.md
 - issue-notes/9.md
@@ -239,6 +246,50 @@ Last updated: 2025-12-30
 - tests/test_window_monitor.py
 
 ## 現在のオープンIssues
+## [Issue #41](../issue-notes/41.md): Add self_window_score config to prevent score penalty when app window is active
+## ✅ Implementation Complete for Issue #40
+
+### Problem Solved
+When the Cat Window Watcher app's own window was active, it was treated as "no match", causing `default_score` (typically -1) to be applied. This confused users who would see their score decrease just for checking the app.
+
+### Solution ...
+ラベル: 
+--- issue-notes/41.md の内容 ---
+
+```markdown
+
+```
+
+## [Issue #40](../issue-notes/40.md): 当アプリ自身のウィンドウがアクティブなとき、「no match」扱いとなり、scoreが減らされてしまい、userが混乱する。当アプリ専用のscoreをtomlで設定できるようにする
+[issue-notes/40.md](https://github.com/cat2151/cat-window-watcher/blob/main/issue-notes/40.md)
+
+...
+ラベル: 
+--- issue-notes/40.md の内容 ---
+
+```markdown
+# issue 当アプリ自身のウィンドウがアクティブなとき、「no match」扱いとなり、scoreが減らされてしまい、userが混乱する。当アプリ専用のscoreをtomlで設定できるようにする #40
+[issues #40](https://github.com/cat2151/cat-window-watcher/issues/40)
+
+
+
+```
+
+## [Issue #39](../issue-notes/39.md): 初期表示xy座標をtomlで設定できるようにする
+[issue-notes/39.md](https://github.com/cat2151/cat-window-watcher/blob/main/issue-notes/39.md)
+
+...
+ラベル: 
+--- issue-notes/39.md の内容 ---
+
+```markdown
+# issue 初期表示xy座標をtomlで設定できるようにする #39
+[issues #39](https://github.com/cat2151/cat-window-watcher/issues/39)
+
+
+
+```
+
 ## [Issue #26](../issue-notes/26.md): ドッグフーディングする
 [issue-notes/26.md](https://github.com/cat2151/cat-window-watcher/blob/main/issue-notes/26.md)
 
@@ -323,6 +374,57 @@ has_recent_human_commit=false
 {% endraw %}
 ```
 
+### .github/actions-tmp/issue-notes/9.md
+```md
+{% raw %}
+# issue 関数コールグラフhtmlビジュアライズが0件なので、原因を可視化する #9
+[issues #9](https://github.com/cat2151/github-actions/issues/9)
+
+# agentに修正させたり、人力で修正したりした
+- agentがハルシネーションし、いろいろ根の深いバグにつながる、エラー隠蔽などを仕込んでいたため、検知が遅れた
+- 詳しくはcommit logを参照のこと
+- WSL + actの環境を少し変更、act起動時のコマンドライン引数を変更し、generated-docsをmountする（ほかはデフォルト挙動であるcpだけにする）ことで、デバッグ情報をコンテナ外に出力できるようにし、デバッグを効率化した
+
+# test green
+
+# closeとする
+
+{% endraw %}
+```
+
+### issue-notes/9.md
+```md
+{% raw %}
+# issue マッチしない場合のscore、を定義し、マッチ設定ミスを検知しやすくする #9
+[issues #9](https://github.com/cat2151/cat-window-watcher/issues/9)
+
+
+
+{% endraw %}
+```
+
+### issue-notes/39.md
+```md
+{% raw %}
+# issue 初期表示xy座標をtomlで設定できるようにする #39
+[issues #39](https://github.com/cat2151/cat-window-watcher/issues/39)
+
+
+
+{% endraw %}
+```
+
+### issue-notes/40.md
+```md
+{% raw %}
+# issue 当アプリ自身のウィンドウがアクティブなとき、「no match」扱いとなり、scoreが減らされてしまい、userが混乱する。当アプリ専用のscoreをtomlで設定できるようにする #40
+[issues #40](https://github.com/cat2151/cat-window-watcher/issues/40)
+
+
+
+{% endraw %}
+```
+
 ### issue-notes/6.md
 ```md
 {% raw %}
@@ -336,31 +438,28 @@ has_recent_human_commit=false
 
 ## 最近の変更（過去7日間）
 ### コミット履歴:
-559d5b4 Auto-translate README.ja.md to README.md [auto]
-ca8967d Merge pull request #28 from cat2151/copilot/add-toml-toggle-frontend
-07df023 Fix topmost state restoration and add missing test cases
-25ef608 Update documentation for always_on_top_while_score_decreasing feature
-56d8bd9 Add GUI tests for always_on_top_while_score_decreasing feature
-372121c Add TOML configuration for always_on_top_while_score_decreasing feature
-43dff5d Initial plan
-eb814d4 Add issue note for #27 [auto]
-d68732e Add issue note for #26 [auto]
-e535604 Merge pull request #25 from cat2151/copilot/add-opacity-transition-mode
+9d842e9 Add issue note for #40 [auto]
+6493e74 Add issue note for #39 [auto]
+ed818ef Merge pull request #38 from cat2151/copilot/fix-clipboard-title-issue
+7b0c678 Address code review: Add comment about empty title handling and test
+e783f11 Fix CTRL+C to copy previous window title instead of current app title
+ff674fa Initial plan
+fe624a9 Add issue note for #37 [auto]
+a940f5e Merge pull request #36 from cat2151/copilot/remove-clipboard-settings
+67492ee Add macOS Command+C support and refactor test to use actual implementation
+cc9489c Remove copy_no_match_to_clipboard setting and implement CTRL+C clipboard copy
 
 ### 変更されたファイル:
-README.ja.md
-README.md
 config.toml.example
-issue-notes/26.md
-issue-notes/27.md
+issue-notes/34.md
+issue-notes/37.md
+issue-notes/39.md
+issue-notes/40.md
 src/config.py
 src/gui.py
-src/main.py
-src/score_tracker.py
 tests/test_config.py
 tests/test_gui.py
-tests/test_score_tracker.py
 
 
 ---
-Generated at: 2025-12-30 07:05:37 JST
+Generated at: 2025-12-31 07:05:30 JST

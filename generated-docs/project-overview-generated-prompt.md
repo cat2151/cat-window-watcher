@@ -1,4 +1,4 @@
-Last updated: 2025-12-30
+Last updated: 2025-12-31
 
 
 # プロジェクト概要生成プロンプト（来訪者向け）
@@ -188,6 +188,11 @@ description = "Twitter/X"
   - `false`に設定すると、スコアは蓄積され続けます
   - ポモドーロ・テクニックに類似して、「今の30分だけ集中する」というイメージを作りやすくします
   - 例: 10:29にスコアが100でも、10:30になると0にリセットされ、新しい30分間が始まります
+- **copy_no_match_to_clipboard**: マッチしないウィンドウタイトルを自動的にクリップボードにコピーする（デフォルト: false）
+  - `true`に設定すると、どのパターンにもマッチしないウィンドウタイトルが自動的にクリップボードにコピーされます
+  - `false`に設定すると、この機能は無効になります
+  - 新しいパターンの設定が簡単になります - ウィンドウに切り替えるだけでタイトルが取得でき、設定ファイルにペーストできます
+  - 各ユニークなマッチしないタイトルは一度だけコピーされるため、繰り返しクリップボードが更新されることはありません
 - **regex**: ウィンドウタイトルにマッチする正規表現パターン（大文字小文字を区別しない）
 - **score**: パターンがマッチしたときにスコアに追加する整数値（負の値も可能）
 - **description**: ステータスエリアに表示される人間が読める説明
@@ -337,7 +342,14 @@ pip install pywin32
   📖 21.md
   📖 26.md
   📖 27.md
+  📖 29.md
+  📖 31.md
+  📖 33.md
+  📖 34.md
+  📖 37.md
+  📖 39.md
   📖 4.md
+  📖 40.md
   📖 6.md
   📖 8.md
   📖 9.md
@@ -378,7 +390,14 @@ issue-notes/16.md
 issue-notes/21.md
 issue-notes/26.md
 issue-notes/27.md
+issue-notes/29.md
+issue-notes/31.md
+issue-notes/33.md
+issue-notes/34.md
+issue-notes/37.md
+issue-notes/39.md
 issue-notes/4.md
+issue-notes/40.md
 issue-notes/6.md
 issue-notes/8.md
 issue-notes/9.md
@@ -393,4 +412,4 @@ issue-notes/9.md
 
 
 ---
-Generated at: 2025-12-30 07:05:37 JST
+Generated at: 2025-12-31 07:05:29 JST
