@@ -40,6 +40,7 @@ class Config:
         self.fade_window_on_flow_mode_enabled = False
         self.flow_mode_delay_seconds = 10
         self.flow_mode_fade_rate_percent_per_second = 1
+        self.copy_no_match_to_clipboard = False
         self._last_modified = None
         self.load_config()
 
@@ -175,6 +176,13 @@ class Config:
                     f"Invalid 'flow_mode_fade_rate_percent_per_second' value: {flow_mode_fade_rate_percent_per_second!r}. Must be an integer between 1 and 100."
                 )
 
+            # Load copy_no_match_to_clipboard setting (copy unmatched window title to clipboard)
+            copy_no_match_to_clipboard = config_data.get("copy_no_match_to_clipboard", False)
+            if not isinstance(copy_no_match_to_clipboard, bool):
+                raise ValueError(
+                    f"Invalid 'copy_no_match_to_clipboard' value: {copy_no_match_to_clipboard!r}. Must be a boolean."
+                )
+
             # Load window patterns with their score values
             window_patterns = []
             for pattern in config_data.get("window_patterns", []):
@@ -202,6 +210,7 @@ class Config:
             self.fade_window_on_flow_mode_enabled = fade_window_on_flow_mode_enabled
             self.flow_mode_delay_seconds = flow_mode_delay_seconds
             self.flow_mode_fade_rate_percent_per_second = flow_mode_fade_rate_percent_per_second
+            self.copy_no_match_to_clipboard = copy_no_match_to_clipboard
             self.window_patterns = window_patterns
 
             # Update last modified timestamp after successful load
@@ -375,3 +384,11 @@ class Config:
             int: Fade rate in percent per second (1-100)
         """
         return self.flow_mode_fade_rate_percent_per_second
+
+    def get_copy_no_match_to_clipboard(self):
+        """Get copy_no_match_to_clipboard setting.
+
+        Returns:
+            bool: True if unmatched window titles should be copied to clipboard, False otherwise
+        """
+        return self.copy_no_match_to_clipboard
