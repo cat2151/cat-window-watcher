@@ -213,7 +213,7 @@ description = "GitHub"
             Config(str(self.config_path))
 
     def test_always_on_top_default(self):
-        """Test always_on_top defaults to False when not specified."""
+        """Test always_on_top defaults to True when not specified."""
         config_content = """
 [[window_patterns]]
 regex = "github"
@@ -223,7 +223,7 @@ description = "GitHub"
         self.config_path.write_text(config_content)
 
         config = Config(str(self.config_path))
-        self.assertFalse(config.get_always_on_top())
+        self.assertTrue(config.get_always_on_top())
 
     def test_always_on_top_true(self):
         """Test always_on_top set to true."""
@@ -441,7 +441,7 @@ regex = "twitter"
         self.assertEqual(config.get_window_patterns()[0]["regex"], "github")
 
     def test_hide_on_mouse_proximity_default(self):
-        """Test hide_on_mouse_proximity defaults to False when not specified."""
+        """Test hide_on_mouse_proximity defaults to True when not specified."""
         config_content = """
 [[window_patterns]]
 regex = "github"
@@ -451,7 +451,7 @@ description = "GitHub"
         self.config_path.write_text(config_content)
 
         config = Config(str(self.config_path))
-        self.assertFalse(config.get_hide_on_mouse_proximity())
+        self.assertTrue(config.get_hide_on_mouse_proximity())
 
     def test_hide_on_mouse_proximity_true(self):
         """Test hide_on_mouse_proximity set to true."""
@@ -663,7 +663,7 @@ description = "GitHub"
         self.assertEqual(config.get_proximity_distance(), 75)
 
     def test_always_on_top_while_score_decreasing_default(self):
-        """Test always_on_top_while_score_decreasing defaults to False when not specified."""
+        """Test always_on_top_while_score_decreasing defaults to True when not specified."""
         config_content = """
 [[window_patterns]]
 regex = "github"
@@ -673,7 +673,7 @@ description = "GitHub"
         self.config_path.write_text(config_content)
 
         config = Config(str(self.config_path))
-        self.assertFalse(config.get_always_on_top_while_score_decreasing())
+        self.assertTrue(config.get_always_on_top_while_score_decreasing())
 
     def test_always_on_top_while_score_decreasing_true(self):
         """Test always_on_top_while_score_decreasing set to true."""
@@ -1052,7 +1052,7 @@ class TestResetScoreEvery30MinutesConfig(unittest.TestCase):
         self.config_path = Path(self.temp_dir) / "test_config.toml"
 
     def test_reset_score_every_30_minutes_default(self):
-        """Test reset_score_every_30_minutes defaults to False when not specified."""
+        """Test reset_score_every_30_minutes defaults to True when not specified."""
         config_content = """
 [[window_patterns]]
 regex = "github"
@@ -1062,7 +1062,7 @@ description = "GitHub"
         self.config_path.write_text(config_content)
 
         config = Config(str(self.config_path))
-        self.assertFalse(config.get_reset_score_every_30_minutes())
+        self.assertTrue(config.get_reset_score_every_30_minutes())
 
     def test_reset_score_every_30_minutes_true(self):
         """Test reset_score_every_30_minutes set to true."""
