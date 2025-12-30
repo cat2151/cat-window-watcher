@@ -72,8 +72,8 @@ class ScoreDisplay:
         self._current_transparency = 1.0  # 1.0 = fully opaque, 0.0 = fully transparent
         self._fade_active = False
 
-        # Track last copied window title to avoid repeated copies
-        self._last_copied_title = None
+        # Track current window title for clipboard operations
+        self._current_window_title = ""
 
         # Create main window
         self.root = tk.Tk()
@@ -83,6 +83,10 @@ class ScoreDisplay:
 
         # Apply initial always_on_top setting
         self._apply_always_on_top()
+
+        # Bind clipboard copy shortcuts (Ctrl+C on Windows/Linux, Command+C on macOS)
+        self.root.bind("<Control-c>", self._on_ctrl_c)
+        self.root.bind("<Command-c>", self._on_ctrl_c)
 
         # Create score label with initial color
         initial_color = config.get_score_up_color()
@@ -228,31 +232,22 @@ class ScoreDisplay:
                 self.root.attributes("-alpha", self._current_transparency)
                 self._fade_active = False
 
-    def _copy_to_clipboard(self, window_title, matched_pattern):
-        """Copy unmatched window title to clipboard if configured.
+    def _on_ctrl_c(self, event):
+        """Handle CTRL+C key press to copy current window title to clipboard.
 
         Args:
-            window_title: Current window title
-            matched_pattern: Matched pattern dict or None if no match
+            event: tkinter event object
         """
-        # Only copy if no match and feature is enabled
-        if matched_pattern is None and self.config.get_copy_no_match_to_clipboard():
-            # Only copy if title is not empty and hasn't been copied yet
-            if window_title and window_title != self._last_copied_title:
-                try:
-                    # Clear clipboard and set new content
-                    self.root.clipboard_clear()
-                    self.root.clipboard_append(window_title)
-                    # Update() is needed to finalize the clipboard operation
-                    self.root.update()
-                    self._last_copied_title = window_title
-                except Exception as e:
-                    # Silently ignore clipboard errors to not disrupt the main functionality
-                    print(f"Warning: Failed to copy to clipboard: {e}")
-        elif matched_pattern is not None:
-            # Reset last copied title when a match is found
-            # This allows the same title to be copied again later if it becomes unmatched
-            self._last_copied_title = None
+        if self._current_window_title:
+            try:
+                # Clear clipboard and set new content
+                self.root.clipboard_clear()
+                self.root.clipboard_append(self._current_window_title)
+                # Update() is needed to finalize the clipboard operation
+                self.root.update()
+            except Exception as e:
+                # Silently ignore clipboard errors to not disrupt the main functionality
+                print(f"Warning: Failed to copy to clipboard: {e}")
 
     def update_display(self):
         """Update the display with current score and window info."""
@@ -275,11 +270,11 @@ class ScoreDisplay:
         # Get current window title
         window_title = self.window_monitor.get_active_window_title()
 
+        # Store current window title for clipboard operations
+        self._current_window_title = window_title
+
         # Update score
         score_changed, matched_pattern = self.score_tracker.update(window_title)
-
-        # Copy unmatched window title to clipboard if configured
-        self._copy_to_clipboard(window_title, matched_pattern)
 
         # Update score-decreasing-based topmost behavior (after score update)
         # This has highest priority - if it takes control, skip other topmost updates
