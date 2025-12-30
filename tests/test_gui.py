@@ -7,15 +7,17 @@ from pathlib import Path
 from unittest.mock import MagicMock
 
 # Try to import from src module
+MAX_WINDOW_TITLE_LENGTH = None
+get_status_text = None
+
 try:
     from src.config import Config
     from src.score_tracker import ScoreTracker
 
     try:
-        from src.gui import MAX_WINDOW_TITLE_LENGTH
+        from src.gui import MAX_WINDOW_TITLE_LENGTH, get_status_text
     except (ImportError, ModuleNotFoundError):
-        # If tkinter is not available, define the constant here
-        MAX_WINDOW_TITLE_LENGTH = 40
+        pass
 except ImportError:
     import sys
 
@@ -24,10 +26,35 @@ except ImportError:
     from score_tracker import ScoreTracker
 
     try:
-        from gui import MAX_WINDOW_TITLE_LENGTH
+        from gui import MAX_WINDOW_TITLE_LENGTH, get_status_text
     except (ImportError, ModuleNotFoundError):
-        # If tkinter is not available, define the constant here
-        MAX_WINDOW_TITLE_LENGTH = 40
+        pass
+
+# If tkinter is not available and import failed, define the constant and function here
+if MAX_WINDOW_TITLE_LENGTH is None:
+    MAX_WINDOW_TITLE_LENGTH = 40
+
+if get_status_text is None:
+
+    def get_status_text(matched_pattern, window_title, default_score):
+        """Fallback implementation of get_status_text for testing."""
+        if matched_pattern:
+            description = matched_pattern.get("description", "")
+            score_delta = matched_pattern.get("score", 0)
+            score_sign = "+" if score_delta >= 0 else ""
+            return f"{description} ({score_sign}{score_delta})"
+        else:
+            display_title = (
+                window_title[:MAX_WINDOW_TITLE_LENGTH] + "..."
+                if len(window_title) > MAX_WINDOW_TITLE_LENGTH
+                else window_title
+            )
+            if default_score != 0:
+                score_sign = "+" if default_score >= 0 else ""
+                score_text = f"({score_sign}{default_score})"
+                return f"No match: {display_title} {score_text}" if display_title else f"No match {score_text}"
+            else:
+                return display_title if display_title else "Watching..."
 
 
 class MockScoreDisplay:
@@ -1191,31 +1218,9 @@ class MockScoreDisplayWithStatusLabel(MockScoreDisplay):
         # Update score
         score_changed, matched_pattern = self.score_tracker.update(window_title)
 
-        # Update status label
-        if matched_pattern:
-            description = matched_pattern.get("description", "")
-            score_delta = matched_pattern.get("score", 0)
-            score_sign = "+" if score_delta >= 0 else ""
-            self.status_label.config(text=f"{description} ({score_sign}{score_delta})")
-        else:
-            # No match - always show window title to help users configure patterns
-            # Show truncated window title
-            display_title = (
-                window_title[:MAX_WINDOW_TITLE_LENGTH] + "..."
-                if len(window_title) > MAX_WINDOW_TITLE_LENGTH
-                else window_title
-            )
-
-            # Check if default score was applied
-            default_score = self.score_tracker.default_score
-            if default_score != 0:
-                score_sign = "+" if default_score >= 0 else ""
-                score_text = f"({score_sign}{default_score})"
-                # Combine window title with default score information
-                status_text = f"No match: {display_title} {score_text}" if display_title else f"No match {score_text}"
-                self.status_label.config(text=status_text)
-            else:
-                self.status_label.config(text=display_title if display_title else "Watching...")
+        # Update status label using the extracted function
+        status_text = get_status_text(matched_pattern, window_title, self.score_tracker.default_score)
+        self.status_label.config(text=status_text)
 
 
 class TestGuiStatusLabelDisplay(unittest.TestCase):

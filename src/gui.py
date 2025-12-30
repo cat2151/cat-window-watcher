@@ -7,6 +7,41 @@ import tkinter as tk
 MAX_WINDOW_TITLE_LENGTH = 40
 
 
+def get_status_text(matched_pattern, window_title, default_score):
+    """Generate status text based on pattern match and window title.
+
+    Args:
+        matched_pattern: Matched pattern dict with 'description' and 'score', or None
+        window_title: Current window title string
+        default_score: Default score value when no pattern matches
+
+    Returns:
+        str: Status text to display
+    """
+    if matched_pattern:
+        description = matched_pattern.get("description", "")
+        score_delta = matched_pattern.get("score", 0)
+        score_sign = "+" if score_delta >= 0 else ""
+        return f"{description} ({score_sign}{score_delta})"
+    else:
+        # No match - always show window title to help users configure patterns
+        # Show truncated window title
+        display_title = (
+            window_title[:MAX_WINDOW_TITLE_LENGTH] + "..."
+            if len(window_title) > MAX_WINDOW_TITLE_LENGTH
+            else window_title
+        )
+
+        # Check if default score was applied
+        if default_score != 0:
+            score_sign = "+" if default_score >= 0 else ""
+            score_text = f"({score_sign}{default_score})"
+            # Combine window title with default score information
+            return f"No match: {display_title} {score_text}" if display_title else f"No match {score_text}"
+        else:
+            return display_title if display_title else "Watching..."
+
+
 class ScoreDisplay:
     """Tkinter GUI for displaying score."""
 
@@ -240,30 +275,8 @@ class ScoreDisplay:
         self._previous_score = current_score
 
         # Update status label
-        if matched_pattern:
-            description = matched_pattern.get("description", "")
-            score_delta = matched_pattern.get("score", 0)
-            score_sign = "+" if score_delta >= 0 else ""
-            self.status_label.config(text=f"{description} ({score_sign}{score_delta})")
-        else:
-            # No match - always show window title to help users configure patterns
-            # Show truncated window title
-            display_title = (
-                window_title[:MAX_WINDOW_TITLE_LENGTH] + "..."
-                if len(window_title) > MAX_WINDOW_TITLE_LENGTH
-                else window_title
-            )
-
-            # Check if default score was applied
-            default_score = self.score_tracker.default_score
-            if default_score != 0:
-                score_sign = "+" if default_score >= 0 else ""
-                score_text = f"({score_sign}{default_score})"
-                # Combine window title with default score information
-                status_text = f"No match: {display_title} {score_text}" if display_title else f"No match {score_text}"
-                self.status_label.config(text=status_text)
-            else:
-                self.status_label.config(text=display_title if display_title else "Watching...")
+        status_text = get_status_text(matched_pattern, window_title, self.score_tracker.default_score)
+        self.status_label.config(text=status_text)
 
         # Schedule next update
         self.root.after(self.update_interval, self.update_display)
