@@ -27,6 +27,7 @@ class Config:
         self.window_patterns = []
         self.default_score = -1
         self.apply_default_score_mode = True
+        self.self_window_score = 0
         self.always_on_top = True
         self.hide_on_mouse_proximity = True
         self.proximity_distance = 50
@@ -94,6 +95,9 @@ class Config:
                 raise ValueError(
                     f"Invalid 'apply_default_score_mode' value: {apply_default_score_mode!r}. Must be a boolean."
                 )
+
+            # Load self_window_score (score applied when app's own window is active)
+            self_window_score = config_data.get("self_window_score", 0)
 
             # Load always_on_top setting (whether window should stay on top)
             always_on_top = config_data.get("always_on_top", True)
@@ -189,6 +193,7 @@ class Config:
             # Only update instance attributes after successful parsing
             self.default_score = default_score
             self.apply_default_score_mode = apply_default_score_mode
+            self.self_window_score = self_window_score
             self.always_on_top = always_on_top
             self.hide_on_mouse_proximity = hide_on_mouse_proximity
             self.proximity_distance = proximity_distance
@@ -271,6 +276,14 @@ class Config:
             bool: True if default score should be applied when no pattern matches, False otherwise
         """
         return self.apply_default_score_mode
+
+    def get_self_window_score(self):
+        """Get self_window_score setting.
+
+        Returns:
+            int: Score to apply when app's own window is active
+        """
+        return self.self_window_score
 
     def get_always_on_top(self):
         """Get always_on_top setting.

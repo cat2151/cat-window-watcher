@@ -55,6 +55,8 @@ def main():
             config.get_mild_penalty_start_hour(),
             config.get_mild_penalty_end_hour(),
             config.get_reset_score_every_30_minutes(),
+            config.get_self_window_score(),
+            "Cat Window Watcher - Cat is watching you -",
         )
 
         # Create and run GUI

@@ -13,6 +13,14 @@ default_score = -1
 # Set to false to not apply any score when no pattern matches (score stays unchanged)
 apply_default_score_mode = true
 
+# Self window score - score applied when the app's own window is active
+# When you switch focus to the Cat Window Watcher window itself,
+# this score will be applied instead of default_score or "no match"
+# Set to 0 (default) to not change score when viewing the app
+# Set to a positive value to reward checking your score
+# Set to a negative value to discourage excessive score checking
+self_window_score = 0
+
 # Mild penalty mode - limit negative scores to -1 during specified hours
 # This is a provisional implementation for testing purposes
 # Set to true to enable, false to disable (default: false)

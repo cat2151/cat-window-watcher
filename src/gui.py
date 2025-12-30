@@ -267,6 +267,8 @@ class ScoreDisplay:
                 self.config.get_mild_penalty_start_hour(),
                 self.config.get_mild_penalty_end_hour(),
                 self.config.get_reset_score_every_30_minutes(),
+                self.config.get_self_window_score(),
+                "Cat Window Watcher - Cat is watching you -",
             )
 
             # Update always_on_top setting if it changed

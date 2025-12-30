@@ -212,6 +212,99 @@ description = "GitHub"
         with self.assertRaises(SystemExit):
             Config(str(self.config_path))
 
+    def test_self_window_score_default(self):
+        """Test self_window_score defaults to 0 when not specified."""
+        config_content = """
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertEqual(config.get_self_window_score(), 0)
+
+    def test_self_window_score_positive(self):
+        """Test self_window_score set to positive value."""
+        config_content = """
+self_window_score = 5
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertEqual(config.get_self_window_score(), 5)
+
+    def test_self_window_score_negative(self):
+        """Test self_window_score set to negative value."""
+        config_content = """
+self_window_score = -2
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertEqual(config.get_self_window_score(), -2)
+
+    def test_self_window_score_zero(self):
+        """Test self_window_score explicitly set to zero."""
+        config_content = """
+self_window_score = 0
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertEqual(config.get_self_window_score(), 0)
+
+    def test_self_window_score_reloaded_on_config_change(self):
+        """Test that self_window_score is reloaded when config file changes."""
+        config_content = """
+self_window_score = 0
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+        config = Config(str(self.config_path))
+
+        # Verify initial config
+        self.assertEqual(config.get_self_window_score(), 0)
+
+        # Modify the file to change self_window_score
+        time.sleep(0.01)  # Ensure timestamp changes
+        new_content = """
+self_window_score = 3
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(new_content)
+
+        # Reload configuration
+        reloaded = config.reload_if_modified()
+        self.assertTrue(reloaded)
+
+        # Verify self_window_score was updated
+        self.assertEqual(config.get_self_window_score(), 3)
+
     def test_always_on_top_default(self):
         """Test always_on_top defaults to True when not specified."""
         config_content = """
