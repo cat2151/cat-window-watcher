@@ -17,6 +17,8 @@ class ScoreTracker:
         mild_penalty_start_hour=22,
         mild_penalty_end_hour=23,
         reset_score_every_30_minutes=False,
+        self_window_score=0,
+        self_window_title="",
     ):
         """Initialize score tracker.
 
@@ -28,6 +30,8 @@ class ScoreTracker:
             mild_penalty_start_hour: Start hour for mild penalty mode (default: 22)
             mild_penalty_end_hour: End hour for mild penalty mode (default: 23)
             reset_score_every_30_minutes: Whether to reset score every 30 minutes (default: False)
+            self_window_score: Score to apply when app's own window is active (default: 0)
+            self_window_title: Title of app's own window (default: "")
         """
         self.window_patterns = window_patterns
         self.default_score = default_score
@@ -36,6 +40,8 @@ class ScoreTracker:
         self.mild_penalty_start_hour = mild_penalty_start_hour
         self.mild_penalty_end_hour = mild_penalty_end_hour
         self.reset_score_every_30_minutes = reset_score_every_30_minutes
+        self.self_window_score = self_window_score
+        self.self_window_title = self_window_title
         self.score = 0
         self.last_window_title = ""
         self.current_match = None
@@ -53,6 +59,8 @@ class ScoreTracker:
         mild_penalty_start_hour=22,
         mild_penalty_end_hour=23,
         reset_score_every_30_minutes=False,
+        self_window_score=0,
+        self_window_title="",
     ):
         """Update configuration patterns and settings.
 
@@ -64,6 +72,8 @@ class ScoreTracker:
             mild_penalty_start_hour: Start hour for mild penalty mode
             mild_penalty_end_hour: End hour for mild penalty mode
             reset_score_every_30_minutes: Whether to reset score every 30 minutes
+            self_window_score: Score to apply when app's own window is active
+            self_window_title: Title of app's own window
         """
         self.window_patterns = window_patterns
         self.default_score = default_score
@@ -72,6 +82,8 @@ class ScoreTracker:
         self.mild_penalty_start_hour = mild_penalty_start_hour
         self.mild_penalty_end_hour = mild_penalty_end_hour
         self.reset_score_every_30_minutes = reset_score_every_30_minutes
+        self.self_window_score = self_window_score
+        self.self_window_title = self_window_title
 
         # Initialize last reset time slot if the feature is newly enabled
         if reset_score_every_30_minutes and self._last_reset_time_slot is None:
@@ -152,25 +164,39 @@ class ScoreTracker:
         # Update last window title
         self.last_window_title = window_title
 
-        # Check each pattern against window title
-        for pattern in self.window_patterns:
-            regex = pattern.get("regex", "")
-            score_delta = pattern.get("score", 0)
-
-            if regex and re.search(regex, window_title, re.IGNORECASE):
-                # Apply mild penalty if applicable
-                adjusted_score_delta = self._apply_mild_penalty(score_delta)
-                self.score += adjusted_score_delta
-                self.current_match = pattern
+        # Check if this is the app's own window first
+        if self.self_window_title and window_title == self.self_window_title:
+            if self.self_window_score != 0:
+                # Apply mild penalty to self window score if applicable
+                adjusted_self_window_score = self._apply_mild_penalty(self.self_window_score)
+                self.score += adjusted_self_window_score
                 score_changed = True
-                break  # Only match first pattern
+            # Mark as matched (even if score is 0) to prevent default_score from being applied
+            self.current_match = {
+                "regex": "",
+                "score": self.self_window_score,
+                "description": "Cat Window Watcher (self)",
+            }
+        else:
+            # Check each pattern against window title
+            for pattern in self.window_patterns:
+                regex = pattern.get("regex", "")
+                score_delta = pattern.get("score", 0)
 
-        # If no pattern matched, apply default score (if mode is enabled)
-        if not self.current_match and self.apply_default_score_mode and self.default_score != 0:
-            # Apply mild penalty to default score if applicable
-            adjusted_default_score = self._apply_mild_penalty(self.default_score)
-            self.score += adjusted_default_score
-            score_changed = True
+                if regex and re.search(regex, window_title, re.IGNORECASE):
+                    # Apply mild penalty if applicable
+                    adjusted_score_delta = self._apply_mild_penalty(score_delta)
+                    self.score += adjusted_score_delta
+                    self.current_match = pattern
+                    score_changed = True
+                    break  # Only match first pattern
+
+            # If no pattern matched, apply default score (if mode is enabled)
+            if not self.current_match and self.apply_default_score_mode and self.default_score != 0:
+                # Apply mild penalty to default score if applicable
+                adjusted_default_score = self._apply_mild_penalty(self.default_score)
+                self.score += adjusted_default_score
+                score_changed = True
 
         # Update flow state tracking
         self._update_flow_state(previous_score)

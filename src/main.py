@@ -7,11 +7,13 @@ from pathlib import Path
 
 try:
     from .config import Config
+    from .constants import APP_WINDOW_TITLE
     from .gui import ScoreDisplay
     from .score_tracker import ScoreTracker
     from .window_monitor import WindowMonitor
 except ImportError:
     from config import Config
+    from constants import APP_WINDOW_TITLE
     from gui import ScoreDisplay
     from score_tracker import ScoreTracker
     from window_monitor import WindowMonitor
@@ -55,6 +57,8 @@ def main():
             config.get_mild_penalty_start_hour(),
             config.get_mild_penalty_end_hour(),
             config.get_reset_score_every_30_minutes(),
+            config.get_self_window_score(),
+            APP_WINDOW_TITLE,
         )
 
         # Create and run GUI
