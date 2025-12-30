@@ -1550,9 +1550,6 @@ class TestSelfWindowScore(unittest.TestCase):
 class TestScoreDecreasingStateContinued(unittest.TestCase):
     """Additional test cases for score decreasing state tracking."""
 
-class TestScoreDecreasingStateContinued(unittest.TestCase):
-    """Additional test cases for score decreasing state tracking."""
-
     def test_score_decreasing_state_on_score_decrease(self):
         """Test score decreasing state is True when score decreases."""
         patterns = [

@@ -98,6 +98,10 @@ class Config:
 
             # Load self_window_score (score applied when app's own window is active)
             self_window_score = config_data.get("self_window_score", 0)
+            if not isinstance(self_window_score, int):
+                raise ValueError(
+                    f"Invalid 'self_window_score' value: {self_window_score!r}. Must be an integer."
+                )
 
             # Load always_on_top setting (whether window should stay on top)
             always_on_top = config_data.get("always_on_top", True)

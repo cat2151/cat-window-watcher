@@ -305,6 +305,36 @@ description = "GitHub"
         # Verify self_window_score was updated
         self.assertEqual(config.get_self_window_score(), 3)
 
+    def test_self_window_score_invalid_string(self):
+        """Test self_window_score with string value raises SystemExit."""
+        config_content = """
+self_window_score = "zero"
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        with self.assertRaises(SystemExit):
+            Config(str(self.config_path))
+
+    def test_self_window_score_invalid_float(self):
+        """Test self_window_score with float value raises SystemExit."""
+        config_content = """
+self_window_score = 1.5
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        with self.assertRaises(SystemExit):
+            Config(str(self.config_path))
+
     def test_always_on_top_default(self):
         """Test always_on_top defaults to True when not specified."""
         config_content = """
