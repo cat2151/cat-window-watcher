@@ -69,6 +69,7 @@ class MockScoreDisplay:
         self._mouse_in_proximity = False
         self._previous_always_on_top = None
         self._current_window_title = ""
+        self._previous_window_title = ""
         self.root = MagicMock()
 
     def _apply_always_on_top(self):
@@ -150,16 +151,20 @@ class MockScoreDisplay:
             return False  # No priority, let other behaviors take over
 
     def _on_ctrl_c(self, event):
-        """Handle CTRL+C key press to copy current window title to clipboard.
+        """Handle CTRL+C key press to copy previous window title to clipboard.
+
+        This copies the previous window title (not the current one) because when the user
+        presses CTRL+C, the focus is on this application, making it the active window.
+        What we want is the window that was active before switching to this app.
 
         Args:
             event: tkinter event object
         """
-        if self._current_window_title:
+        if self._previous_window_title:
             try:
                 # Clear clipboard and set new content
                 self.root.clipboard_clear()
-                self.root.clipboard_append(self._current_window_title)
+                self.root.clipboard_append(self._previous_window_title)
                 # Update() is needed to finalize the clipboard operation
                 self.root.update()
             except Exception as e:
@@ -1514,7 +1519,7 @@ class TestClipboardCopyOnCtrlC(unittest.TestCase):
         return gui
 
     def test_ctrl_c_copies_current_window_title(self):
-        """Test that CTRL+C copies the current window title to clipboard."""
+        """Test that CTRL+C copies the previous window title to clipboard."""
         config_content = """
 [[window_patterns]]
 regex = "github"
@@ -1523,19 +1528,21 @@ description = "GitHub"
 """
         gui = self._create_mock_gui(config_content)
 
-        # Set a current window title
-        gui._current_window_title = "Random Window Title"
+        # Set a previous window title (this is what should be copied)
+        gui._previous_window_title = "Random Window Title"
+        # Set a different current window title (this should NOT be copied)
+        gui._current_window_title = "Cat Window Watcher - Cat is watching you -"
 
         # Simulate CTRL+C press
         gui._on_ctrl_c(None)
 
-        # Verify clipboard methods were called
+        # Verify clipboard methods were called with previous title
         gui.root.clipboard_clear.assert_called_once()
         gui.root.clipboard_append.assert_called_once_with("Random Window Title")
         gui.root.update.assert_called_once()
 
     def test_ctrl_c_with_empty_title_does_not_copy(self):
-        """Test that CTRL+C does not copy when window title is empty."""
+        """Test that CTRL+C does not copy when previous window title is empty."""
         config_content = """
 [[window_patterns]]
 regex = "github"
@@ -1544,8 +1551,10 @@ description = "GitHub"
 """
         gui = self._create_mock_gui(config_content)
 
-        # Set empty window title
-        gui._current_window_title = ""
+        # Set empty previous window title
+        gui._previous_window_title = ""
+        # Set non-empty current window title (should not be copied)
+        gui._current_window_title = "Some Window"
 
         # Simulate CTRL+C press
         gui._on_ctrl_c(None)
@@ -1564,8 +1573,8 @@ description = "GitHub"
 """
         gui = self._create_mock_gui(config_content)
 
-        # Set a current window title
-        gui._current_window_title = "Random Window Title"
+        # Set a previous window title
+        gui._previous_window_title = "Random Window Title"
 
         # Make clipboard_append raise an exception
         gui.root.clipboard_append.side_effect = Exception("Clipboard error")
@@ -1580,7 +1589,7 @@ description = "GitHub"
         gui.root.clipboard_clear.assert_called_once()
 
     def test_ctrl_c_can_copy_multiple_times(self):
-        """Test that CTRL+C can copy the same title multiple times."""
+        """Test that CTRL+C can copy the same previous title multiple times."""
         config_content = """
 [[window_patterns]]
 regex = "github"
@@ -1589,8 +1598,8 @@ description = "GitHub"
 """
         gui = self._create_mock_gui(config_content)
 
-        # Set a current window title
-        gui._current_window_title = "Random Window Title"
+        # Set a previous window title
+        gui._previous_window_title = "Random Window Title"
 
         # First CTRL+C
         gui._on_ctrl_c(None)
@@ -1608,7 +1617,7 @@ description = "GitHub"
         gui.root.clipboard_append.assert_called_once_with("Random Window Title")
 
     def test_ctrl_c_copies_different_titles(self):
-        """Test that CTRL+C copies different window titles correctly."""
+        """Test that CTRL+C copies different previous window titles correctly."""
         config_content = """
 [[window_patterns]]
 regex = "github"
@@ -1617,8 +1626,8 @@ description = "GitHub"
 """
         gui = self._create_mock_gui(config_content)
 
-        # Set first window title
-        gui._current_window_title = "First Window"
+        # Set first previous window title
+        gui._previous_window_title = "First Window"
 
         # First CTRL+C
         gui._on_ctrl_c(None)
@@ -1629,12 +1638,70 @@ description = "GitHub"
         gui.root.clipboard_append.reset_mock()
         gui.root.update.reset_mock()
 
-        # Change window title
-        gui._current_window_title = "Second Window"
+        # Change previous window title
+        gui._previous_window_title = "Second Window"
 
         # Second CTRL+C with different title
         gui._on_ctrl_c(None)
         gui.root.clipboard_append.assert_called_once_with("Second Window")
+
+    def test_ctrl_c_copies_previous_not_current_title(self):
+        """Test that CTRL+C copies the previous window title, not the current one.
+
+        This verifies the fix for issue #37: When user presses CTRL+C, the focus
+        shifts to the app itself, so we want the previous window title
+        (before the app became active), not the current one.
+        """
+        config_content = """
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        gui = self._create_mock_gui(config_content)
+
+        # Set different current and previous window titles
+        gui._current_window_title = "Cat Window Watcher - Cat is watching you -"
+        gui._previous_window_title = "GitHub - Pull Requests"
+
+        # Simulate CTRL+C press
+        gui._on_ctrl_c(None)
+
+        # Verify that the previous title is copied, not the current one
+        gui.root.clipboard_append.assert_called_once_with("GitHub - Pull Requests")
+        # Make sure it's NOT the current title
+        self.assertNotEqual(gui.root.clipboard_append.call_args[0][0], "Cat Window Watcher - Cat is watching you -")
+
+    def test_ctrl_c_preserves_previous_title_when_current_becomes_empty(self):
+        """Test that previous title is preserved when current title becomes empty.
+
+        If window monitoring temporarily fails and returns an empty title,
+        we should preserve the last valid previous title for clipboard operations.
+        """
+        config_content = """
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        gui = self._create_mock_gui(config_content)
+
+        # Start with valid titles
+        gui._previous_window_title = "GitHub - Pull Requests"
+        gui._current_window_title = "Twitter - Home"
+
+        # Simulate current title becoming empty (monitoring failure)
+        # In the real implementation, this would happen through update_display
+        # Here we test the clipboard behavior with preserved previous title
+        new_previous = gui._current_window_title if gui._current_window_title else gui._previous_window_title
+        gui._previous_window_title = new_previous
+        gui._current_window_title = ""
+
+        # Press CTRL+C - should still have the last valid title
+        gui._on_ctrl_c(None)
+
+        # Verify that we still have a valid title to copy
+        gui.root.clipboard_append.assert_called_once_with("Twitter - Home")
 
 
 if __name__ == "__main__":

@@ -72,8 +72,9 @@ class ScoreDisplay:
         self._current_transparency = 1.0  # 1.0 = fully opaque, 0.0 = fully transparent
         self._fade_active = False
 
-        # Track current window title for clipboard operations
+        # Track current and previous window title for clipboard operations
         self._current_window_title = ""
+        self._previous_window_title = ""
 
         # Create main window
         self.root = tk.Tk()
@@ -233,16 +234,20 @@ class ScoreDisplay:
                 self._fade_active = False
 
     def _on_ctrl_c(self, event):
-        """Handle CTRL+C key press to copy current window title to clipboard.
+        """Handle CTRL+C key press to copy previous window title to clipboard.
+
+        This copies the previous window title (not the current one) because when the user
+        presses CTRL+C, the focus is on this application, making it the active window.
+        What we want is the window that was active before switching to this app.
 
         Args:
             event: tkinter event object
         """
-        if self._current_window_title:
+        if self._previous_window_title:
             try:
                 # Clear clipboard and set new content
                 self.root.clipboard_clear()
-                self.root.clipboard_append(self._current_window_title)
+                self.root.clipboard_append(self._previous_window_title)
                 # Update() is needed to finalize the clipboard operation
                 self.root.update()
             except Exception as e:
@@ -270,7 +275,14 @@ class ScoreDisplay:
         # Get current window title
         window_title = self.window_monitor.get_active_window_title()
 
-        # Store current window title for clipboard operations
+        # Store previous window title before updating to current
+        # This is used for clipboard operations (CTRL+C)
+        # Only update previous title if current title is non-empty to avoid
+        # losing the last valid title when window monitoring temporarily fails
+        if self._current_window_title:
+            self._previous_window_title = self._current_window_title
+
+        # Store current window title
         self._current_window_title = window_title
 
         # Update score
