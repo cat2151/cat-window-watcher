@@ -31,13 +31,16 @@ except ImportError:
         pass
 
 # If tkinter is not available and import failed, define the constant and function here
+# Note: This fallback is necessary for environments without tkinter (e.g., CI/headless systems)
+# where src.gui cannot be imported. The logic is intentionally duplicated to maintain
+# test functionality in these environments.
 if MAX_WINDOW_TITLE_LENGTH is None:
     MAX_WINDOW_TITLE_LENGTH = 40
 
 if get_status_text is None:
 
     def get_status_text(matched_pattern, window_title, default_score):
-        """Fallback implementation of get_status_text for testing."""
+        """Fallback implementation of get_status_text for testing without tkinter."""
         if matched_pattern:
             description = matched_pattern.get("description", "")
             score_delta = matched_pattern.get("score", 0)
