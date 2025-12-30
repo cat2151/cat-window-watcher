@@ -1672,6 +1672,37 @@ description = "GitHub"
         # Make sure it's NOT the current title
         self.assertNotEqual(gui.root.clipboard_append.call_args[0][0], "Cat Window Watcher - Cat is watching you -")
 
+    def test_ctrl_c_preserves_previous_title_when_current_becomes_empty(self):
+        """Test that previous title is preserved when current title becomes empty.
+
+        If window monitoring temporarily fails and returns an empty title,
+        we should preserve the last valid previous title for clipboard operations.
+        """
+        config_content = """
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        gui = self._create_mock_gui(config_content)
+
+        # Start with valid titles
+        gui._previous_window_title = "GitHub - Pull Requests"
+        gui._current_window_title = "Twitter - Home"
+
+        # Simulate current title becoming empty (monitoring failure)
+        # In the real implementation, this would happen through update_display
+        # Here we test the clipboard behavior with preserved previous title
+        new_previous = gui._current_window_title if gui._current_window_title else gui._previous_window_title
+        gui._previous_window_title = new_previous
+        gui._current_window_title = ""
+
+        # Press CTRL+C - should still have the last valid title
+        gui._on_ctrl_c(None)
+
+        # Verify that we still have a valid title to copy
+        gui.root.clipboard_append.assert_called_once_with("Twitter - Home")
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -277,6 +277,8 @@ class ScoreDisplay:
 
         # Store previous window title before updating to current
         # This is used for clipboard operations (CTRL+C)
+        # Only update previous title if current title is non-empty to avoid
+        # losing the last valid title when window monitoring temporarily fails
         if self._current_window_title:
             self._previous_window_title = self._current_window_title
 
