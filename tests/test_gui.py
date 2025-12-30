@@ -1495,6 +1495,12 @@ class TestClipboardCopyOnNoMatch(unittest.TestCase):
         self.temp_dir = tempfile.mkdtemp()
         self.config_path = Path(self.temp_dir) / "test_config.toml"
 
+    def tearDown(self):
+        """Clean up test fixtures."""
+        import shutil
+
+        shutil.rmtree(self.temp_dir, ignore_errors=True)
+
     def _create_mock_gui(self, config_content):
         """Helper to create a mock GUI with given config."""
         self.config_path.write_text(config_content)

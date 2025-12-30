@@ -1428,6 +1428,12 @@ class TestCopyNoMatchToClipboardConfig(unittest.TestCase):
         self.temp_dir = tempfile.mkdtemp()
         self.config_path = Path(self.temp_dir) / "test_config.toml"
 
+    def tearDown(self):
+        """Clean up test fixtures."""
+        import shutil
+
+        shutil.rmtree(self.temp_dir, ignore_errors=True)
+
     def test_copy_no_match_to_clipboard_default(self):
         """Test copy_no_match_to_clipboard defaults to False when not specified."""
         config_content = """
