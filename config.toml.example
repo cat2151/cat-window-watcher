@@ -83,6 +83,14 @@ flow_mode_delay_seconds = 10
 # Range: 1-100 (1 = slow fade, 100 = instant transparency)
 flow_mode_fade_rate_percent_per_second = 1
 
+# Window position settings - initial x and y coordinates for window position
+# When both window_x and window_y are specified, the window will open at that position
+# If either is not specified (or set to null), the system will choose the default position
+# Coordinates are in pixels from the top-left corner of the screen
+# Default: not set (null) - system chooses position
+# window_x = 100
+# window_y = 100
+
 # Window patterns define regex patterns to match window titles
 # and the score change when that window becomes active
 

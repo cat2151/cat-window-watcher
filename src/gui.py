@@ -84,7 +84,15 @@ class ScoreDisplay:
         # Create main window
         self.root = tk.Tk()
         self.root.title(APP_WINDOW_TITLE)
-        self.root.geometry("400x200")
+
+        # Set window geometry (size and optionally position)
+        window_x = config.get_window_x()
+        window_y = config.get_window_y()
+        if window_x is not None and window_y is not None:
+            self.root.geometry(f"400x200+{window_x}+{window_y}")
+        else:
+            self.root.geometry("400x200")
+
         self.root.configure(bg="#2b2b2b")
 
         # Apply initial always_on_top setting

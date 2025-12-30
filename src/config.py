@@ -41,6 +41,8 @@ class Config:
         self.fade_window_on_flow_mode_enabled = False
         self.flow_mode_delay_seconds = 10
         self.flow_mode_fade_rate_percent_per_second = 1
+        self.window_x = None
+        self.window_y = None
         self._last_modified = None
         self.load_config()
 
@@ -99,9 +101,7 @@ class Config:
             # Load self_window_score (score applied when app's own window is active)
             self_window_score = config_data.get("self_window_score", 0)
             if not isinstance(self_window_score, int):
-                raise ValueError(
-                    f"Invalid 'self_window_score' value: {self_window_score!r}. Must be an integer."
-                )
+                raise ValueError(f"Invalid 'self_window_score' value: {self_window_score!r}. Must be an integer.")
 
             # Load always_on_top setting (whether window should stay on top)
             always_on_top = config_data.get("always_on_top", True)
@@ -183,6 +183,16 @@ class Config:
                     f"Invalid 'flow_mode_fade_rate_percent_per_second' value: {flow_mode_fade_rate_percent_per_second!r}. Must be an integer between 1 and 100."
                 )
 
+            # Load window_x setting (initial x coordinate for window position)
+            window_x = config_data.get("window_x", None)
+            if window_x is not None and not isinstance(window_x, int):
+                raise ValueError(f"Invalid 'window_x' value: {window_x!r}. Must be an integer or null.")
+
+            # Load window_y setting (initial y coordinate for window position)
+            window_y = config_data.get("window_y", None)
+            if window_y is not None and not isinstance(window_y, int):
+                raise ValueError(f"Invalid 'window_y' value: {window_y!r}. Must be an integer or null.")
+
             # Load window patterns with their score values
             window_patterns = []
             for pattern in config_data.get("window_patterns", []):
@@ -211,6 +221,8 @@ class Config:
             self.fade_window_on_flow_mode_enabled = fade_window_on_flow_mode_enabled
             self.flow_mode_delay_seconds = flow_mode_delay_seconds
             self.flow_mode_fade_rate_percent_per_second = flow_mode_fade_rate_percent_per_second
+            self.window_x = window_x
+            self.window_y = window_y
             self.window_patterns = window_patterns
 
             # Update last modified timestamp after successful load
@@ -392,3 +404,19 @@ class Config:
             int: Fade rate in percent per second (1-100)
         """
         return self.flow_mode_fade_rate_percent_per_second
+
+    def get_window_x(self):
+        """Get window_x setting.
+
+        Returns:
+            int or None: Initial x coordinate for window position, or None for default
+        """
+        return self.window_x
+
+    def get_window_y(self):
+        """Get window_y setting.
+
+        Returns:
+            int or None: Initial y coordinate for window position, or None for default
+        """
+        return self.window_y

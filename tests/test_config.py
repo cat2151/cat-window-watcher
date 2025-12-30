@@ -1543,5 +1543,278 @@ description = "GitHub"
         self.assertEqual(config.get_flow_mode_fade_rate_percent_per_second(), 5)
 
 
+class TestWindowPositionConfig(unittest.TestCase):
+    """Test cases for window position configuration settings."""
+
+    def setUp(self):
+        """Set up test fixtures."""
+        self.temp_dir = tempfile.mkdtemp()
+        self.config_path = Path(self.temp_dir) / "test_config.toml"
+
+    def test_window_x_default(self):
+        """Test window_x defaults to None when not specified."""
+        config_content = """
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertIsNone(config.get_window_x())
+
+    def test_window_y_default(self):
+        """Test window_y defaults to None when not specified."""
+        config_content = """
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertIsNone(config.get_window_y())
+
+    def test_window_x_positive_value(self):
+        """Test window_x with positive value."""
+        config_content = """
+window_x = 100
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertEqual(config.get_window_x(), 100)
+
+    def test_window_y_positive_value(self):
+        """Test window_y with positive value."""
+        config_content = """
+window_y = 200
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertEqual(config.get_window_y(), 200)
+
+    def test_window_x_zero(self):
+        """Test window_x with zero value."""
+        config_content = """
+window_x = 0
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertEqual(config.get_window_x(), 0)
+
+    def test_window_y_zero(self):
+        """Test window_y with zero value."""
+        config_content = """
+window_y = 0
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertEqual(config.get_window_y(), 0)
+
+    def test_window_x_negative_value(self):
+        """Test window_x with negative value (valid for multi-monitor setups)."""
+        config_content = """
+window_x = -100
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertEqual(config.get_window_x(), -100)
+
+    def test_window_y_negative_value(self):
+        """Test window_y with negative value (valid for multi-monitor setups)."""
+        config_content = """
+window_y = -50
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertEqual(config.get_window_y(), -50)
+
+    def test_window_x_invalid_float(self):
+        """Test window_x with float value raises SystemExit."""
+        config_content = """
+window_x = 100.5
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        with self.assertRaises(SystemExit):
+            Config(str(self.config_path))
+
+    def test_window_y_invalid_float(self):
+        """Test window_y with float value raises SystemExit."""
+        config_content = """
+window_y = 200.7
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        with self.assertRaises(SystemExit):
+            Config(str(self.config_path))
+
+    def test_window_x_invalid_string(self):
+        """Test window_x with string value raises SystemExit."""
+        config_content = """
+window_x = "100"
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        with self.assertRaises(SystemExit):
+            Config(str(self.config_path))
+
+    def test_window_y_invalid_string(self):
+        """Test window_y with string value raises SystemExit."""
+        config_content = """
+window_y = "200"
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        with self.assertRaises(SystemExit):
+            Config(str(self.config_path))
+
+    def test_both_window_position_settings(self):
+        """Test loading both window_x and window_y together."""
+        config_content = """
+window_x = 150
+window_y = 250
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertEqual(config.get_window_x(), 150)
+        self.assertEqual(config.get_window_y(), 250)
+
+    def test_window_position_reloaded_on_config_change(self):
+        """Test that window position settings are reloaded when config file changes."""
+        config_content = """
+window_x = 100
+window_y = 200
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+        config = Config(str(self.config_path))
+
+        # Verify initial config
+        self.assertEqual(config.get_window_x(), 100)
+        self.assertEqual(config.get_window_y(), 200)
+
+        # Modify the file to change window position
+        time.sleep(0.01)  # Ensure timestamp changes
+        new_content = """
+window_x = 300
+window_y = 400
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(new_content)
+
+        # Reload configuration
+        reloaded = config.reload_if_modified()
+        self.assertTrue(reloaded)
+
+        # Verify window position settings were updated
+        self.assertEqual(config.get_window_x(), 300)
+        self.assertEqual(config.get_window_y(), 400)
+
+    def test_window_x_only_without_y(self):
+        """Test setting window_x without window_y."""
+        config_content = """
+window_x = 100
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertEqual(config.get_window_x(), 100)
+        self.assertIsNone(config.get_window_y())
+
+    def test_window_y_only_without_x(self):
+        """Test setting window_y without window_x."""
+        config_content = """
+window_y = 200
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertIsNone(config.get_window_x())
+        self.assertEqual(config.get_window_y(), 200)
+
+
 if __name__ == "__main__":
     unittest.main()
