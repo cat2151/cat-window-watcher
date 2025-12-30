@@ -84,8 +84,9 @@ class ScoreDisplay:
         # Apply initial always_on_top setting
         self._apply_always_on_top()
 
-        # Bind CTRL+C for clipboard copy
+        # Bind clipboard copy shortcuts (Ctrl+C on Windows/Linux, Command+C on macOS)
         self.root.bind("<Control-c>", self._on_ctrl_c)
+        self.root.bind("<Command-c>", self._on_ctrl_c)
 
         # Create score label with initial color
         initial_color = config.get_score_up_color()

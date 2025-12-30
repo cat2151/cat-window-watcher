@@ -149,6 +149,23 @@ class MockScoreDisplay:
             self._apply_always_on_top()
             return False  # No priority, let other behaviors take over
 
+    def _on_ctrl_c(self, event):
+        """Handle CTRL+C key press to copy current window title to clipboard.
+
+        Args:
+            event: tkinter event object
+        """
+        if self._current_window_title:
+            try:
+                # Clear clipboard and set new content
+                self.root.clipboard_clear()
+                self.root.clipboard_append(self._current_window_title)
+                # Update() is needed to finalize the clipboard operation
+                self.root.update()
+            except Exception as e:
+                # Silently ignore clipboard errors to not disrupt the main functionality
+                print(f"Warning: Failed to copy to clipboard: {e}")
+
 
 class TestGuiProximity(unittest.TestCase):
     """Test cases for GUI proximity detection."""
@@ -1493,19 +1510,6 @@ class TestClipboardCopyOnCtrlC(unittest.TestCase):
         gui.root.clipboard_clear = MagicMock()
         gui.root.clipboard_append = MagicMock()
         gui.root.update = MagicMock()
-
-        # Add the _on_ctrl_c method from the real implementation
-        def _on_ctrl_c(event):
-            """Handle CTRL+C key press to copy current window title to clipboard."""
-            if gui._current_window_title:
-                try:
-                    gui.root.clipboard_clear()
-                    gui.root.clipboard_append(gui._current_window_title)
-                    gui.root.update()
-                except Exception as e:
-                    print(f"Warning: Failed to copy to clipboard: {e}")
-
-        gui._on_ctrl_c = _on_ctrl_c
 
         return gui
 
