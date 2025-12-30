@@ -3,6 +3,11 @@
 
 import tkinter as tk
 
+try:
+    from .constants import APP_WINDOW_TITLE
+except ImportError:
+    from constants import APP_WINDOW_TITLE
+
 # Maximum window title length before truncation
 MAX_WINDOW_TITLE_LENGTH = 40
 
@@ -78,7 +83,7 @@ class ScoreDisplay:
 
         # Create main window
         self.root = tk.Tk()
-        self.root.title("Cat Window Watcher - Cat is watching you -")
+        self.root.title(APP_WINDOW_TITLE)
         self.root.geometry("400x200")
         self.root.configure(bg="#2b2b2b")
 
@@ -268,7 +273,7 @@ class ScoreDisplay:
                 self.config.get_mild_penalty_end_hour(),
                 self.config.get_reset_score_every_30_minutes(),
                 self.config.get_self_window_score(),
-                "Cat Window Watcher - Cat is watching you -",
+                APP_WINDOW_TITLE,
             )
 
             # Update always_on_top setting if it changed
