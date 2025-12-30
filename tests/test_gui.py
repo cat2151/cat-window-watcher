@@ -68,6 +68,7 @@ class MockScoreDisplay:
         self.config = config
         self._mouse_in_proximity = False
         self._previous_always_on_top = None
+        self._last_copied_title = None
         self.root = MagicMock()
 
     def _apply_always_on_top(self):
@@ -147,6 +148,32 @@ class MockScoreDisplay:
             # This ensures we don't leave the window stuck in a forced topmost state
             self._apply_always_on_top()
             return False  # No priority, let other behaviors take over
+
+    def _copy_to_clipboard(self, window_title, matched_pattern):
+        """Copy unmatched window title to clipboard if configured.
+
+        Args:
+            window_title: Current window title
+            matched_pattern: Matched pattern dict or None if no match
+        """
+        # Only copy if no match and feature is enabled
+        if matched_pattern is None and self.config.get_copy_no_match_to_clipboard():
+            # Only copy if title is not empty and hasn't been copied yet
+            if window_title and window_title != self._last_copied_title:
+                try:
+                    # Clear clipboard and set new content
+                    self.root.clipboard_clear()
+                    self.root.clipboard_append(window_title)
+                    # Update() is needed to finalize the clipboard operation
+                    self.root.update()
+                    self._last_copied_title = window_title
+                except Exception as e:
+                    # Silently ignore clipboard errors to not disrupt the main functionality
+                    print(f"Warning: Failed to copy to clipboard: {e}")
+        elif matched_pattern is not None:
+            # Reset last copied title when a match is found
+            # This allows the same title to be copied again later if it becomes unmatched
+            self._last_copied_title = None
 
 
 class TestGuiProximity(unittest.TestCase):
@@ -1458,6 +1485,235 @@ description = "GitHub"
 
         # Verify status label shows full window title without ellipsis
         gui.status_label.config.assert_called_with(text=f"No match: {title_max_chars} (-1)")
+
+
+class TestClipboardCopyOnNoMatch(unittest.TestCase):
+    """Test cases for clipboard copy on no match functionality."""
+
+    def setUp(self):
+        """Set up test fixtures."""
+        self.temp_dir = tempfile.mkdtemp()
+        self.config_path = Path(self.temp_dir) / "test_config.toml"
+
+    def tearDown(self):
+        """Clean up test fixtures."""
+        import shutil
+
+        shutil.rmtree(self.temp_dir, ignore_errors=True)
+
+    def _create_mock_gui(self, config_content):
+        """Helper to create a mock GUI with given config."""
+        self.config_path.write_text(config_content)
+        config = Config(str(self.config_path))
+
+        # Create patterns for testing
+        patterns = [{"regex": "github", "score": 10, "description": "GitHub"}]
+        score_tracker = ScoreTracker(patterns)
+
+        # Create mock GUI with clipboard methods
+        gui = MockScoreDisplay(score_tracker, config)
+        gui.score_label = MagicMock()
+        gui.status_label = MagicMock()
+
+        # Mock clipboard methods
+        gui.root.clipboard_clear = MagicMock()
+        gui.root.clipboard_append = MagicMock()
+        gui.root.update = MagicMock()
+
+        return gui
+
+    def test_clipboard_copy_disabled_by_default(self):
+        """Test that clipboard copy is not performed when feature is disabled (default)."""
+        config_content = """
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        gui = self._create_mock_gui(config_content)
+
+        # Initialize last_copied_title
+        gui._last_copied_title = None
+
+        # Simulate no match
+        window_title = "Random Window Title"
+        matched_pattern = None
+
+        # Call clipboard copy method
+        gui._copy_to_clipboard(window_title, matched_pattern)
+
+        # Verify clipboard methods were not called
+        gui.root.clipboard_clear.assert_not_called()
+        gui.root.clipboard_append.assert_not_called()
+
+    def test_clipboard_copy_enabled_copies_on_no_match(self):
+        """Test that clipboard copy works when feature is enabled and no pattern matches."""
+        config_content = """
+copy_no_match_to_clipboard = true
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        gui = self._create_mock_gui(config_content)
+
+        # Initialize last_copied_title
+        gui._last_copied_title = None
+
+        # Simulate no match
+        window_title = "Random Window Title"
+        matched_pattern = None
+
+        # Call clipboard copy method
+        gui._copy_to_clipboard(window_title, matched_pattern)
+
+        # Verify clipboard methods were called
+        gui.root.clipboard_clear.assert_called_once()
+        gui.root.clipboard_append.assert_called_once_with(window_title)
+        gui.root.update.assert_called_once()
+
+    def test_clipboard_copy_not_triggered_on_match(self):
+        """Test that clipboard copy is not performed when a pattern matches."""
+        config_content = """
+copy_no_match_to_clipboard = true
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        gui = self._create_mock_gui(config_content)
+
+        # Initialize last_copied_title
+        gui._last_copied_title = None
+
+        # Simulate match
+        window_title = "GitHub - Profile"
+        matched_pattern = {"regex": "github", "score": 10, "description": "GitHub"}
+
+        # Call clipboard copy method
+        gui._copy_to_clipboard(window_title, matched_pattern)
+
+        # Verify clipboard methods were not called
+        gui.root.clipboard_clear.assert_not_called()
+        gui.root.clipboard_append.assert_not_called()
+
+    def test_clipboard_copy_avoids_repeated_copies(self):
+        """Test that the same title is not copied to clipboard multiple times."""
+        config_content = """
+copy_no_match_to_clipboard = true
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        gui = self._create_mock_gui(config_content)
+
+        # Initialize last_copied_title
+        gui._last_copied_title = None
+
+        # Simulate no match with same title twice
+        window_title = "Random Window Title"
+        matched_pattern = None
+
+        # First call - should copy
+        gui._copy_to_clipboard(window_title, matched_pattern)
+        gui.root.clipboard_clear.assert_called_once()
+        gui.root.clipboard_append.assert_called_once_with(window_title)
+
+        # Reset mocks
+        gui.root.clipboard_clear.reset_mock()
+        gui.root.clipboard_append.reset_mock()
+        gui.root.update.reset_mock()
+
+        # Second call with same title - should not copy again
+        gui._copy_to_clipboard(window_title, matched_pattern)
+        gui.root.clipboard_clear.assert_not_called()
+        gui.root.clipboard_append.assert_not_called()
+
+    def test_clipboard_copy_resets_on_match(self):
+        """Test that last_copied_title is reset when a pattern matches."""
+        config_content = """
+copy_no_match_to_clipboard = true
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        gui = self._create_mock_gui(config_content)
+
+        # Initialize and set last_copied_title
+        gui._last_copied_title = "Some Previously Copied Title"
+
+        # Simulate match
+        window_title = "GitHub - Profile"
+        matched_pattern = {"regex": "github", "score": 10, "description": "GitHub"}
+
+        # Call clipboard copy method
+        gui._copy_to_clipboard(window_title, matched_pattern)
+
+        # Verify last_copied_title was reset
+        self.assertIsNone(gui._last_copied_title)
+
+    def test_clipboard_copy_skips_empty_titles(self):
+        """Test that empty window titles are not copied to clipboard."""
+        config_content = """
+copy_no_match_to_clipboard = true
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        gui = self._create_mock_gui(config_content)
+
+        # Initialize last_copied_title
+        gui._last_copied_title = None
+
+        # Simulate no match with empty title
+        window_title = ""
+        matched_pattern = None
+
+        # Call clipboard copy method
+        gui._copy_to_clipboard(window_title, matched_pattern)
+
+        # Verify clipboard methods were not called
+        gui.root.clipboard_clear.assert_not_called()
+        gui.root.clipboard_append.assert_not_called()
+
+    def test_clipboard_copy_handles_errors_gracefully(self):
+        """Test that clipboard errors are handled gracefully without crashing."""
+        config_content = """
+copy_no_match_to_clipboard = true
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        gui = self._create_mock_gui(config_content)
+
+        # Initialize last_copied_title
+        gui._last_copied_title = None
+
+        # Make clipboard_append raise an exception
+        gui.root.clipboard_append.side_effect = Exception("Clipboard error")
+
+        # Simulate no match
+        window_title = "Random Window Title"
+        matched_pattern = None
+
+        # Call clipboard copy method - should not raise exception
+        try:
+            gui._copy_to_clipboard(window_title, matched_pattern)
+        except Exception as e:
+            self.fail(f"_copy_to_clipboard raised exception: {e}")
+
+        # Verify clipboard_clear was called before the error
+        gui.root.clipboard_clear.assert_called_once()
 
 
 if __name__ == "__main__":

@@ -72,6 +72,9 @@ class ScoreDisplay:
         self._current_transparency = 1.0  # 1.0 = fully opaque, 0.0 = fully transparent
         self._fade_active = False
 
+        # Track last copied window title to avoid repeated copies
+        self._last_copied_title = None
+
         # Create main window
         self.root = tk.Tk()
         self.root.title("Cat Window Watcher - Cat is watching you -")
@@ -225,6 +228,32 @@ class ScoreDisplay:
                 self.root.attributes("-alpha", self._current_transparency)
                 self._fade_active = False
 
+    def _copy_to_clipboard(self, window_title, matched_pattern):
+        """Copy unmatched window title to clipboard if configured.
+
+        Args:
+            window_title: Current window title
+            matched_pattern: Matched pattern dict or None if no match
+        """
+        # Only copy if no match and feature is enabled
+        if matched_pattern is None and self.config.get_copy_no_match_to_clipboard():
+            # Only copy if title is not empty and hasn't been copied yet
+            if window_title and window_title != self._last_copied_title:
+                try:
+                    # Clear clipboard and set new content
+                    self.root.clipboard_clear()
+                    self.root.clipboard_append(window_title)
+                    # Update() is needed to finalize the clipboard operation
+                    self.root.update()
+                    self._last_copied_title = window_title
+                except Exception as e:
+                    # Silently ignore clipboard errors to not disrupt the main functionality
+                    print(f"Warning: Failed to copy to clipboard: {e}")
+        elif matched_pattern is not None:
+            # Reset last copied title when a match is found
+            # This allows the same title to be copied again later if it becomes unmatched
+            self._last_copied_title = None
+
     def update_display(self):
         """Update the display with current score and window info."""
         # Check if config file has been modified and reload if necessary
@@ -248,6 +277,9 @@ class ScoreDisplay:
 
         # Update score
         score_changed, matched_pattern = self.score_tracker.update(window_title)
+
+        # Copy unmatched window title to clipboard if configured
+        self._copy_to_clipboard(window_title, matched_pattern)
 
         # Update score-decreasing-based topmost behavior (after score update)
         # This has highest priority - if it takes control, skip other topmost updates

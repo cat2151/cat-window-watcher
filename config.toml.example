@@ -75,6 +75,12 @@ flow_mode_delay_seconds = 10
 # Range: 1-100 (1 = slow fade, 100 = instant transparency)
 flow_mode_fade_rate_percent_per_second = 1
 
+# Copy no match window title to clipboard - automatically copy unmatched window titles
+# When enabled, window titles that don't match any pattern will be automatically copied to the clipboard
+# This makes it easy to configure new patterns - just switch to a window and paste the title
+# Set to true to enable, false to disable (default: false)
+copy_no_match_to_clipboard = false
+
 # Window patterns define regex patterns to match window titles
 # and the score change when that window becomes active
 

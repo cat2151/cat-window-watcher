@@ -125,6 +125,11 @@ description = "Twitter/X"
   - If set to `false`, the score continues to accumulate.
   - Similar to the Pomodoro Technique, this helps create a mindset of 'focusing for just the next 30 minutes'.
   - Example: If your score is 100 at 10:29, it will reset to 0 at 10:30, starting a new 30-minute period.
+- **copy_no_match_to_clipboard**: Automatically copy unmatched window titles to clipboard (default: false)
+  - If set to `true`, when a window title doesn't match any pattern, it will be automatically copied to the clipboard.
+  - If set to `false`, this feature is disabled.
+  - This makes it easier to configure new patterns - just switch to a window and paste the title into your config file.
+  - Each unique unmatched title is only copied once to avoid repeated clipboard updates.
 - **regex**: Regular expression pattern to match window titles (case-insensitive)
 - **score**: Integer value to add to the score when the pattern matches (can be negative)
 - **description**: Human-readable description displayed in the status area
