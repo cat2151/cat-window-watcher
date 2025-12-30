@@ -167,7 +167,9 @@ class ScoreTracker:
         # Check if this is the app's own window first
         if self.self_window_title and window_title == self.self_window_title:
             if self.self_window_score != 0:
-                self.score += self.self_window_score
+                # Apply mild penalty to self window score if applicable
+                adjusted_self_window_score = self._apply_mild_penalty(self.self_window_score)
+                self.score += adjusted_self_window_score
                 score_changed = True
             # Mark as matched (even if score is 0) to prevent default_score from being applied
             self.current_match = {

@@ -1546,6 +1546,69 @@ class TestSelfWindowScore(unittest.TestCase):
         tracker.update("New Title")
         self.assertEqual(tracker.get_score(), 5)  # 2 + 3
 
+    def test_self_window_score_with_mild_penalty_mode(self):
+        """Test that self_window_score is affected by mild penalty mode."""
+        from datetime import datetime
+        from unittest.mock import patch
+
+        patterns = [
+            {"regex": "github", "score": 10, "description": "GitHub"},
+        ]
+        tracker = ScoreTracker(
+            patterns,
+            default_score=-1,
+            mild_penalty_mode=True,
+            mild_penalty_start_hour=22,
+            mild_penalty_end_hour=23,
+            self_window_score=-5,
+            self_window_title=self.self_window_title,
+        )
+
+        # Mock datetime to return hour 22 (within mild penalty hours)
+        with patch("src.score_tracker.datetime") as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 1, 22, 30)  # 22:30
+
+            # Negative self_window_score should be limited to -1
+            tracker.update(self.self_window_title)
+            self.assertEqual(tracker.get_score(), -1)
+
+            # Second update should also be limited to -1
+            tracker.update(self.self_window_title)
+            self.assertEqual(tracker.get_score(), -2)  # -1 + (-1)
+
+        # Mock datetime to return hour 10 (outside mild penalty hours)
+        with patch("src.score_tracker.datetime") as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 0)  # 10:00
+
+            tracker.reset_score()
+
+            # Negative self_window_score should apply normally
+            tracker.update(self.self_window_title)
+            self.assertEqual(tracker.get_score(), -5)
+
+    def test_self_window_score_positive_not_affected_by_mild_penalty(self):
+        """Test that positive self_window_score is not affected by mild penalty mode."""
+        from datetime import datetime
+        from unittest.mock import patch
+
+        tracker = ScoreTracker(
+            self.patterns,
+            default_score=-1,
+            mild_penalty_mode=True,
+            mild_penalty_start_hour=22,
+            mild_penalty_end_hour=23,
+            self_window_score=5,
+            self_window_title=self.self_window_title,
+        )
+
+        # Mock datetime to return hour 22 (within mild penalty hours)
+        with patch("src.score_tracker.datetime") as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 1, 22, 30)
+
+            # Positive self_window_score should not be affected by mild penalty
+            tracker.update(self.self_window_title)
+            self.assertEqual(tracker.get_score(), 5)
+
 
 class TestScoreDecreasingStateContinued(unittest.TestCase):
     """Additional test cases for score decreasing state tracking."""
