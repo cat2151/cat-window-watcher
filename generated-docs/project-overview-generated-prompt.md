@@ -1,4 +1,4 @@
-Last updated: 2025-12-31
+Last updated: 2026-01-01
 
 
 # プロジェクト概要生成プロンプト（来訪者向け）
@@ -359,6 +359,7 @@ pip install pywin32
   📄 __init__.py
   📄 __main__.py
   📄 config.py
+  📄 constants.py
   📄 gui.py
   📄 main.py
   📄 score_tracker.py
@@ -412,4 +413,4 @@ issue-notes/9.md
 
 
 ---
-Generated at: 2025-12-31 07:05:29 JST
+Generated at: 2026-01-01 07:05:38 JST
