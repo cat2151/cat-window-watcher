@@ -105,7 +105,7 @@ description = "Twitter/X"
   - 0に設定すると、マッチしない場合はスコアが変化しません
   - パターンが誤って設定されている場合、スコアが継続的に減少するため、すぐに気づくことができます
 - **apply_default_score_mode**: デフォルトスコアの適用制御（デフォルト: true）
-  - `true`（デフォルト）に設定すると、パターンがマッチしない場合に default_score が適用されます
+  - `true`に設定すると、パターンがマッチしない場合に default_score が適用されます
   - `false`に設定すると、パターンがマッチしない場合でもスコアは変化しません（スコアは維持されます）
 - **self_window_score**: アプリ自身のウィンドウがアクティブな場合に適用されるスコア（デフォルト: 0）
   - Cat Window Watcherのウィンドウ自体にフォーカスを切り替えた場合、default_scoreや「マッチなし」の代わりにこのスコアが適用されます
@@ -114,7 +114,7 @@ description = "Twitter/X"
   - 負の値に設定すると、過度なスコアチェックを抑制します
 - **mild_penalty_mode**: 指定した時間帯にマイナススコアを -1 に制限するモード（デフォルト: false）
   - **注意**: これはテスト目的の暫定実装です
-  - `true`に設定すると有効化、`false`で無効化（デフォルト: false）
+  - `true`に設定すると有効化、`false`で無効化
 - **mild_penalty_start_hour**: マイルドペナルティモードの開始時刻（0-23、デフォルト: 22）
   - mild_penalty_mode が有効な場合、mild_penalty_start_hour から mild_penalty_end_hour までの時間帯にマイナススコアが -1 に制限されます
 - **mild_penalty_end_hour**: マイルドペナルティモードの終了時刻（0-23、デフォルト: 23）
