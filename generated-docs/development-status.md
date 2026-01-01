@@ -1,51 +1,50 @@
-Last updated: 2026-01-01
+Last updated: 2026-01-02
 
 # Development Status
 
 ## 現在のIssues
-- [Issue #42](../issue-notes/42.md) と [Issue #39](../issue-notes/39.md) は、アプリケーションウィンドウの初期表示位置をTOML設定ファイル（`window_x`, `window_y`）でカスタマイズする機能の追加を目指しています。
-- [Issue #26](../issue-notes/26.md) は、開発者が自身でアプリケーションを日常的に使用（ドッグフーディング）し、実際の使用感に基づいた改善点を見つけることを目的としています。
-- [Issue #9](../issue-notes/9.md) は、ウィンドウタイトルが設定されたパターンにマッチしない場合に、デフォルトのスコアを定義することで設定ミスを早期に検知しやすくする改善を提案しています。
+- [Issue #26](../issue-notes/26.md) は、自身の開発ツールを実際に使用して改善点を見つける「ドッグフーディング」を開始することを目指しています。
+- [Issue #6](../issue-notes/6.md) では、GitHubサイトの特定のページ（プルリクエストやコードビュー）が `config.toml.example` の設定によって正しく認識されない問題の解決が必要です。
+- [Issue #43](../issue-notes/43.md) は、最近issue noteが追加されており、プロジェクトの新たな課題または特定の機能改善に関するものであると推測されます。
 
 ## 次の一手候補
-1. アプリケーションウィンドウの初期表示位置をTOMLで設定できるようにする [Issue #42](../issue-notes/42.md)
-   - 最初の小さな一歩: `src/config.py` に `window_x` と `window_y` の読み込みロジックを追加し、デフォルト値をNoneに設定する。
+1. [Issue #26](../issue-notes/26.md) ドッグフーディング計画の策定と初期実行
+   - 最初の小さな一歩: ツールを日常的に使用する期間を設定し、その間に気付いた改善点やバグを記録するためのシンプルなログファイル（例: `DOGFOODING_NOTES.md`）を新規作成する。
    - Agent実行プロンプト:
      ```
-     対象ファイル: src/config.py, config.toml.example
+     対象ファイル: README.ja.md, DOGFOODING_NOTES.md (新規作成)
 
-     実行内容: `src/config.py` に、`config.toml.example` の設定を参考に、`window_x` と `window_y` (int型、デフォルトはNone) をTOMLから読み込む機能を追加してください。`config.toml.example` にもこれらの設定項目を追加してください。
+     実行内容: README.ja.mdにドッグフーディングの目的と開始方法を追記し、DOGFOODING_NOTES.mdという新規ファイルを作成して、初期の観察事項を記録するためのシンプルなフォーマットを提供してください。
 
-     確認事項: 既存の`load_config`関数との整合性、型変換時のエラーハンドリング（Noneまたはint型以外の値の場合）、および他の設定項目との競合がないことを確認してください。`window_x`と`window_y`が負の値を取りうることも考慮してください。
+     確認事項: 既存のREADMEコンテンツとの整合性、およびプロジェクトの目的との一貫性を確認してください。DOGFOODING_NOTES.mdはプロジェクトのルートディレクトリに作成します。
 
-     期待する出力: `src/config.py` と `config.toml.example` の変更内容を記載したコードブロック。
+     期待する出力: README.ja.mdの更新内容と、新規作成するDOGFOODING_NOTES.mdの初期コンテンツをmarkdown形式で出力してください。
      ```
 
-2. マッチしない場合のデフォルトスコアをTOMLで設定できるようにする [Issue #9](../issue-notes/9.md)
-   - 最初の小さな一歩: `src/config.py` に `default_unmatched_score` の読み込みロジックを追加し、`config.toml.example` にも設定項目を追加する。
+2. [Issue #6](../issue-notes/6.md) GitHubサイト認識ロジックの調査と改善計画
+   - 最初の小さな一歩: `src/window_monitor.py` 内で、ウィンドウタイトルと設定ファイルのキーワードを比較している部分を特定し、そのロジックを把握する。
    - Agent実行プロンプト:
      ```
-     対象ファイル: src/config.py, src/score_tracker.py, config.toml.example
+     対象ファイル: src/window_monitor.py, src/config.py, config.toml.example
 
-     実行内容: `src/config.py` に `default_unmatched_score` (int型、デフォルトは例えば-1) をTOMLから読み込む機能を追加し、`config.toml.example` にもこの設定項目を追加してください。また、`src/score_tracker.py` でウィンドウタイトルがどのパターンにもマッチしなかった場合に、この `default_unmatched_score` を使用するように修正してください。
+     実行内容: `src/window_monitor.py` がどのようにウィンドウタイトルを取得し、`src/config.py`で読み込まれた`config.toml.example`内の設定（特にGitHub関連の正規表現やキーワード）と照合しているか、そのロジックを分析してください。特に、ウィンドウタイトルに"github"が含まれない「Pull requests」や「Code」ページを認識できない原因となりうる部分に焦点を当ててください。
 
-     確認事項: 既存のスコア計算ロジックとの整合性、負のスコアが適切に扱われるか、および設定値が有効な数値であることを確認してください。
+     確認事項: ウィンドウタイトルマッチングに影響を与える可能性のある設定項目（例: `github`セクションの`keywords`や`regex`）と、それらがコード内でどのように利用されているかを確認してください。
 
-     期待する出力: `src/config.py`, `src/score_tracker.py`, `config.toml.example` の変更内容を記載したコードブロック。
+     期待する出力: `src/window_monitor.py`と`src/config.py`におけるウィンドウタイトル認識ロジックの概要をmarkdown形式で説明し、[Issue #6](../issue-notes/6.md)の現象が発生しうる具体的なコード箇所と改善の方向性を提案してください。
      ```
 
-3. ドッグフーディング開始の準備とフィードバック収集 [Issue #26](../issue-notes/26.md)
-   - 最初の小さな一歩: 開発者がアプリケーションを日常的に利用し始めるための最小限のガイダンスを`README.md`に追記する。
+3. [Issue #43](../issue-notes/43.md) 新規Issueの初期調査と内容明確化
+   - 最初の小さな一歩: `issue-notes/43.md` のファイル内容を確認し、Issue #43の具体的な目的、課題、関連するファイルや機能について初期的な把握を行う。
    - Agent実行プロンプト:
      ```
-     対象ファイル: README.md, README.ja.md
+     対象ファイル: issue-notes/43.md
 
-     実行内容: `README.md` と `README.ja.md` に「Dogfooding / ドッグフーディング」セクションを追加し、開発者がアプリケーションをどのように日常的に使用し、フィードバックをどのように収集するか（例: 新しいIssueを立てる、既存のIssueにコメントする）についての簡単なガイドラインを記述してください。
+     実行内容: `issue-notes/43.md` のファイル内容を読み込み、Issue #43の具体的な目的、課題、関連するファイルや機能について分析してください。もしファイルが存在しない、または内容が不足している場合は、その旨を報告してください。
 
-     確認事項: 既存のREADME構造との整合性、簡潔で分かりやすい説明になっているか、および具体的なフィードバック経路が示されていることを確認してください。
+     確認事項: ファイルの存在確認と、内容がプロジェクトの他の部分（例: 最近のコミットや既存の機能）とどのように関連しているかを確認してください。
 
-     期待する出力: `README.md` と `README.ja.md` の変更内容を記載したコードブロック。
-     ```
+     期待する出力: Issue #43の具体的な内容（もしあれば）、それが解決しようとしている問題、および次のステップとして考えられる行動をmarkdown形式で出力してください。もし内容が不明な場合は、その状況を明確に記述してください。
 
 ---
-Generated at: 2026-01-01 07:05:52 JST
+Generated at: 2026-01-02 07:05:57 JST

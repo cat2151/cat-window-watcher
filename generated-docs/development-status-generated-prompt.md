@@ -1,4 +1,4 @@
-Last updated: 2026-01-01
+Last updated: 2026-01-02
 
 # 開発状況生成プロンプト（開発者向け）
 
@@ -226,6 +226,7 @@ Last updated: 2026-01-01
 - issue-notes/39.md
 - issue-notes/4.md
 - issue-notes/40.md
+- issue-notes/43.md
 - issue-notes/6.md
 - issue-notes/8.md
 - issue-notes/9.md
@@ -247,36 +248,6 @@ Last updated: 2026-01-01
 - tests/test_window_monitor.py
 
 ## 現在のオープンIssues
-## [Issue #42](../issue-notes/42.md): Add window position configuration via window_x and window_y
-Adds ability to set initial window position through TOML config. Previously, the window always opened at system-default position.
-
-## Changes
-
-- **Config**: Added `window_x` and `window_y` options (default: `None`)
-  - Validation: integers only, supports negative values for multi-monitor setups
-  - ...
-ラベル: 
---- issue-notes/42.md の内容 ---
-
-```markdown
-
-```
-
-## [Issue #39](../issue-notes/39.md): 初期表示xy座標をtomlで設定できるようにする
-[issue-notes/39.md](https://github.com/cat2151/cat-window-watcher/blob/main/issue-notes/39.md)
-
-...
-ラベル: 
---- issue-notes/39.md の内容 ---
-
-```markdown
-# issue 初期表示xy座標をtomlで設定できるようにする #39
-[issues #39](https://github.com/cat2151/cat-window-watcher/issues/39)
-
-
-
-```
-
 ## [Issue #26](../issue-notes/26.md): ドッグフーディングする
 [issue-notes/26.md](https://github.com/cat2151/cat-window-watcher/blob/main/issue-notes/26.md)
 
@@ -293,181 +264,6 @@ Adds ability to set initial window position through TOML config. Previously, the
 ```
 
 ## ドキュメントで言及されているファイルの内容
-### .github/actions-tmp/issue-notes/2.md
-```md
-{% raw %}
-# issue GitHub Actions「関数コールグラフhtmlビジュアライズ生成」を共通ワークフロー化する #2
-[issues #2](https://github.com/cat2151/github-actions/issues/2)
-
-
-# prompt
-```
-あなたはGitHub Actionsと共通ワークフローのスペシャリストです。
-このymlファイルを、以下の2つのファイルに分割してください。
-1. 共通ワークフロー       cat2151/github-actions/.github/workflows/callgraph_enhanced.yml
-2. 呼び出し元ワークフロー cat2151/github-actions/.github/workflows/call-callgraph_enhanced.yml
-まずplanしてください
-```
-
-# 結果
-- indent
-    - linter？がindentのエラーを出しているがyml内容は見た感じOK
-    - テキストエディタとagentの相性問題と判断する
-    - 別のテキストエディタでsaveしなおし、テキストエディタをreload
-    - indentのエラーは解消した
-- LLMレビュー
-    - agent以外の複数のLLMにレビューさせる
-    - prompt
-```
-あなたはGitHub Actionsと共通ワークフローのスペシャリストです。
-以下の2つのファイルをレビューしてください。最優先で、エラーが発生するかどうかだけレビューしてください。エラー以外の改善事項のチェックをするかわりに、エラー発生有無チェックに最大限注力してください。
-
---- 共通ワークフロー
-
-# GitHub Actions Reusable Workflow for Call Graph Generation
-name: Generate Call Graph
-
-# TODO Windowsネイティブでのtestをしていた名残が残っているので、今後整理していく。今はWSL act でtestしており、Windowsネイティブ環境依存問題が解決した
-#  ChatGPTにレビューさせるとそこそこ有用そうな提案が得られたので、今後それをやる予定
-#  agentに自己チェックさせる手も、セカンドオピニオンとして選択肢に入れておく
-
-on:
-  workflow_call:
-
-jobs:
-  check-commits:
-    runs-on: ubuntu-latest
-    outputs:
-      should-run: ${{ steps.check.outputs.should-run }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 50 # 過去のコミットを取得
-
-      - name: Check for user commits in last 24 hours
-        id: check
-        run: |
-          node .github/scripts/callgraph_enhanced/check-commits.cjs
-
-  generate-callgraph:
-    needs: check-commits
-    if: needs.check-commits.outputs.should-run == 'true'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      security-events: write
-      actions: read
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set Git identity
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-      - name: Remove old CodeQL packages cache
-        run: rm -rf ~/.codeql/packages
-
-      - name: Check Node.js version
-        run: |
-          node .github/scripts/callgraph_enhanced/check-node-version.cjs
-
-      - name: Install CodeQL CLI
-        run: |
-          wget https://github.com/github/codeql-cli-binaries/releases/download/v2.22.1/codeql-linux64.zip
-          unzip codeql-linux64.zip
-          sudo mv codeql /opt/codeql
-          echo "/opt/codeql" >> $GITHUB_PATH
-
-      - name: Install CodeQL query packs
-        run: |
-          /opt/codeql/codeql pack install .github/codeql-queries
-
-      - name: Check CodeQL exists
-        run: |
-          node .github/scripts/callgraph_enhanced/check-codeql-exists.cjs
-
-      - name: Verify CodeQL Configuration
-        run: |
-          node .github/scripts/callgraph_enhanced/analyze-codeql.cjs verify-config
-
-      - name: Remove existing CodeQL DB (if any)
-        run: |
-          rm -rf codeql-db
-
-      - name: Perform CodeQL Analysis
-        run: |
-          node .github/scripts/callgraph_enhanced/analyze-codeql.cjs analyze
-
-      - name: Check CodeQL Analysis Results
-        run: |
-          node .github/scripts/callgraph_enhanced/analyze-codeql.cjs check-results
-
-      - name: Debug CodeQL execution
-        run: |
-          node .github/scripts/callgraph_enhanced/analyze-codeql.cjs debug
-
-      - name: Wait for CodeQL results
-        run: |
-          node -e "setTimeout(()=>{}, 10000)"
-
-      - name: Find and process CodeQL results
-        run: |
-          node .github/scripts/callgraph_enhanced/find-process-results.cjs
-
-      - name: Generate HTML graph
-        run: |
-          node .github/scripts/callgraph_enhanced/generate-html-graph.cjs
-
-      - name: Copy files to generated-docs and commit results
-        run: |
-          node .github/scripts/callgraph_enhanced/copy-commit-results.cjs
-
---- 呼び出し元
-# 呼び出し元ワークフロー: call-callgraph_enhanced.yml
-name: Call Call Graph Enhanced
-
-on:
-  schedule:
-    # 毎日午前5時(JST) = UTC 20:00前日
-    - cron: '0 20 * * *'
-  workflow_dispatch:
-
-jobs:
-  call-callgraph-enhanced:
-    # uses: cat2151/github-actions/.github/workflows/callgraph_enhanced.yml
-    uses: ./.github/workflows/callgraph_enhanced.yml # ローカルでのテスト用
-```
-
-# レビュー結果OKと判断する
-- レビュー結果を人力でレビューした形になった
-
-# test
-- #4 同様にローカル WSL + act でtestする
-- エラー。userのtest設計ミス。
-  - scriptの挙動 : src/ がある前提
-  - 今回の共通ワークフローのリポジトリ : src/ がない
-  - 今回testで実現したいこと
-    - 仮のソースでよいので、関数コールグラフを生成させる
-  - 対策
-    - src/ にダミーを配置する
-- test green
-  - ただしcommit pushはしてないので、html内容が0件NG、といったケースの検知はできない
-  - もしそうなったら別issueとしよう
-
-# test green
-
-# commit用に、yml 呼び出し元 uses をlocal用から本番用に書き換える
-
-# closeとする
-- もしhtml内容が0件NG、などになったら、別issueとするつもり
-
-{% endraw %}
-```
-
 ### .github/actions-tmp/issue-notes/26.md
 ```md
 {% raw %}
@@ -536,46 +332,6 @@ has_recent_human_commit=false
 {% endraw %}
 ```
 
-### .github/actions-tmp/issue-notes/9.md
-```md
-{% raw %}
-# issue 関数コールグラフhtmlビジュアライズが0件なので、原因を可視化する #9
-[issues #9](https://github.com/cat2151/github-actions/issues/9)
-
-# agentに修正させたり、人力で修正したりした
-- agentがハルシネーションし、いろいろ根の深いバグにつながる、エラー隠蔽などを仕込んでいたため、検知が遅れた
-- 詳しくはcommit logを参照のこと
-- WSL + actの環境を少し変更、act起動時のコマンドライン引数を変更し、generated-docsをmountする（ほかはデフォルト挙動であるcpだけにする）ことで、デバッグ情報をコンテナ外に出力できるようにし、デバッグを効率化した
-
-# test green
-
-# closeとする
-
-{% endraw %}
-```
-
-### issue-notes/9.md
-```md
-{% raw %}
-# issue マッチしない場合のscore、を定義し、マッチ設定ミスを検知しやすくする #9
-[issues #9](https://github.com/cat2151/cat-window-watcher/issues/9)
-
-
-
-{% endraw %}
-```
-
-### issue-notes/39.md
-```md
-{% raw %}
-# issue 初期表示xy座標をtomlで設定できるようにする #39
-[issues #39](https://github.com/cat2151/cat-window-watcher/issues/39)
-
-
-
-{% endraw %}
-```
-
 ### issue-notes/6.md
 ```md
 {% raw %}
@@ -589,35 +345,34 @@ has_recent_human_commit=false
 
 ## 最近の変更（過去7日間）
 ### コミット履歴:
-a2c5e0e Merge pull request #41 from cat2151/copilot/add-toml-score-configuration
-40c276e Update project summaries (overview & development status) [auto]
-1fa01ca Apply mild penalty to self_window_score and add test coverage
-668b6a1 Refactor: Extract APP_WINDOW_TITLE constant to avoid duplication
-0b56dd1 Fix code review issues: Add validation and remove duplicate class
-afd3b15 Add self_window_score configuration feature
-c78da24 Initial plan
-9d842e9 Add issue note for #40 [auto]
-6493e74 Add issue note for #39 [auto]
-ed818ef Merge pull request #38 from cat2151/copilot/fix-clipboard-title-issue
+6b70ba5 Auto-translate README.ja.md to README.md [auto]
+4fec17b Merge pull request #44 from cat2151/copilot/update-readme-with-config-items
+1b3167c Remove redundant default value mentions
+3225fb0 Improve documentation clarity based on code review feedback
+265b4f8 Add missing config.toml.example items to README.ja.md
+603de31 Initial plan
+68213de Add issue note for #43 [auto]
+52ef51c Merge pull request #42 from cat2151/copilot/add-initial-position-xy-coordinates
+fa6e54f Update project summaries (overview & development status) [auto]
+8ec7b52 Add window position configuration options (window_x, window_y)
 
 ### 変更されたファイル:
+README.ja.md
+README.md
 config.toml.example
 generated-docs/development-status-generated-prompt.md
 generated-docs/development-status.md
 generated-docs/project-overview-generated-prompt.md
 generated-docs/project-overview.md
-issue-notes/37.md
-issue-notes/39.md
-issue-notes/40.md
+issue-notes/43.md
 src/config.py
 src/constants.py
 src/gui.py
 src/main.py
 src/score_tracker.py
 tests/test_config.py
-tests/test_gui.py
 tests/test_score_tracker.py
 
 
 ---
-Generated at: 2026-01-01 07:05:38 JST
+Generated at: 2026-01-02 07:05:32 JST
