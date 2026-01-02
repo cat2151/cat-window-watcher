@@ -1,4 +1,4 @@
-Last updated: 2026-01-02
+Last updated: 2026-01-03
 
 # 開発状況生成プロンプト（開発者向け）
 
@@ -345,34 +345,29 @@ has_recent_human_commit=false
 
 ## 最近の変更（過去7日間）
 ### コミット履歴:
+f6b7e38 PRとレビューを日本語化できるか試し
+813ad03 ignore
+87a09e4 Jekyll設定
+e75440b Update project summaries (overview & development status) [auto]
 6b70ba5 Auto-translate README.ja.md to README.md [auto]
 4fec17b Merge pull request #44 from cat2151/copilot/update-readme-with-config-items
 1b3167c Remove redundant default value mentions
 3225fb0 Improve documentation clarity based on code review feedback
 265b4f8 Add missing config.toml.example items to README.ja.md
 603de31 Initial plan
-68213de Add issue note for #43 [auto]
-52ef51c Merge pull request #42 from cat2151/copilot/add-initial-position-xy-coordinates
-fa6e54f Update project summaries (overview & development status) [auto]
-8ec7b52 Add window position configuration options (window_x, window_y)
 
 ### 変更されたファイル:
+.github/copilot-instructions.md
+.gitignore
 README.ja.md
 README.md
-config.toml.example
+_config.yml
 generated-docs/development-status-generated-prompt.md
 generated-docs/development-status.md
 generated-docs/project-overview-generated-prompt.md
 generated-docs/project-overview.md
 issue-notes/43.md
-src/config.py
-src/constants.py
-src/gui.py
-src/main.py
-src/score_tracker.py
-tests/test_config.py
-tests/test_score_tracker.py
 
 
 ---
-Generated at: 2026-01-02 07:05:32 JST
+Generated at: 2026-01-03 07:05:33 JST
