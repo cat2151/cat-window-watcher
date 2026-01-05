@@ -1,4 +1,4 @@
-Last updated: 2026-01-03
+Last updated: 2026-01-06
 
 
 # プロジェクト概要生成プロンプト（来訪者向け）
@@ -217,6 +217,11 @@ description = "Twitter/X"
 - **flow_mode_fade_rate_percent_per_second**: フローモードの透明化速度（1秒あたりの透明度増加率、パーセント単位、デフォルト: 1）
   - フローモード中、ウィンドウは毎秒このパーセント分だけ透明になります
   - 範囲: 1-100（1 = ゆっくりとしたフェード、100 = 即座に透明化）
+- **default_transparency**: ウィンドウの初期透明度（デフォルト: 1.0）
+  - ウィンドウ起動時の透明度/不透明度を設定します
+  - 範囲: 0.0-1.0（0.0 = 完全に透明、1.0 = 完全に不透明）
+  - デフォルトでウィンドウを少し透明にしたい場合に便利です
+  - デフォルト: 1.0 - 完全に不透明
 - **window_x / window_y**: ウィンドウの初期位置（X座標 / Y座標、ピクセル単位）
   - 両方が指定されている場合、ウィンドウはその位置に開きます
   - どちらか一方が指定されていない場合（または null に設定されている場合）は、システムがデフォルト位置を選択します
@@ -385,6 +390,10 @@ pip install pywin32
   📖 4.md
   📖 40.md
   📖 43.md
+  📖 45.md
+  📖 46.md
+  📖 48.md
+  📖 50.md
   📖 6.md
   📖 8.md
   📖 9.md
@@ -435,6 +444,10 @@ issue-notes/39.md
 issue-notes/4.md
 issue-notes/40.md
 issue-notes/43.md
+issue-notes/45.md
+issue-notes/46.md
+issue-notes/48.md
+issue-notes/50.md
 issue-notes/6.md
 issue-notes/8.md
 issue-notes/9.md
@@ -449,4 +462,4 @@ issue-notes/9.md
 
 
 ---
-Generated at: 2026-01-03 07:05:32 JST
+Generated at: 2026-01-06 07:05:56 JST
