@@ -1225,7 +1225,7 @@ description = "GitHub"
         # Reset mock after initialization
         gui.root.reset_mock()
 
-        # Already at 1.0 (default), mode disabled
+        # Already at default transparency, mode disabled
         gui._update_window_transparency()
 
         # Should not call attributes if no change
