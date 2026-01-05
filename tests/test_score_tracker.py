@@ -1715,8 +1715,15 @@ class TestElapsedSecondsTracking(unittest.TestCase):
 
     def test_initial_elapsed_seconds(self):
         """Test that elapsed seconds is 0 initially."""
-        tracker = ScoreTracker(self.patterns, default_score=0)
-        elapsed = tracker.get_current_window_elapsed_seconds()
+        from datetime import datetime
+        from unittest.mock import patch
+
+        # Mock datetime in src.score_tracker so that initialization time and
+        # elapsed-time calculation use the same fixed timestamp.
+        with patch("src.score_tracker.datetime") as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 0, 0)
+            tracker = ScoreTracker(self.patterns, default_score=0)
+            elapsed = tracker.get_current_window_elapsed_seconds()
         self.assertEqual(elapsed, 0)
 
     def test_elapsed_seconds_increases_with_time(self):
@@ -1724,11 +1731,12 @@ class TestElapsedSecondsTracking(unittest.TestCase):
         from datetime import datetime
         from unittest.mock import patch
 
-        tracker = ScoreTracker(self.patterns, default_score=0)
+        tracker = None
 
-        # Start with GitHub window
+        # Start with GitHub window; initialize tracker under mocked datetime
         with patch("src.score_tracker.datetime") as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 0, 0)
+            tracker = ScoreTracker(self.patterns, default_score=0)
             tracker.update("GitHub - Repository")
 
         # Check elapsed after 5 seconds
@@ -1748,11 +1756,10 @@ class TestElapsedSecondsTracking(unittest.TestCase):
         from datetime import datetime
         from unittest.mock import patch
 
-        tracker = ScoreTracker(self.patterns, default_score=0)
-
-        # Start with GitHub window at 10:00:00
+        # Initialize tracker and start with GitHub window at 10:00:00
         with patch("src.score_tracker.datetime") as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 0, 0)
+            tracker = ScoreTracker(self.patterns, default_score=0)
             tracker.update("GitHub - Repository")
 
         # Check elapsed after 10 seconds (at 10:00:10)
@@ -1783,11 +1790,10 @@ class TestElapsedSecondsTracking(unittest.TestCase):
         from datetime import datetime
         from unittest.mock import patch
 
-        tracker = ScoreTracker(self.patterns, default_score=0)
-
         # Start with GitHub window at 10:00:00
         with patch("src.score_tracker.datetime") as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 0, 0)
+            tracker = ScoreTracker(self.patterns, default_score=0)
             tracker.update("GitHub - Repository")
 
         # Same window at 10:00:05
@@ -1809,11 +1815,10 @@ class TestElapsedSecondsTracking(unittest.TestCase):
         from datetime import datetime
         from unittest.mock import patch
 
-        tracker = ScoreTracker(self.patterns, default_score=0)
-
         # Start with GitHub Repository at 10:00:00
         with patch("src.score_tracker.datetime") as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 0, 0)
+            tracker = ScoreTracker(self.patterns, default_score=0)
             tracker.update("GitHub - Repository")
 
         # Check elapsed after 10 seconds
