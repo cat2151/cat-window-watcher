@@ -297,3 +297,13 @@ class ScoreTracker:
             return 0
         elapsed = (datetime.now() - self._current_window_start_time).total_seconds()
         return int(elapsed)
+
+    def get_flow_mode_elapsed_seconds(self):
+        """Get elapsed seconds since flow mode started if in flow state, otherwise 0.
+
+        Returns:
+            int: Elapsed seconds since flow mode started, or 0 if not in flow state
+        """
+        if self.is_in_flow_state():
+            return int(self.get_flow_state_duration())
+        return 0

@@ -350,9 +350,7 @@ class ScoreDisplay:
 
         # Update status label with elapsed seconds
         elapsed_seconds = self.score_tracker.get_current_window_elapsed_seconds()
-        flow_mode_seconds = (
-            int(self.score_tracker.get_flow_state_duration()) if self.score_tracker.is_in_flow_state() else 0
-        )
+        flow_mode_seconds = self.score_tracker.get_flow_mode_elapsed_seconds()
         status_text = get_status_text(
             matched_pattern, window_title, self.score_tracker.default_score, elapsed_seconds, flow_mode_seconds
         )
