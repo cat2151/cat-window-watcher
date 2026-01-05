@@ -12,7 +12,7 @@ except ImportError:
 MAX_WINDOW_TITLE_LENGTH = 40
 
 
-def get_status_text(matched_pattern, window_title, default_score, elapsed_seconds=0):
+def get_status_text(matched_pattern, window_title, default_score, elapsed_seconds=0, flow_mode_seconds=0):
     """Generate status text based on pattern match and window title.
 
     Args:
@@ -20,12 +20,18 @@ def get_status_text(matched_pattern, window_title, default_score, elapsed_second
         window_title: Current window title string
         default_score: Default score value when no pattern matches
         elapsed_seconds: Elapsed seconds since current window became active (default: 0)
+        flow_mode_seconds: Elapsed seconds since flow mode started (default: 0)
 
     Returns:
         str: Status text to display
     """
-    # Format elapsed time
-    elapsed_text = f" [{elapsed_seconds}秒]" if elapsed_seconds > 0 else ""
+    # Format elapsed time - prioritize flow mode time if active
+    if flow_mode_seconds > 0:
+        elapsed_text = f" [フロー: {flow_mode_seconds}秒]"
+    elif elapsed_seconds > 0:
+        elapsed_text = f" [{elapsed_seconds}秒]"
+    else:
+        elapsed_text = ""
 
     if matched_pattern:
         description = matched_pattern.get("description", "")
@@ -344,7 +350,10 @@ class ScoreDisplay:
 
         # Update status label with elapsed seconds
         elapsed_seconds = self.score_tracker.get_current_window_elapsed_seconds()
-        status_text = get_status_text(matched_pattern, window_title, self.score_tracker.default_score, elapsed_seconds)
+        flow_mode_seconds = self.score_tracker.get_flow_mode_elapsed_seconds()
+        status_text = get_status_text(
+            matched_pattern, window_title, self.score_tracker.default_score, elapsed_seconds, flow_mode_seconds
+        )
         self.status_label.config(text=status_text)
 
         # Schedule next update

@@ -1314,6 +1314,37 @@ class TestFlowStateTracking(unittest.TestCase):
         tracker.update("GitHub")
         self.assertTrue(tracker.is_in_flow_state())
 
+    def test_get_flow_mode_elapsed_seconds_in_flow_state(self):
+        """Test get_flow_mode_elapsed_seconds returns correct value in flow state."""
+        from datetime import datetime
+        from unittest.mock import patch
+
+        tracker = ScoreTracker(self.patterns, default_score=0)
+
+        # Enter flow state
+        with patch("src.score_tracker.datetime") as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 0, 0)
+            tracker.update("GitHub")
+
+        # Check elapsed seconds after 25 seconds
+        with patch("src.score_tracker.datetime") as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 0, 25)
+            elapsed = tracker.get_flow_mode_elapsed_seconds()
+            self.assertEqual(elapsed, 25)
+
+    def test_get_flow_mode_elapsed_seconds_not_in_flow_state(self):
+        """Test get_flow_mode_elapsed_seconds returns 0 when not in flow state."""
+        tracker = ScoreTracker(self.patterns, default_score=0)
+
+        # Not in flow state initially
+        elapsed = tracker.get_flow_mode_elapsed_seconds()
+        self.assertEqual(elapsed, 0)
+
+        # After decreasing score (not in flow state)
+        tracker.update("Twitter Feed")
+        elapsed = tracker.get_flow_mode_elapsed_seconds()
+        self.assertEqual(elapsed, 0)
+
 
 class TestScoreDecreasingState(unittest.TestCase):
     """Test cases for score decreasing state tracking."""
