@@ -1816,5 +1816,196 @@ description = "GitHub"
         self.assertEqual(config.get_window_y(), 200)
 
 
+class TestDefaultTransparencyConfig(unittest.TestCase):
+    """Test cases for default_transparency configuration settings."""
+
+    def setUp(self):
+        """Set up test fixtures."""
+        self.temp_dir = tempfile.mkdtemp()
+        self.config_path = Path(self.temp_dir) / "test_config.toml"
+
+    def test_default_transparency_default(self):
+        """Test default_transparency defaults to 1.0 when not specified."""
+        config_content = """
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertEqual(config.get_default_transparency(), 1.0)
+
+    def test_default_transparency_custom_value(self):
+        """Test default_transparency with custom value."""
+        config_content = """
+default_transparency = 0.8
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertEqual(config.get_default_transparency(), 0.8)
+
+    def test_default_transparency_zero(self):
+        """Test default_transparency can be set to zero (fully transparent)."""
+        config_content = """
+default_transparency = 0.0
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertEqual(config.get_default_transparency(), 0.0)
+
+    def test_default_transparency_one(self):
+        """Test default_transparency can be set to 1.0 (fully opaque)."""
+        config_content = """
+default_transparency = 1.0
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertEqual(config.get_default_transparency(), 1.0)
+
+    def test_default_transparency_integer_value(self):
+        """Test default_transparency accepts integer values (0 or 1)."""
+        config_content = """
+default_transparency = 1
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertEqual(config.get_default_transparency(), 1)
+
+    def test_default_transparency_half(self):
+        """Test default_transparency with 0.5 (half transparent)."""
+        config_content = """
+default_transparency = 0.5
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path))
+        self.assertEqual(config.get_default_transparency(), 0.5)
+
+    def test_default_transparency_invalid_negative(self):
+        """Test default_transparency with negative value raises SystemExit."""
+        config_content = """
+default_transparency = -0.1
+"""
+        self.config_path.write_text(config_content)
+
+        with self.assertRaises(SystemExit):
+            Config(str(self.config_path))
+
+    def test_default_transparency_invalid_over_one(self):
+        """Test default_transparency with value over 1.0 raises SystemExit."""
+        config_content = """
+default_transparency = 1.1
+"""
+        self.config_path.write_text(config_content)
+
+        with self.assertRaises(SystemExit):
+            Config(str(self.config_path))
+
+    def test_default_transparency_invalid_string(self):
+        """Test default_transparency with string value raises SystemExit."""
+        config_content = """
+default_transparency = "opaque"
+"""
+        self.config_path.write_text(config_content)
+
+        with self.assertRaises(SystemExit):
+            Config(str(self.config_path))
+
+    def test_default_transparency_reloaded_on_config_change(self):
+        """Test that default_transparency is reloaded when config file changes."""
+        config_content = """
+default_transparency = 1.0
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+        config = Config(str(self.config_path))
+
+        # Verify initial config
+        self.assertEqual(config.get_default_transparency(), 1.0)
+
+        # Modify the file to change default_transparency
+        time.sleep(0.01)  # Ensure timestamp changes
+        new_content = """
+default_transparency = 0.6
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(new_content)
+
+        # Reload configuration
+        reloaded = config.reload_if_modified()
+        self.assertTrue(reloaded)
+
+        # Verify default_transparency was updated
+        self.assertEqual(config.get_default_transparency(), 0.6)
+
+    def test_default_transparency_boundary_values(self):
+        """Test default_transparency with exact boundary values."""
+        # Test lower boundary (0.0)
+        config_content_low = """
+default_transparency = 0.0
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content_low)
+        config = Config(str(self.config_path))
+        self.assertEqual(config.get_default_transparency(), 0.0)
+
+        # Test upper boundary (1.0)
+        time.sleep(0.01)  # Ensure timestamp changes
+        config_content_high = """
+default_transparency = 1.0
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content_high)
+        config.reload_if_modified()
+        self.assertEqual(config.get_default_transparency(), 1.0)
+
+
 if __name__ == "__main__":
     unittest.main()

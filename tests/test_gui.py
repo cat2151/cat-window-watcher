@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Tests for GUI module proximity detection."""
 
+import shutil
 import tempfile
 import unittest
 from pathlib import Path
@@ -736,7 +737,6 @@ class TestGuiScoreColors(unittest.TestCase):
 
     def tearDown(self):
         """Clean up test fixtures."""
-        import shutil
 
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
@@ -944,15 +944,19 @@ class MockScoreDisplayWithTransparency(MockScoreDisplay):
     def __init__(self, score_tracker, config, update_interval=1000):
         super().__init__(score_tracker, config)
         self.update_interval = update_interval
-        self._current_transparency = 1.0
+        self._current_transparency = config.get_default_transparency()
         self._fade_active = False
+        # Set initial transparency on the mock root
+        self.root.attributes("-alpha", self._current_transparency)
 
     def _update_window_transparency(self):
         """Update window transparency based on flow mode state."""
+        default_transparency = self.config.get_default_transparency()
+
         if not self.config.get_fade_window_on_flow_mode_enabled():
-            # Mode is disabled, ensure window is fully opaque
-            if self._current_transparency < 1.0:
-                self._current_transparency = 1.0
+            # Mode is disabled, ensure window is at default transparency
+            if self._current_transparency != default_transparency:
+                self._current_transparency = default_transparency
                 self.root.attributes("-alpha", self._current_transparency)
             self._fade_active = False
             return
@@ -979,9 +983,9 @@ class MockScoreDisplayWithTransparency(MockScoreDisplay):
                 self._current_transparency = new_transparency
                 self.root.attributes("-alpha", self._current_transparency)
         else:
-            # Not in flow state or haven't reached delay yet, reset transparency
-            if self._current_transparency < 1.0 or self._fade_active:
-                self._current_transparency = 1.0
+            # Not in flow state or haven't reached delay yet, reset transparency to default
+            if self._current_transparency != default_transparency or self._fade_active:
+                self._current_transparency = default_transparency
                 self.root.attributes("-alpha", self._current_transparency)
                 self._fade_active = False
 
@@ -996,7 +1000,6 @@ class TestGuiTransparencyUpdate(unittest.TestCase):
 
     def tearDown(self):
         """Clean up test fixtures."""
-        import shutil
 
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
@@ -1219,7 +1222,10 @@ description = "GitHub"
 """
         gui = self._create_mock_gui(config_content)
 
-        # Already at 1.0, mode disabled
+        # Reset mock after initialization
+        gui.root.reset_mock()
+
+        # Already at default transparency, mode disabled
         gui._update_window_transparency()
 
         # Should not call attributes if no change
@@ -1259,7 +1265,6 @@ class TestGuiStatusLabelDisplay(unittest.TestCase):
 
     def tearDown(self):
         """Clean up test fixtures."""
-        import shutil
 
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
@@ -1493,7 +1498,6 @@ class TestClipboardCopyOnCtrlC(unittest.TestCase):
 
     def tearDown(self):
         """Clean up test fixtures."""
-        import shutil
 
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
@@ -1702,6 +1706,184 @@ description = "GitHub"
 
         # Verify that we still have a valid title to copy
         gui.root.clipboard_append.assert_called_once_with("Twitter - Home")
+
+
+class TestGuiDefaultTransparency(unittest.TestCase):
+    """Test cases for GUI default transparency setting."""
+
+    def setUp(self):
+        """Set up test fixtures."""
+        self.temp_dir = tempfile.mkdtemp()
+        self.config_path = Path(self.temp_dir) / "test_config.toml"
+
+    def tearDown(self):
+        """Clean up test fixtures."""
+
+        shutil.rmtree(self.temp_dir, ignore_errors=True)
+
+    def _create_mock_gui(self, config_content):
+        """Create a mock GUI with given configuration."""
+        self.config_path.write_text(config_content)
+        config = Config(str(self.config_path))
+        patterns = [
+            {"regex": "github", "score": 10, "description": "GitHub"},
+            {"regex": "twitter", "score": -5, "description": "Twitter"},
+        ]
+        score_tracker = ScoreTracker(patterns, default_score=0)
+        gui = MockScoreDisplayWithTransparency(score_tracker, config)
+        return gui
+
+    def test_default_transparency_initializes_to_1_0_by_default(self):
+        """Test that default transparency is 1.0 when not specified in config."""
+        config_content = """
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        gui = self._create_mock_gui(config_content)
+
+        # Verify default transparency is 1.0
+        self.assertEqual(gui._current_transparency, 1.0)
+        # Verify it's set on the window
+        gui.root.attributes.assert_called_with("-alpha", 1.0)
+
+    def test_default_transparency_initializes_to_configured_value(self):
+        """Test that default transparency uses configured value."""
+        config_content = """
+default_transparency = 0.7
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        gui = self._create_mock_gui(config_content)
+
+        # Verify default transparency is 0.7
+        self.assertEqual(gui._current_transparency, 0.7)
+        # Verify it's set on the window
+        gui.root.attributes.assert_called_with("-alpha", 0.7)
+
+    def test_default_transparency_zero_fully_transparent(self):
+        """Test that default transparency 0.0 makes window fully transparent."""
+        config_content = """
+default_transparency = 0.0
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        gui = self._create_mock_gui(config_content)
+
+        # Verify default transparency is 0.0
+        self.assertEqual(gui._current_transparency, 0.0)
+        # Verify it's set on the window
+        gui.root.attributes.assert_called_with("-alpha", 0.0)
+
+    def test_default_transparency_half_transparent(self):
+        """Test that default transparency 0.5 makes window half transparent."""
+        config_content = """
+default_transparency = 0.5
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        gui = self._create_mock_gui(config_content)
+
+        # Verify default transparency is 0.5
+        self.assertEqual(gui._current_transparency, 0.5)
+        # Verify it's set on the window
+        gui.root.attributes.assert_called_with("-alpha", 0.5)
+
+    def test_transparency_resets_to_configured_default_not_1_0(self):
+        """Test that transparency resets to configured default, not hardcoded 1.0."""
+        from datetime import datetime
+        from unittest.mock import patch
+
+        config_content = """
+fade_window_on_flow_mode_enabled = true
+flow_mode_delay_seconds = 0
+flow_mode_fade_rate_percent_per_second = 10
+default_transparency = 0.8
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+
+[[window_patterns]]
+regex = "twitter"
+score = -20
+description = "Twitter"
+"""
+        gui = self._create_mock_gui(config_content)
+
+        # Initial transparency should be 0.8
+        self.assertEqual(gui._current_transparency, 0.8)
+
+        # Enter flow state and fade
+        with patch("src.score_tracker.datetime") as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 0, 0)
+            gui.score_tracker.update("github.com")
+            gui._update_window_transparency()
+            # Should fade to 0.7 (0.8 - 10%)
+            self.assertAlmostEqual(gui._current_transparency, 0.7, delta=0.01)
+
+        # Exit flow state
+        gui.score_tracker.update("twitter.com")
+        self.assertFalse(gui.score_tracker.is_in_flow_state())
+
+        # Transparency should reset to default (0.8), not 1.0
+        gui._update_window_transparency()
+        self.assertEqual(gui._current_transparency, 0.8)
+        # Verify the attributes call
+        gui.root.attributes.assert_called_with("-alpha", 0.8)
+
+    def test_transparency_disabled_flow_mode_restores_to_default(self):
+        """Test that transparency restores to configured default when flow mode is disabled."""
+        config_content = """
+fade_window_on_flow_mode_enabled = false
+default_transparency = 0.9
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        gui = self._create_mock_gui(config_content)
+
+        # Manually set transparency lower than default
+        gui._current_transparency = 0.5
+
+        # Update transparency with flow mode disabled
+        gui._update_window_transparency()
+
+        # Should restore to default (0.9)
+        self.assertEqual(gui._current_transparency, 0.9)
+        gui.root.attributes.assert_called_with("-alpha", 0.9)
+
+    def test_transparency_with_various_default_values(self):
+        """Test transparency initialization with various default values."""
+        test_values = [0.0, 0.25, 0.5, 0.75, 1.0]
+
+        for value in test_values:
+            with self.subTest(value=value):
+                config_content = f"""
+default_transparency = {value}
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+                gui = self._create_mock_gui(config_content)
+
+                # Verify transparency is set correctly
+                self.assertEqual(gui._current_transparency, value)
 
 
 if __name__ == "__main__":

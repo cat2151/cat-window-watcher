@@ -41,6 +41,7 @@ class Config:
         self.fade_window_on_flow_mode_enabled = False
         self.flow_mode_delay_seconds = 10
         self.flow_mode_fade_rate_percent_per_second = 1
+        self.default_transparency = 1.0
         self.window_x = None
         self.window_y = None
         self._last_modified = None
@@ -193,6 +194,17 @@ class Config:
             if window_y is not None and not isinstance(window_y, int):
                 raise ValueError(f"Invalid 'window_y' value: {window_y!r}. Must be an integer or null.")
 
+            # Load default_transparency setting (default window transparency/opacity, 0.0-1.0)
+            default_transparency = config_data.get("default_transparency", 1.0)
+            if not isinstance(default_transparency, (int, float)):
+                raise ValueError(
+                    f"Invalid 'default_transparency' value: {default_transparency!r}. Must be a number (int or float)."
+                )
+            if not (0.0 <= default_transparency <= 1.0):
+                raise ValueError(
+                    f"Invalid 'default_transparency' value: {default_transparency!r}. Must be between 0.0 and 1.0."
+                )
+
             # Load window patterns with their score values
             window_patterns = []
             for pattern in config_data.get("window_patterns", []):
@@ -221,6 +233,7 @@ class Config:
             self.fade_window_on_flow_mode_enabled = fade_window_on_flow_mode_enabled
             self.flow_mode_delay_seconds = flow_mode_delay_seconds
             self.flow_mode_fade_rate_percent_per_second = flow_mode_fade_rate_percent_per_second
+            self.default_transparency = default_transparency
             self.window_x = window_x
             self.window_y = window_y
             self.window_patterns = window_patterns
@@ -404,6 +417,14 @@ class Config:
             int: Fade rate in percent per second (1-100)
         """
         return self.flow_mode_fade_rate_percent_per_second
+
+    def get_default_transparency(self):
+        """Get default_transparency setting.
+
+        Returns:
+            float: Default window transparency (0.0 = fully transparent, 1.0 = fully opaque)
+        """
+        return self.default_transparency
 
     def get_window_x(self):
         """Get window_x setting.
