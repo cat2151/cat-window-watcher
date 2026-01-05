@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Tests for GUI module proximity detection."""
 
+import shutil
 import tempfile
 import unittest
 from pathlib import Path
@@ -1888,8 +1889,6 @@ description = "GitHub"
             # Verify transparency is set correctly
             self.assertEqual(gui._current_transparency, value)
             # Clean up for next iteration
-            import shutil
-
             shutil.rmtree(self.temp_dir, ignore_errors=True)
             self.temp_dir = tempfile.mkdtemp()
             self.config_path = Path(self.temp_dir) / "test_config.toml"
