@@ -40,13 +40,16 @@ if MAX_WINDOW_TITLE_LENGTH is None:
 
 if get_status_text is None:
 
-    def get_status_text(matched_pattern, window_title, default_score):
+    def get_status_text(matched_pattern, window_title, default_score, elapsed_seconds=0):
         """Fallback implementation of get_status_text for testing without tkinter."""
+        # Format elapsed time
+        elapsed_text = f" [{elapsed_seconds}秒]" if elapsed_seconds > 0 else ""
+
         if matched_pattern:
             description = matched_pattern.get("description", "")
             score_delta = matched_pattern.get("score", 0)
             score_sign = "+" if score_delta >= 0 else ""
-            return f"{description} ({score_sign}{score_delta})"
+            return f"{description} ({score_sign}{score_delta}){elapsed_text}"
         else:
             display_title = (
                 window_title[:MAX_WINDOW_TITLE_LENGTH] + "..."
@@ -56,9 +59,13 @@ if get_status_text is None:
             if default_score != 0:
                 score_sign = "+" if default_score >= 0 else ""
                 score_text = f"({score_sign}{default_score})"
-                return f"No match: {display_title} {score_text}" if display_title else f"No match {score_text}"
+                return (
+                    f"No match: {display_title} {score_text}{elapsed_text}"
+                    if display_title
+                    else f"No match {score_text}{elapsed_text}"
+                )
             else:
-                return display_title if display_title else "Watching..."
+                return f"{display_title}{elapsed_text}" if display_title else f"Watching...{elapsed_text}"
 
 
 class MockScoreDisplay:
@@ -1250,8 +1257,9 @@ class MockScoreDisplayWithStatusLabel(MockScoreDisplay):
         # Update score
         score_changed, matched_pattern = self.score_tracker.update(window_title)
 
-        # Update status label using the extracted function
-        status_text = get_status_text(matched_pattern, window_title, self.score_tracker.default_score)
+        # Update status label using the extracted function with elapsed seconds
+        elapsed_seconds = self.score_tracker.get_current_window_elapsed_seconds()
+        status_text = get_status_text(matched_pattern, window_title, self.score_tracker.default_score, elapsed_seconds)
         self.status_label.config(text=status_text)
 
 

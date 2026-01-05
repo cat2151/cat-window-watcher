@@ -49,6 +49,7 @@ class ScoreTracker:
         self._in_score_up_state = False
         self._score_up_state_start_time = None
         self._in_score_decreasing_state = False
+        self._current_window_start_time = datetime.now()  # Track when current window became active
 
     def update_config(
         self,
@@ -160,6 +161,10 @@ class ScoreTracker:
         score_changed = False
         self.current_match = None
         previous_score = self.score
+
+        # Track window change - reset start time when window title changes
+        if self.last_window_title != window_title:
+            self._current_window_start_time = datetime.now()
 
         # Update last window title
         self.last_window_title = window_title
@@ -281,3 +286,14 @@ class ScoreTracker:
             dict: Current matched pattern or None
         """
         return self.current_match
+
+    def get_current_window_elapsed_seconds(self):
+        """Get elapsed seconds since current window became active.
+
+        Returns:
+            int: Elapsed seconds since current window became active
+        """
+        if self._current_window_start_time is None:
+            return 0
+        elapsed = (datetime.now() - self._current_window_start_time).total_seconds()
+        return int(elapsed)
