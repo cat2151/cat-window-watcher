@@ -737,7 +737,6 @@ class TestGuiScoreColors(unittest.TestCase):
 
     def tearDown(self):
         """Clean up test fixtures."""
-        import shutil
 
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
@@ -1001,7 +1000,6 @@ class TestGuiTransparencyUpdate(unittest.TestCase):
 
     def tearDown(self):
         """Clean up test fixtures."""
-        import shutil
 
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
@@ -1267,7 +1265,6 @@ class TestGuiStatusLabelDisplay(unittest.TestCase):
 
     def tearDown(self):
         """Clean up test fixtures."""
-        import shutil
 
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
@@ -1501,7 +1498,6 @@ class TestClipboardCopyOnCtrlC(unittest.TestCase):
 
     def tearDown(self):
         """Clean up test fixtures."""
-        import shutil
 
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
@@ -1722,7 +1718,6 @@ class TestGuiDefaultTransparency(unittest.TestCase):
 
     def tearDown(self):
         """Clean up test fixtures."""
-        import shutil
 
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
@@ -1876,7 +1871,8 @@ description = "GitHub"
         test_values = [0.0, 0.25, 0.5, 0.75, 1.0]
 
         for value in test_values:
-            config_content = f"""
+            with self.subTest(value=value):
+                config_content = f"""
 default_transparency = {value}
 
 [[window_patterns]]
@@ -1884,14 +1880,10 @@ regex = "github"
 score = 10
 description = "GitHub"
 """
-            gui = self._create_mock_gui(config_content)
+                gui = self._create_mock_gui(config_content)
 
-            # Verify transparency is set correctly
-            self.assertEqual(gui._current_transparency, value)
-            # Clean up for next iteration
-            shutil.rmtree(self.temp_dir, ignore_errors=True)
-            self.temp_dir = tempfile.mkdtemp()
-            self.config_path = Path(self.temp_dir) / "test_config.toml"
+                # Verify transparency is set correctly
+                self.assertEqual(gui._current_transparency, value)
 
 
 if __name__ == "__main__":
