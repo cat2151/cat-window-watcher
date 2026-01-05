@@ -74,7 +74,8 @@ class ScoreDisplay:
         self._previous_score = score_tracker.get_score()
 
         # Track fade state for flow mode
-        self._current_transparency = 1.0  # 1.0 = fully opaque, 0.0 = fully transparent
+        # Initialize transparency from config
+        self._current_transparency = config.get_default_transparency()
         self._fade_active = False
 
         # Track current and previous window title for clipboard operations
@@ -94,6 +95,9 @@ class ScoreDisplay:
             self.root.geometry("400x200")
 
         self.root.configure(bg="#2b2b2b")
+
+        # Set initial transparency
+        self.root.attributes("-alpha", self._current_transparency)
 
         # Apply initial always_on_top setting
         self._apply_always_on_top()
@@ -210,10 +214,12 @@ class ScoreDisplay:
 
     def _update_window_transparency(self):
         """Update window transparency based on flow mode state."""
+        default_transparency = self.config.get_default_transparency()
+
         if not self.config.get_fade_window_on_flow_mode_enabled():
-            # Mode is disabled, ensure window is fully opaque
-            if self._current_transparency < 1.0:
-                self._current_transparency = 1.0
+            # Mode is disabled, ensure window is at default transparency
+            if self._current_transparency != default_transparency:
+                self._current_transparency = default_transparency
                 self.root.attributes("-alpha", self._current_transparency)
             self._fade_active = False
             return
@@ -240,9 +246,9 @@ class ScoreDisplay:
                 self._current_transparency = new_transparency
                 self.root.attributes("-alpha", self._current_transparency)
         else:
-            # Not in flow state or haven't reached delay yet, reset transparency
-            if self._current_transparency < 1.0 or self._fade_active:
-                self._current_transparency = 1.0
+            # Not in flow state or haven't reached delay yet, reset transparency to default
+            if self._current_transparency != default_transparency or self._fade_active:
+                self._current_transparency = default_transparency
                 self.root.attributes("-alpha", self._current_transparency)
                 self._fade_active = False
 
