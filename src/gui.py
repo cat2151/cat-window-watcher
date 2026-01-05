@@ -12,22 +12,26 @@ except ImportError:
 MAX_WINDOW_TITLE_LENGTH = 40
 
 
-def get_status_text(matched_pattern, window_title, default_score):
+def get_status_text(matched_pattern, window_title, default_score, elapsed_seconds=0):
     """Generate status text based on pattern match and window title.
 
     Args:
         matched_pattern: Matched pattern dict with 'description' and 'score', or None
         window_title: Current window title string
         default_score: Default score value when no pattern matches
+        elapsed_seconds: Elapsed seconds since current window became active (default: 0)
 
     Returns:
         str: Status text to display
     """
+    # Format elapsed time
+    elapsed_text = f" [{elapsed_seconds}秒]" if elapsed_seconds > 0 else ""
+
     if matched_pattern:
         description = matched_pattern.get("description", "")
         score_delta = matched_pattern.get("score", 0)
         score_sign = "+" if score_delta >= 0 else ""
-        return f"{description} ({score_sign}{score_delta})"
+        return f"{description} ({score_sign}{score_delta}){elapsed_text}"
     else:
         # No match - always show window title to help users configure patterns
         # Show truncated window title
@@ -42,9 +46,13 @@ def get_status_text(matched_pattern, window_title, default_score):
             score_sign = "+" if default_score >= 0 else ""
             score_text = f"({score_sign}{default_score})"
             # Combine window title with default score information
-            return f"No match: {display_title} {score_text}" if display_title else f"No match {score_text}"
+            return (
+                f"No match: {display_title} {score_text}{elapsed_text}"
+                if display_title
+                else f"No match {score_text}{elapsed_text}"
+            )
         else:
-            return display_title if display_title else "Watching..."
+            return f"{display_title}{elapsed_text}" if display_title else f"Watching...{elapsed_text}"
 
 
 class ScoreDisplay:
@@ -334,8 +342,9 @@ class ScoreDisplay:
         self.score_label.config(fg=score_color)
         self._previous_score = current_score
 
-        # Update status label
-        status_text = get_status_text(matched_pattern, window_title, self.score_tracker.default_score)
+        # Update status label with elapsed seconds
+        elapsed_seconds = self.score_tracker.get_current_window_elapsed_seconds()
+        status_text = get_status_text(matched_pattern, window_title, self.score_tracker.default_score, elapsed_seconds)
         self.status_label.config(text=status_text)
 
         # Schedule next update
