@@ -38,7 +38,7 @@ description = "Twitter"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         patterns = config.get_window_patterns()
 
         self.assertEqual(len(patterns), 2)
@@ -55,7 +55,7 @@ description = "Twitter"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         patterns = config.get_window_patterns()
 
         self.assertEqual(len(patterns), 0)
@@ -73,7 +73,7 @@ regex = "test"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         patterns = config.get_window_patterns()
 
         self.assertEqual(len(patterns), 1)
@@ -93,7 +93,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertEqual(config.get_default_score(), -1)
 
     def test_default_score_default_value(self):
@@ -106,7 +106,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertEqual(config.get_default_score(), -1)
 
     def test_default_score_positive_value(self):
@@ -121,7 +121,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertEqual(config.get_default_score(), 5)
 
     def test_default_score_zero(self):
@@ -136,7 +136,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertEqual(config.get_default_score(), 0)
 
     def test_apply_default_score_mode_default(self):
@@ -149,7 +149,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertTrue(config.get_apply_default_score_mode())
 
     def test_apply_default_score_mode_true(self):
@@ -164,7 +164,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertTrue(config.get_apply_default_score_mode())
 
     def test_apply_default_score_mode_false(self):
@@ -179,7 +179,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertFalse(config.get_apply_default_score_mode())
 
     def test_apply_default_score_mode_invalid_string(self):
@@ -195,7 +195,7 @@ description = "GitHub"
         self.config_path.write_text(config_content)
 
         with self.assertRaises(SystemExit):
-            Config(str(self.config_path))
+            Config(str(self.config_path), verbose=False)
 
     def test_apply_default_score_mode_invalid_integer(self):
         """Test apply_default_score_mode with integer value raises SystemExit."""
@@ -210,7 +210,7 @@ description = "GitHub"
         self.config_path.write_text(config_content)
 
         with self.assertRaises(SystemExit):
-            Config(str(self.config_path))
+            Config(str(self.config_path), verbose=False)
 
     def test_self_window_score_default(self):
         """Test self_window_score defaults to 0 when not specified."""
@@ -222,7 +222,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertEqual(config.get_self_window_score(), 0)
 
     def test_self_window_score_positive(self):
@@ -237,7 +237,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertEqual(config.get_self_window_score(), 5)
 
     def test_self_window_score_negative(self):
@@ -252,7 +252,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertEqual(config.get_self_window_score(), -2)
 
     def test_self_window_score_zero(self):
@@ -267,7 +267,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertEqual(config.get_self_window_score(), 0)
 
     def test_self_window_score_reloaded_on_config_change(self):
@@ -281,7 +281,7 @@ score = 10
 description = "GitHub"
 """
         self.config_path.write_text(config_content)
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
 
         # Verify initial config
         self.assertEqual(config.get_self_window_score(), 0)
@@ -318,7 +318,7 @@ description = "GitHub"
         self.config_path.write_text(config_content)
 
         with self.assertRaises(SystemExit):
-            Config(str(self.config_path))
+            Config(str(self.config_path), verbose=False)
 
     def test_self_window_score_invalid_float(self):
         """Test self_window_score with float value raises SystemExit."""
@@ -333,7 +333,7 @@ description = "GitHub"
         self.config_path.write_text(config_content)
 
         with self.assertRaises(SystemExit):
-            Config(str(self.config_path))
+            Config(str(self.config_path), verbose=False)
 
     def test_always_on_top_default(self):
         """Test always_on_top defaults to True when not specified."""
@@ -345,7 +345,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertTrue(config.get_always_on_top())
 
     def test_always_on_top_true(self):
@@ -360,7 +360,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertTrue(config.get_always_on_top())
 
     def test_always_on_top_false(self):
@@ -375,7 +375,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertFalse(config.get_always_on_top())
 
     def test_always_on_top_reloaded_on_config_change(self):
@@ -390,7 +390,7 @@ score = 10
 description = "GitHub"
 """
         self.config_path.write_text(config_content)
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
 
         # Verify initial config
         self.assertFalse(config.get_always_on_top())
@@ -426,7 +426,7 @@ score = 10
 description = "GitHub"
 """
         self.config_path.write_text(config_content)
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
 
         # Initially, file should not be modified
         self.assertFalse(config.is_modified())
@@ -457,7 +457,7 @@ score = 10
 description = "GitHub"
 """
         self.config_path.write_text(config_content)
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
 
         # Verify initial config
         self.assertEqual(config.get_default_score(), -1)
@@ -502,7 +502,7 @@ score = 10
 description = "GitHub"
 """
         self.config_path.write_text(config_content)
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
 
         # Call reload_if_modified without modifying file
         reloaded = config.reload_if_modified()
@@ -519,7 +519,7 @@ score = 10
 description = "GitHub"
 """
         self.config_path.write_text(config_content)
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
 
         # Remove the config file
         self.config_path.unlink()
@@ -538,7 +538,7 @@ score = 10
 description = "GitHub"
 """
         self.config_path.write_text(config_content)
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
 
         # Verify initial config
         self.assertEqual(config.get_default_score(), -1)
@@ -573,7 +573,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertTrue(config.get_hide_on_mouse_proximity())
 
     def test_hide_on_mouse_proximity_true(self):
@@ -588,7 +588,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertTrue(config.get_hide_on_mouse_proximity())
 
     def test_hide_on_mouse_proximity_false(self):
@@ -603,7 +603,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertFalse(config.get_hide_on_mouse_proximity())
 
     def test_proximity_distance_default(self):
@@ -616,7 +616,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertEqual(config.get_proximity_distance(), 50)
 
     def test_proximity_distance_custom_value(self):
@@ -631,7 +631,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertEqual(config.get_proximity_distance(), 100)
 
     def test_proximity_distance_zero(self):
@@ -646,7 +646,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertEqual(config.get_proximity_distance(), 0)
 
     def test_proximity_distance_invalid_negative(self):
@@ -662,7 +662,7 @@ description = "GitHub"
         self.config_path.write_text(config_content)
 
         with self.assertRaises(SystemExit):
-            Config(str(self.config_path))
+            Config(str(self.config_path), verbose=False)
 
     def test_proximity_distance_invalid_float(self):
         """Test proximity_distance with float value raises SystemExit."""
@@ -677,7 +677,7 @@ description = "GitHub"
         self.config_path.write_text(config_content)
 
         with self.assertRaises(SystemExit):
-            Config(str(self.config_path))
+            Config(str(self.config_path), verbose=False)
 
     def test_proximity_distance_invalid_string(self):
         """Test proximity_distance with string value raises SystemExit."""
@@ -692,7 +692,7 @@ description = "GitHub"
         self.config_path.write_text(config_content)
 
         with self.assertRaises(SystemExit):
-            Config(str(self.config_path))
+            Config(str(self.config_path), verbose=False)
 
     def test_hide_on_mouse_proximity_reloaded_on_config_change(self):
         """Test that hide_on_mouse_proximity is reloaded when config file changes."""
@@ -706,7 +706,7 @@ score = 10
 description = "GitHub"
 """
         self.config_path.write_text(config_content)
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
 
         # Verify initial config
         self.assertFalse(config.get_hide_on_mouse_proximity())
@@ -742,7 +742,7 @@ score = 10
 description = "GitHub"
 """
         self.config_path.write_text(config_content)
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
 
         # Verify initial config
         self.assertEqual(config.get_proximity_distance(), 50)
@@ -780,7 +780,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertTrue(config.get_always_on_top())
         self.assertTrue(config.get_hide_on_mouse_proximity())
         self.assertEqual(config.get_proximity_distance(), 75)
@@ -795,7 +795,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertTrue(config.get_always_on_top_while_score_decreasing())
 
     def test_always_on_top_while_score_decreasing_true(self):
@@ -810,7 +810,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertTrue(config.get_always_on_top_while_score_decreasing())
 
     def test_always_on_top_while_score_decreasing_false(self):
@@ -825,7 +825,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertFalse(config.get_always_on_top_while_score_decreasing())
 
     def test_always_on_top_while_score_decreasing_invalid_string(self):
@@ -841,7 +841,7 @@ description = "GitHub"
         self.config_path.write_text(config_content)
 
         with self.assertRaises(SystemExit):
-            Config(str(self.config_path))
+            Config(str(self.config_path), verbose=False)
 
     def test_always_on_top_while_score_decreasing_invalid_integer(self):
         """Test always_on_top_while_score_decreasing with integer value raises SystemExit."""
@@ -856,7 +856,7 @@ description = "GitHub"
         self.config_path.write_text(config_content)
 
         with self.assertRaises(SystemExit):
-            Config(str(self.config_path))
+            Config(str(self.config_path), verbose=False)
 
 
 class TestMildPenaltyModeConfig(unittest.TestCase):
@@ -877,7 +877,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertFalse(config.get_mild_penalty_mode())
 
     def test_mild_penalty_mode_true(self):
@@ -892,7 +892,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertTrue(config.get_mild_penalty_mode())
 
     def test_mild_penalty_mode_false(self):
@@ -907,7 +907,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertFalse(config.get_mild_penalty_mode())
 
     def test_mild_penalty_mode_invalid_string(self):
@@ -923,7 +923,7 @@ description = "GitHub"
         self.config_path.write_text(config_content)
 
         with self.assertRaises(SystemExit):
-            Config(str(self.config_path))
+            Config(str(self.config_path), verbose=False)
 
     def test_mild_penalty_mode_invalid_integer(self):
         """Test mild_penalty_mode with integer value raises SystemExit."""
@@ -938,7 +938,7 @@ description = "GitHub"
         self.config_path.write_text(config_content)
 
         with self.assertRaises(SystemExit):
-            Config(str(self.config_path))
+            Config(str(self.config_path), verbose=False)
 
     def test_mild_penalty_start_hour_default(self):
         """Test mild_penalty_start_hour defaults to 22 when not specified."""
@@ -950,7 +950,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertEqual(config.get_mild_penalty_start_hour(), 22)
 
     def test_mild_penalty_start_hour_custom_value(self):
@@ -965,7 +965,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertEqual(config.get_mild_penalty_start_hour(), 20)
 
     def test_mild_penalty_end_hour_default(self):
@@ -978,7 +978,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertEqual(config.get_mild_penalty_end_hour(), 23)
 
     def test_mild_penalty_end_hour_custom_value(self):
@@ -993,7 +993,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertEqual(config.get_mild_penalty_end_hour(), 1)
 
     def test_mild_penalty_hours_boundary_values(self):
@@ -1009,7 +1009,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertEqual(config.get_mild_penalty_start_hour(), 0)
         self.assertEqual(config.get_mild_penalty_end_hour(), 23)
 
@@ -1026,7 +1026,7 @@ description = "GitHub"
         self.config_path.write_text(config_content)
 
         with self.assertRaises(SystemExit):
-            Config(str(self.config_path))
+            Config(str(self.config_path), verbose=False)
 
     def test_mild_penalty_start_hour_invalid_over_23(self):
         """Test mild_penalty_start_hour with value over 23 raises SystemExit."""
@@ -1041,7 +1041,7 @@ description = "GitHub"
         self.config_path.write_text(config_content)
 
         with self.assertRaises(SystemExit):
-            Config(str(self.config_path))
+            Config(str(self.config_path), verbose=False)
 
     def test_mild_penalty_end_hour_invalid_negative(self):
         """Test mild_penalty_end_hour with negative value raises SystemExit."""
@@ -1056,7 +1056,7 @@ description = "GitHub"
         self.config_path.write_text(config_content)
 
         with self.assertRaises(SystemExit):
-            Config(str(self.config_path))
+            Config(str(self.config_path), verbose=False)
 
     def test_mild_penalty_end_hour_invalid_over_23(self):
         """Test mild_penalty_end_hour with value over 23 raises SystemExit."""
@@ -1071,7 +1071,7 @@ description = "GitHub"
         self.config_path.write_text(config_content)
 
         with self.assertRaises(SystemExit):
-            Config(str(self.config_path))
+            Config(str(self.config_path), verbose=False)
 
     def test_mild_penalty_start_hour_invalid_float(self):
         """Test mild_penalty_start_hour with float value raises SystemExit."""
@@ -1086,7 +1086,7 @@ description = "GitHub"
         self.config_path.write_text(config_content)
 
         with self.assertRaises(SystemExit):
-            Config(str(self.config_path))
+            Config(str(self.config_path), verbose=False)
 
     def test_mild_penalty_end_hour_invalid_string(self):
         """Test mild_penalty_end_hour with string value raises SystemExit."""
@@ -1101,7 +1101,7 @@ description = "GitHub"
         self.config_path.write_text(config_content)
 
         with self.assertRaises(SystemExit):
-            Config(str(self.config_path))
+            Config(str(self.config_path), verbose=False)
 
     def test_all_mild_penalty_settings_together(self):
         """Test loading all mild penalty settings together."""
@@ -1117,7 +1117,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertTrue(config.get_mild_penalty_mode())
         self.assertEqual(config.get_mild_penalty_start_hour(), 22)
         self.assertEqual(config.get_mild_penalty_end_hour(), 23)
@@ -1135,7 +1135,7 @@ score = 10
 description = "GitHub"
 """
         self.config_path.write_text(config_content)
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
 
         # Verify initial config
         self.assertFalse(config.get_mild_penalty_mode())
@@ -1184,7 +1184,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertTrue(config.get_reset_score_every_30_minutes())
 
     def test_reset_score_every_30_minutes_true(self):
@@ -1199,7 +1199,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertTrue(config.get_reset_score_every_30_minutes())
 
     def test_reset_score_every_30_minutes_false(self):
@@ -1214,7 +1214,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertFalse(config.get_reset_score_every_30_minutes())
 
     def test_reset_score_every_30_minutes_invalid_integer(self):
@@ -1230,7 +1230,7 @@ description = "GitHub"
         self.config_path.write_text(config_content)
 
         with self.assertRaises(SystemExit):
-            Config(str(self.config_path))
+            Config(str(self.config_path), verbose=False)
 
     def test_reset_score_every_30_minutes_invalid_string(self):
         """Test reset_score_every_30_minutes with string value raises SystemExit."""
@@ -1245,7 +1245,7 @@ description = "GitHub"
         self.config_path.write_text(config_content)
 
         with self.assertRaises(SystemExit):
-            Config(str(self.config_path))
+            Config(str(self.config_path), verbose=False)
 
     def test_reset_score_every_30_minutes_reloaded_on_config_change(self):
         """Test that reset_score_every_30_minutes is reloaded when config file changes."""
@@ -1258,7 +1258,7 @@ score = 10
 description = "GitHub"
 """
         self.config_path.write_text(config_content)
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
 
         # Verify initial config
         self.assertFalse(config.get_reset_score_every_30_minutes())
@@ -1301,7 +1301,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertFalse(config.get_fade_window_on_flow_mode_enabled())
 
     def test_fade_window_on_flow_mode_enabled_true(self):
@@ -1316,7 +1316,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertTrue(config.get_fade_window_on_flow_mode_enabled())
 
     def test_fade_window_on_flow_mode_enabled_false(self):
@@ -1331,7 +1331,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertFalse(config.get_fade_window_on_flow_mode_enabled())
 
     def test_fade_window_on_flow_mode_enabled_invalid_string(self):
@@ -1342,7 +1342,7 @@ fade_window_on_flow_mode_enabled = "yes"
         self.config_path.write_text(config_content)
 
         with self.assertRaises(SystemExit):
-            Config(str(self.config_path))
+            Config(str(self.config_path), verbose=False)
 
     def test_flow_mode_delay_seconds_default(self):
         """Test flow_mode_delay_seconds defaults to 10 when not specified."""
@@ -1354,7 +1354,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertEqual(config.get_flow_mode_delay_seconds(), 10)
 
     def test_flow_mode_delay_seconds_custom_value(self):
@@ -1369,7 +1369,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertEqual(config.get_flow_mode_delay_seconds(), 20)
 
     def test_flow_mode_delay_seconds_zero(self):
@@ -1384,7 +1384,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertEqual(config.get_flow_mode_delay_seconds(), 0)
 
     def test_flow_mode_delay_seconds_negative(self):
@@ -1395,7 +1395,7 @@ flow_mode_delay_seconds = -5
         self.config_path.write_text(config_content)
 
         with self.assertRaises(SystemExit):
-            Config(str(self.config_path))
+            Config(str(self.config_path), verbose=False)
 
     def test_flow_mode_delay_seconds_invalid_float(self):
         """Test flow_mode_delay_seconds with float value raises SystemExit."""
@@ -1405,7 +1405,7 @@ flow_mode_delay_seconds = 10.5
         self.config_path.write_text(config_content)
 
         with self.assertRaises(SystemExit):
-            Config(str(self.config_path))
+            Config(str(self.config_path), verbose=False)
 
     def test_flow_mode_fade_rate_default(self):
         """Test flow_mode_fade_rate_percent_per_second defaults to 1 when not specified."""
@@ -1417,7 +1417,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertEqual(config.get_flow_mode_fade_rate_percent_per_second(), 1)
 
     def test_flow_mode_fade_rate_custom_value(self):
@@ -1432,7 +1432,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertEqual(config.get_flow_mode_fade_rate_percent_per_second(), 5)
 
     def test_flow_mode_fade_rate_max_value(self):
@@ -1447,7 +1447,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertEqual(config.get_flow_mode_fade_rate_percent_per_second(), 100)
 
     def test_flow_mode_fade_rate_zero(self):
@@ -1458,7 +1458,7 @@ flow_mode_fade_rate_percent_per_second = 0
         self.config_path.write_text(config_content)
 
         with self.assertRaises(SystemExit):
-            Config(str(self.config_path))
+            Config(str(self.config_path), verbose=False)
 
     def test_flow_mode_fade_rate_negative(self):
         """Test flow_mode_fade_rate_percent_per_second with negative value raises SystemExit."""
@@ -1468,7 +1468,7 @@ flow_mode_fade_rate_percent_per_second = -1
         self.config_path.write_text(config_content)
 
         with self.assertRaises(SystemExit):
-            Config(str(self.config_path))
+            Config(str(self.config_path), verbose=False)
 
     def test_flow_mode_fade_rate_over_100(self):
         """Test flow_mode_fade_rate_percent_per_second with value over 100 raises SystemExit."""
@@ -1478,7 +1478,7 @@ flow_mode_fade_rate_percent_per_second = 101
         self.config_path.write_text(config_content)
 
         with self.assertRaises(SystemExit):
-            Config(str(self.config_path))
+            Config(str(self.config_path), verbose=False)
 
     def test_all_flow_mode_settings_together(self):
         """Test loading all flow mode settings together."""
@@ -1494,7 +1494,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertTrue(config.get_fade_window_on_flow_mode_enabled())
         self.assertEqual(config.get_flow_mode_delay_seconds(), 15)
         self.assertEqual(config.get_flow_mode_fade_rate_percent_per_second(), 2)
@@ -1513,7 +1513,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertFalse(config.get_fade_window_on_flow_mode_enabled())
         self.assertEqual(config.get_flow_mode_delay_seconds(), 10)
 
@@ -1561,7 +1561,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertIsNone(config.get_window_x())
 
     def test_window_y_default(self):
@@ -1574,7 +1574,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertIsNone(config.get_window_y())
 
     def test_window_x_positive_value(self):
@@ -1589,7 +1589,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertEqual(config.get_window_x(), 100)
 
     def test_window_y_positive_value(self):
@@ -1604,7 +1604,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertEqual(config.get_window_y(), 200)
 
     def test_window_x_zero(self):
@@ -1619,7 +1619,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertEqual(config.get_window_x(), 0)
 
     def test_window_y_zero(self):
@@ -1634,7 +1634,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertEqual(config.get_window_y(), 0)
 
     def test_window_x_negative_value(self):
@@ -1649,7 +1649,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertEqual(config.get_window_x(), -100)
 
     def test_window_y_negative_value(self):
@@ -1664,7 +1664,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertEqual(config.get_window_y(), -50)
 
     def test_window_x_invalid_float(self):
@@ -1680,7 +1680,7 @@ description = "GitHub"
         self.config_path.write_text(config_content)
 
         with self.assertRaises(SystemExit):
-            Config(str(self.config_path))
+            Config(str(self.config_path), verbose=False)
 
     def test_window_y_invalid_float(self):
         """Test window_y with float value raises SystemExit."""
@@ -1695,7 +1695,7 @@ description = "GitHub"
         self.config_path.write_text(config_content)
 
         with self.assertRaises(SystemExit):
-            Config(str(self.config_path))
+            Config(str(self.config_path), verbose=False)
 
     def test_window_x_invalid_string(self):
         """Test window_x with string value raises SystemExit."""
@@ -1710,7 +1710,7 @@ description = "GitHub"
         self.config_path.write_text(config_content)
 
         with self.assertRaises(SystemExit):
-            Config(str(self.config_path))
+            Config(str(self.config_path), verbose=False)
 
     def test_window_y_invalid_string(self):
         """Test window_y with string value raises SystemExit."""
@@ -1725,7 +1725,7 @@ description = "GitHub"
         self.config_path.write_text(config_content)
 
         with self.assertRaises(SystemExit):
-            Config(str(self.config_path))
+            Config(str(self.config_path), verbose=False)
 
     def test_both_window_position_settings(self):
         """Test loading both window_x and window_y together."""
@@ -1740,7 +1740,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertEqual(config.get_window_x(), 150)
         self.assertEqual(config.get_window_y(), 250)
 
@@ -1756,7 +1756,7 @@ score = 10
 description = "GitHub"
 """
         self.config_path.write_text(config_content)
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
 
         # Verify initial config
         self.assertEqual(config.get_window_x(), 100)
@@ -1795,7 +1795,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertEqual(config.get_window_x(), 100)
         self.assertIsNone(config.get_window_y())
 
@@ -1811,7 +1811,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertIsNone(config.get_window_x())
         self.assertEqual(config.get_window_y(), 200)
 
@@ -1834,7 +1834,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertEqual(config.get_default_transparency(), 1.0)
 
     def test_default_transparency_custom_value(self):
@@ -1849,7 +1849,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertEqual(config.get_default_transparency(), 0.8)
 
     def test_default_transparency_zero(self):
@@ -1864,7 +1864,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertEqual(config.get_default_transparency(), 0.0)
 
     def test_default_transparency_one(self):
@@ -1879,7 +1879,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertEqual(config.get_default_transparency(), 1.0)
 
     def test_default_transparency_integer_value(self):
@@ -1894,7 +1894,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertEqual(config.get_default_transparency(), 1)
 
     def test_default_transparency_half(self):
@@ -1909,7 +1909,7 @@ description = "GitHub"
 """
         self.config_path.write_text(config_content)
 
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertEqual(config.get_default_transparency(), 0.5)
 
     def test_default_transparency_invalid_negative(self):
@@ -1920,7 +1920,7 @@ default_transparency = -0.1
         self.config_path.write_text(config_content)
 
         with self.assertRaises(SystemExit):
-            Config(str(self.config_path))
+            Config(str(self.config_path), verbose=False)
 
     def test_default_transparency_invalid_over_one(self):
         """Test default_transparency with value over 1.0 raises SystemExit."""
@@ -1930,7 +1930,7 @@ default_transparency = 1.1
         self.config_path.write_text(config_content)
 
         with self.assertRaises(SystemExit):
-            Config(str(self.config_path))
+            Config(str(self.config_path), verbose=False)
 
     def test_default_transparency_invalid_string(self):
         """Test default_transparency with string value raises SystemExit."""
@@ -1940,7 +1940,7 @@ default_transparency = "opaque"
         self.config_path.write_text(config_content)
 
         with self.assertRaises(SystemExit):
-            Config(str(self.config_path))
+            Config(str(self.config_path), verbose=False)
 
     def test_default_transparency_reloaded_on_config_change(self):
         """Test that default_transparency is reloaded when config file changes."""
@@ -1953,7 +1953,7 @@ score = 10
 description = "GitHub"
 """
         self.config_path.write_text(config_content)
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
 
         # Verify initial config
         self.assertEqual(config.get_default_transparency(), 1.0)
@@ -1989,7 +1989,7 @@ score = 10
 description = "GitHub"
 """
         self.config_path.write_text(config_content_low)
-        config = Config(str(self.config_path))
+        config = Config(str(self.config_path), verbose=False)
         self.assertEqual(config.get_default_transparency(), 0.0)
 
         # Test upper boundary (1.0)
@@ -2055,7 +2055,7 @@ description = "Twitter"
         sys.stdout = captured_output
 
         try:
-            _ = Config(str(self.config_path))
+            _ = Config(str(self.config_path), verbose=True)
             output = captured_output.getvalue()
 
             # Verify that key settings are printed
@@ -2099,7 +2099,7 @@ description = "GitHub"
         sys.stdout = captured_output
 
         try:
-            _ = Config(str(self.config_path))
+            _ = Config(str(self.config_path), verbose=True)
             output = captured_output.getvalue()
 
             # Verify default values are printed
@@ -2125,7 +2125,7 @@ default_score = 0
         sys.stdout = captured_output
 
         try:
-            _ = Config(str(self.config_path))
+            _ = Config(str(self.config_path), verbose=True)
             output = captured_output.getvalue()
 
             # Verify output indicates no patterns

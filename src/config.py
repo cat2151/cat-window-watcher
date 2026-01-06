@@ -13,17 +13,19 @@ except ImportError:
 class Config:
     """Configuration manager for window watcher."""
 
-    def __init__(self, config_path: str = "config.toml"):
+    def __init__(self, config_path: str = "config.toml", verbose: bool = True):
         """Initialize configuration.
 
         Args:
             config_path: Path to TOML configuration file
+            verbose: If True, print configuration on load (default: True)
 
         Raises:
             FileNotFoundError: If config file doesn't exist
             tomllib.TOMLDecodeError: If config file is invalid
         """
         self.config_path = Path(config_path)
+        self.verbose = verbose
         self.window_patterns = []
         self.default_score = -1
         self.apply_default_score_mode = True
@@ -241,8 +243,9 @@ class Config:
             # Update last modified timestamp after successful load
             self._last_modified = self.config_path.stat().st_mtime
 
-            # Print configuration values to console
-            self.print_config()
+            # Print configuration values to console if verbose mode is enabled
+            if self.verbose:
+                self.print_config()
 
         except FileNotFoundError:
             if exit_on_error:
@@ -277,8 +280,8 @@ class Config:
         """
         if self.is_modified():
             try:
-                self.load_config(exit_on_error=False)
                 print(f"設定ファイルがリロードされました (Configuration reloaded from '{self.config_path}')")
+                self.load_config(exit_on_error=False)
                 return True
             except Exception as e:
                 print(f"Warning: Failed to reload configuration: {e}")
@@ -445,14 +448,20 @@ class Config:
         """
         return self.window_y
 
-    def print_config(self):
+    def print_config(self, context: str = ""):
         """Print all configuration values to console.
+
+        Args:
+            context: Optional context string to add to header (e.g., "リロード後")
 
         This method outputs all settings including default values,
         helping users understand the current configuration state.
         """
         print("=" * 60)
-        print("現在の設定値 (Current Configuration)")
+        header = "現在の設定値 (Current Configuration)"
+        if context:
+            header += f" {context}"
+        print(header)
         print("=" * 60)
         print(f"設定ファイル (Config file): {self.config_path}")
         print()
