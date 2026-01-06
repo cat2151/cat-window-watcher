@@ -13,12 +13,13 @@ except ImportError:
 class Config:
     """Configuration manager for window watcher."""
 
-    def __init__(self, config_path: str = "config.toml", verbose: bool = True):
+    def __init__(self, config_path: str = "config.toml", verbose: bool = False):
         """Initialize configuration.
 
         Args:
             config_path: Path to TOML configuration file
-            verbose: If True, print configuration on load (default: True)
+            verbose: If True, print configuration on load (default: False)
+                     This parameter is deprecated - use 'verbose' in TOML config instead
 
         Raises:
             FileNotFoundError: If config file doesn't exist
@@ -90,6 +91,11 @@ class Config:
         try:
             with open(self.config_path, "rb") as f:
                 config_data = tomllib.load(f)
+
+            # Load verbose mode setting (whether to print configuration on load)
+            verbose = config_data.get("verbose", False)
+            if not isinstance(verbose, bool):
+                raise ValueError(f"Invalid 'verbose' value: {verbose!r}. Must be a boolean.")
 
             # Load default_score (score applied when no pattern matches)
             default_score = config_data.get("default_score", -1)
@@ -219,6 +225,7 @@ class Config:
                 )
 
             # Only update instance attributes after successful parsing
+            self.verbose = verbose
             self.default_score = default_score
             self.apply_default_score_mode = apply_default_score_mode
             self.self_window_score = self_window_score
@@ -447,6 +454,14 @@ class Config:
             int or None: Initial y coordinate for window position, or None for default
         """
         return self.window_y
+
+    def get_verbose(self):
+        """Get verbose mode setting.
+
+        Returns:
+            bool: True if verbose mode is enabled, False otherwise
+        """
+        return self.verbose
 
     def print_config(self, context: str = ""):
         """Print all configuration values to console.

@@ -1816,6 +1816,143 @@ description = "GitHub"
         self.assertEqual(config.get_window_y(), 200)
 
 
+class TestVerboseModeConfig(unittest.TestCase):
+    """Test cases for verbose mode configuration."""
+
+    def setUp(self):
+        """Set up test fixtures."""
+        self.temp_dir = tempfile.mkdtemp()
+        self.config_path = Path(self.temp_dir) / "test_config.toml"
+
+    def test_verbose_default(self):
+        """Test verbose defaults to False when not specified."""
+        config_content = """
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path), verbose=False)
+        self.assertFalse(config.get_verbose())
+
+    def test_verbose_true(self):
+        """Test verbose set to true."""
+        config_content = """
+verbose = true
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        # Capture stdout to verify verbose output
+        captured_output = io.StringIO()
+        sys.stdout = captured_output
+
+        try:
+            config = Config(str(self.config_path), verbose=False)
+            self.assertTrue(config.get_verbose())
+            output = captured_output.getvalue()
+            # Verify that configuration was printed
+            self.assertIn("現在の設定値", output)
+        finally:
+            sys.stdout = sys.__stdout__
+
+    def test_verbose_false(self):
+        """Test verbose explicitly set to false."""
+        config_content = """
+verbose = false
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        # Capture stdout to verify no verbose output
+        captured_output = io.StringIO()
+        sys.stdout = captured_output
+
+        try:
+            config = Config(str(self.config_path), verbose=False)
+            self.assertFalse(config.get_verbose())
+            output = captured_output.getvalue()
+            # Verify that configuration was not printed
+            self.assertNotIn("現在の設定値", output)
+        finally:
+            sys.stdout = sys.__stdout__
+
+    def test_verbose_invalid_string(self):
+        """Test verbose with string value raises SystemExit."""
+        config_content = """
+verbose = "true"
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        with self.assertRaises(SystemExit):
+            Config(str(self.config_path), verbose=False)
+
+    def test_verbose_invalid_integer(self):
+        """Test verbose with integer value raises SystemExit."""
+        config_content = """
+verbose = 1
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        with self.assertRaises(SystemExit):
+            Config(str(self.config_path), verbose=False)
+
+    def test_verbose_reloaded_on_config_change(self):
+        """Test that verbose setting is reloaded when config file changes."""
+        config_content = """
+verbose = false
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+        config = Config(str(self.config_path), verbose=False)
+
+        # Verify initial config
+        self.assertFalse(config.get_verbose())
+
+        # Modify the file to change verbose
+        time.sleep(0.01)  # Ensure timestamp changes
+        new_content = """
+verbose = true
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(new_content)
+
+        # Reload configuration
+        reloaded = config.reload_if_modified()
+        self.assertTrue(reloaded)
+
+        # Verify verbose setting was updated
+        self.assertTrue(config.get_verbose())
+
+
 class TestDefaultTransparencyConfig(unittest.TestCase):
     """Test cases for default_transparency configuration settings."""
 
@@ -2018,6 +2155,7 @@ class TestPrintConfig(unittest.TestCase):
     def test_print_config_outputs_all_settings(self):
         """Test that print_config outputs all configuration settings."""
         config_content = """
+verbose = true
 default_score = -1
 apply_default_score_mode = true
 self_window_score = 0
@@ -2055,7 +2193,7 @@ description = "Twitter"
         sys.stdout = captured_output
 
         try:
-            _ = Config(str(self.config_path), verbose=True)
+            _ = Config(str(self.config_path), verbose=False)
             output = captured_output.getvalue()
 
             # Verify that key settings are printed
@@ -2087,6 +2225,8 @@ description = "Twitter"
     def test_print_config_with_default_values(self):
         """Test that print_config outputs default values when not specified in config."""
         config_content = """
+verbose = true
+
 [[window_patterns]]
 regex = "github"
 score = 10
@@ -2099,7 +2239,7 @@ description = "GitHub"
         sys.stdout = captured_output
 
         try:
-            _ = Config(str(self.config_path), verbose=True)
+            _ = Config(str(self.config_path), verbose=False)
             output = captured_output.getvalue()
 
             # Verify default values are printed
@@ -2116,6 +2256,7 @@ description = "GitHub"
     def test_print_config_with_no_patterns(self):
         """Test that print_config handles empty pattern list."""
         config_content = """
+verbose = true
 default_score = 0
 """
         self.config_path.write_text(config_content)
@@ -2125,7 +2266,7 @@ default_score = 0
         sys.stdout = captured_output
 
         try:
-            _ = Config(str(self.config_path), verbose=True)
+            _ = Config(str(self.config_path), verbose=False)
             output = captured_output.getvalue()
 
             # Verify output indicates no patterns
