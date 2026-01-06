@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Tests for config module."""
 
+import io
+import sys
 import tempfile
 import time
 import unittest
@@ -9,8 +11,6 @@ from pathlib import Path
 try:
     from src.config import Config
 except ImportError:
-    import sys
-
     sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
     from config import Config
 
@@ -2051,9 +2051,6 @@ description = "Twitter"
         self.config_path.write_text(config_content)
 
         # Capture stdout to verify output
-        import io
-        import sys
-
         captured_output = io.StringIO()
         sys.stdout = captured_output
 
@@ -2098,9 +2095,6 @@ description = "GitHub"
         self.config_path.write_text(config_content)
 
         # Capture stdout to verify output
-        import io
-        import sys
-
         captured_output = io.StringIO()
         sys.stdout = captured_output
 
@@ -2127,9 +2121,6 @@ default_score = 0
         self.config_path.write_text(config_content)
 
         # Capture stdout to verify output
-        import io
-        import sys
-
         captured_output = io.StringIO()
         sys.stdout = captured_output
 
