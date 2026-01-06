@@ -1,4 +1,4 @@
-Last updated: 2026-01-06
+Last updated: 2026-01-07
 
 
 # プロジェクト概要生成プロンプト（来訪者向け）
@@ -163,6 +163,10 @@ description = "Twitter/X"
 
 ### 設定オプション
 
+- **verbose**: 設定の詳細を起動時に表示するかどうか（デフォルト: false）
+  - `true`に設定すると、アプリケーション起動時に全ての設定値が表示されます
+  - `false`に設定すると、設定の詳細は表示されません（デフォルト）
+  - デバッグや設定の確認が必要な場合に有効にします
 - **default_score**: パターンがマッチしない場合に適用されるスコア（デフォルト: -1）
   - -1（デフォルト）に設定すると、パターンが正しく設定されているか確認しやすくなります
   - 0に設定すると、マッチしない場合はスコアが変化しません
@@ -394,6 +398,7 @@ pip install pywin32
   📖 46.md
   📖 48.md
   📖 50.md
+  📖 53.md
   📖 6.md
   📖 8.md
   📖 9.md
@@ -448,6 +453,7 @@ issue-notes/45.md
 issue-notes/46.md
 issue-notes/48.md
 issue-notes/50.md
+issue-notes/53.md
 issue-notes/6.md
 issue-notes/8.md
 issue-notes/9.md
@@ -462,4 +468,4 @@ issue-notes/9.md
 
 
 ---
-Generated at: 2026-01-06 07:05:56 JST
+Generated at: 2026-01-07 07:05:48 JST

@@ -1,4 +1,4 @@
-Last updated: 2026-01-06
+Last updated: 2026-01-07
 
 # 開発状況生成プロンプト（開発者向け）
 
@@ -231,6 +231,7 @@ Last updated: 2026-01-06
 - issue-notes/46.md
 - issue-notes/48.md
 - issue-notes/50.md
+- issue-notes/53.md
 - issue-notes/6.md
 - issue-notes/8.md
 - issue-notes/9.md
@@ -252,21 +253,6 @@ Last updated: 2026-01-06
 - tests/test_window_monitor.py
 
 ## 現在のオープンIssues
-## [Issue #48](../issue-notes/48.md): tomlに記載なしのデフォルト値も含めすべてuserが把握できるよう、起動時とhot reload時に、すべての設定値をconsoleに出力する
-[issue-notes/48.md](https://github.com/cat2151/cat-window-watcher/blob/main/issue-notes/48.md)
-
-...
-ラベル: 
---- issue-notes/48.md の内容 ---
-
-```markdown
-# issue tomlに記載なしのデフォルト値も含めすべてuserが把握できるよう、起動時とhot reload時に、すべての設定値をconsoleに出力する #48
-[issues #48](https://github.com/cat2151/cat-window-watcher/issues/48)
-
-
-
-```
-
 ## [Issue #26](../issue-notes/26.md): ドッグフーディングする
 [issue-notes/26.md](https://github.com/cat2151/cat-window-watcher/blob/main/issue-notes/26.md)
 
@@ -351,107 +337,6 @@ has_recent_human_commit=false
 {% endraw %}
 ```
 
-### .github/actions-tmp/issue-notes/8.md
-```md
-{% raw %}
-# issue 関数コールグラフhtmlビジュアライズ生成の対象ソースファイルを、呼び出し元ymlで指定できるようにする #8
-[issues #8](https://github.com/cat2151/github-actions/issues/8)
-
-# これまでの課題
-- 以下が決め打ちになっていた
-```
-  const allowedFiles = [
-    'src/main.js',
-    'src/mml2json.js',
-    'src/play.js'
-  ];
-```
-
-# 対策
-- 呼び出し元ymlで指定できるようにする
-
-# agent
-- agentにやらせることができれば楽なので、初手agentを試した
-- 失敗
-    - ハルシネーションしてscriptを大量破壊した
-- 分析
-    - 修正対象scriptはagentが生成したもの
-    - 低品質な生成結果でありソースが巨大
-    - ハルシネーションで破壊されやすいソース
-    - AIの生成したソースは、必ずしもAIフレンドリーではない
-
-# 人力リファクタリング
-- 低品質コードを、最低限agentが扱えて、ハルシネーションによる大量破壊を防止できる内容、にする
-- 手短にやる
-    - そもそもビジュアライズは、agentに雑に指示してやらせたもので、
-    - 今後別のビジュアライザを選ぶ可能性も高い
-    - 今ここで手間をかけすぎてコンコルド効果（サンクコストバイアス）を増やすのは、project群をトータルで俯瞰して見たとき、損
-- 対象
-    - allowedFiles のあるソース
-        - callgraph-utils.cjs
-            - たかだか300行未満のソースである
-            - この程度でハルシネーションされるのは予想外
-            - やむなし、リファクタリングでソース分割を進める
-
-# agentに修正させる
-## prompt
-```
-allowedFilesを引数で受け取るようにしたいです。
-ないならエラー。
-最終的に呼び出し元すべてに波及して修正したいです。
-
-呼び出し元をたどってエントリポイントも見つけて、
-エントリポイントにおいては、
-引数で受け取ったjsonファイル名 allowedFiles.js から
-jsonファイル allowedFiles.jsonの内容をreadして
-変数 allowedFilesに格納、
-後続処理に引き渡す、としたいです。
-
-まずplanしてください。
-planにおいては、修正対象のソースファイル名と関数名を、呼び出し元を遡ってすべて特定し、listしてください。
-```
-
-# 修正が順調にできた
-- コマンドライン引数から受け取る作りになっていなかったので、そこだけ指示して修正させた
-- yml側は人力で修正した
-
-# 他のリポジトリから呼び出した場合にバグらないよう修正する
-- 気付いた
-    - 共通ワークフローとして他のリポジトリから使った場合はバグるはず。
-        - ymlから、共通ワークフロー側リポジトリのcheckoutが漏れているので。
-- 他のyml同様に修正する
-- あわせて全体にymlをリファクタリングし、修正しやすくし、今後のyml読み書きの学びにしやすくする
-
-# local WSL + act : test green
-
-# closeとする
-- もし生成されたhtmlがNGの場合は、別issueとするつもり
-
-{% endraw %}
-```
-
-### issue-notes/8.md
-```md
-{% raw %}
-# issue tomlをtimestamp更新監視し、更新されたらアプリ設定に反映する #8
-[issues #8](https://github.com/cat2151/cat-window-watcher/issues/8)
-
-
-
-{% endraw %}
-```
-
-### issue-notes/48.md
-```md
-{% raw %}
-# issue tomlに記載なしのデフォルト値も含めすべてuserが把握できるよう、起動時とhot reload時に、すべての設定値をconsoleに出力する #48
-[issues #48](https://github.com/cat2151/cat-window-watcher/issues/48)
-
-
-
-{% endraw %}
-```
-
 ### issue-notes/6.md
 ```md
 {% raw %}
@@ -465,24 +350,27 @@ planにおいては、修正対象のソースファイル名と関数名を、�
 
 ## 最近の変更（過去7日間）
 ### コミット履歴:
-5d3233b Merge pull request #51 from cat2151/copilot/add-timer-display-window
-405f13f コードレビューの提案を反映: ヘルパーメソッドを追加
-4e118eb フローモード経過秒数の表示機能を実装
-0e4ecd3 Initial plan
-da2bcfe Add issue note for #50 [auto]
-1f14cd6 Merge pull request #49 from cat2151/copilot/display-elapsed-time-window
-0d52bf6 Fix non-deterministic tests by mocking datetime during tracker initialization
-fbdab9b Add elapsed time tracking and display for active windows
-a12d97e Auto-translate README.ja.md to README.md [auto]
-99039b9 Initial plan
+07d32e5 Auto-translate README.ja.md to README.md [auto]
+fdb2330 Merge pull request #54 from cat2151/copilot/add-verbose-mode-toml
+bf89246 Fix verbose parameter initialization and add tearDown cleanup
+381aa54 Clarify verbose parameter deprecation in docstring
+c937b08 Add verbose mode documentation to README files
+90e3e6a Add verbose mode configuration to TOML with default off
+41bf617 Initial plan
+69fba51 Add issue note for #53 [auto]
+8a30293 Merge pull request #52 from cat2151/copilot/output-settings-to-console
+152f26e Add verbose parameter to control config output during tests
 
 ### 変更されたファイル:
 README.ja.md
 README.md
 config.toml.example
-issue-notes/46.md
-issue-notes/48.md
+generated-docs/development-status-generated-prompt.md
+generated-docs/development-status.md
+generated-docs/project-overview-generated-prompt.md
+generated-docs/project-overview.md
 issue-notes/50.md
+issue-notes/53.md
 src/config.py
 src/gui.py
 src/score_tracker.py
@@ -492,4 +380,4 @@ tests/test_score_tracker.py
 
 
 ---
-Generated at: 2026-01-06 07:05:56 JST
+Generated at: 2026-01-07 07:05:48 JST
