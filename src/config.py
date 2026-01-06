@@ -18,8 +18,10 @@ class Config:
 
         Args:
             config_path: Path to TOML configuration file
-            verbose: If True, print configuration on load (default: False)
-                     This parameter is deprecated - use 'verbose' in TOML config instead
+            verbose: Deprecated parameter. The verbose setting is now controlled
+                     via the 'verbose' option in the TOML configuration file.
+                     This parameter is ignored and will be removed in a future version.
+                     Use `verbose = true/false` in your config.toml instead.
 
         Raises:
             FileNotFoundError: If config file doesn't exist
