@@ -100,6 +100,10 @@ description = "Twitter/X"
 
 ### Configuration Options
 
+- **verbose**: Whether to display detailed configuration information on startup (default: false)
+  - If set to `true`, all configuration values will be displayed when the application starts.
+  - If set to `false`, configuration details are not displayed (default).
+  - Enable this when debugging or verifying configuration settings.
 - **default_score**: Score applied when no pattern matches (default: -1)
   - Setting it to -1 (default) makes it easier to detect if patterns are configured correctly.
   - Setting it to 0 means the score won't change if no pattern matches.

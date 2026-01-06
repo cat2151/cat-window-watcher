@@ -13,19 +13,22 @@ except ImportError:
 class Config:
     """Configuration manager for window watcher."""
 
-    def __init__(self, config_path: str = "config.toml", verbose: bool = True):
+    def __init__(self, config_path: str = "config.toml", verbose: bool = False):
         """Initialize configuration.
 
         Args:
             config_path: Path to TOML configuration file
-            verbose: If True, print configuration on load (default: True)
+            verbose: Deprecated parameter. The verbose setting is now controlled
+                     via the 'verbose' option in the TOML configuration file.
+                     This parameter is ignored and will be removed in a future version.
+                     Use `verbose = true/false` in your config.toml instead.
 
         Raises:
             FileNotFoundError: If config file doesn't exist
             tomllib.TOMLDecodeError: If config file is invalid
         """
         self.config_path = Path(config_path)
-        self.verbose = verbose
+        self.verbose = False  # Will be overridden by TOML config
         self.window_patterns = []
         self.default_score = -1
         self.apply_default_score_mode = True
@@ -90,6 +93,11 @@ class Config:
         try:
             with open(self.config_path, "rb") as f:
                 config_data = tomllib.load(f)
+
+            # Load verbose mode setting (whether to print configuration on load)
+            verbose = config_data.get("verbose", False)
+            if not isinstance(verbose, bool):
+                raise ValueError(f"Invalid 'verbose' value: {verbose!r}. Must be a boolean.")
 
             # Load default_score (score applied when no pattern matches)
             default_score = config_data.get("default_score", -1)
@@ -219,6 +227,7 @@ class Config:
                 )
 
             # Only update instance attributes after successful parsing
+            self.verbose = verbose
             self.default_score = default_score
             self.apply_default_score_mode = apply_default_score_mode
             self.self_window_score = self_window_score
@@ -447,6 +456,14 @@ class Config:
             int or None: Initial y coordinate for window position, or None for default
         """
         return self.window_y
+
+    def get_verbose(self):
+        """Get verbose mode setting.
+
+        Returns:
+            bool: True if verbose mode is enabled, False otherwise
+        """
+        return self.verbose
 
     def print_config(self, context: str = ""):
         """Print all configuration values to console.
