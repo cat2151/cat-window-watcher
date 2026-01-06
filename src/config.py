@@ -28,7 +28,7 @@ class Config:
             tomllib.TOMLDecodeError: If config file is invalid
         """
         self.config_path = Path(config_path)
-        self.verbose = verbose
+        self.verbose = False  # Will be overridden by TOML config
         self.window_patterns = []
         self.default_score = -1
         self.apply_default_score_mode = True

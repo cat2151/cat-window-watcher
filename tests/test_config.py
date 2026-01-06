@@ -1824,6 +1824,13 @@ class TestVerboseModeConfig(unittest.TestCase):
         self.temp_dir = tempfile.mkdtemp()
         self.config_path = Path(self.temp_dir) / "test_config.toml"
 
+    def tearDown(self):
+        """Clean up test fixtures."""
+        import shutil
+
+        if hasattr(self, "temp_dir") and Path(self.temp_dir).exists():
+            shutil.rmtree(self.temp_dir)
+
     def test_verbose_default(self):
         """Test verbose defaults to False when not specified."""
         config_content = """
