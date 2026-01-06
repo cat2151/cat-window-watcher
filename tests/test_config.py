@@ -2007,5 +2007,141 @@ description = "GitHub"
         self.assertEqual(config.get_default_transparency(), 1.0)
 
 
+class TestPrintConfig(unittest.TestCase):
+    """Test cases for print_config method."""
+
+    def setUp(self):
+        """Set up test fixtures."""
+        self.temp_dir = tempfile.mkdtemp()
+        self.config_path = Path(self.temp_dir) / "test_config.toml"
+
+    def test_print_config_outputs_all_settings(self):
+        """Test that print_config outputs all configuration settings."""
+        config_content = """
+default_score = -1
+apply_default_score_mode = true
+self_window_score = 0
+always_on_top = true
+hide_on_mouse_proximity = true
+proximity_distance = 50
+always_on_top_while_score_decreasing = true
+mild_penalty_mode = false
+mild_penalty_start_hour = 22
+mild_penalty_end_hour = 23
+score_up_color = "#ffffff"
+score_down_color = "#ff0000"
+reset_score_every_30_minutes = true
+fade_window_on_flow_mode_enabled = false
+flow_mode_delay_seconds = 10
+flow_mode_fade_rate_percent_per_second = 1
+default_transparency = 1.0
+window_x = 100
+window_y = 200
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+
+[[window_patterns]]
+regex = "twitter"
+score = -5
+description = "Twitter"
+"""
+        self.config_path.write_text(config_content)
+
+        # Capture stdout to verify output
+        import io
+        import sys
+
+        captured_output = io.StringIO()
+        sys.stdout = captured_output
+
+        try:
+            _ = Config(str(self.config_path))
+            output = captured_output.getvalue()
+
+            # Verify that key settings are printed
+            self.assertIn("現在の設定値", output)
+            self.assertIn("default_score: -1", output)
+            self.assertIn("apply_default_score_mode: True", output)
+            self.assertIn("self_window_score: 0", output)
+            self.assertIn("always_on_top: True", output)
+            self.assertIn("hide_on_mouse_proximity: True", output)
+            self.assertIn("proximity_distance: 50", output)
+            self.assertIn("always_on_top_while_score_decreasing: True", output)
+            self.assertIn("mild_penalty_mode: False", output)
+            self.assertIn("mild_penalty_start_hour: 22", output)
+            self.assertIn("mild_penalty_end_hour: 23", output)
+            self.assertIn("score_up_color: #ffffff", output)
+            self.assertIn("score_down_color: #ff0000", output)
+            self.assertIn("reset_score_every_30_minutes: True", output)
+            self.assertIn("fade_window_on_flow_mode_enabled: False", output)
+            self.assertIn("flow_mode_delay_seconds: 10", output)
+            self.assertIn("flow_mode_fade_rate_percent_per_second: 1", output)
+            self.assertIn("default_transparency: 1.0", output)
+            self.assertIn("window_x: 100", output)
+            self.assertIn("window_y: 200", output)
+            self.assertIn("[1] GitHub", output)
+            self.assertIn("[2] Twitter", output)
+        finally:
+            sys.stdout = sys.__stdout__
+
+    def test_print_config_with_default_values(self):
+        """Test that print_config outputs default values when not specified in config."""
+        config_content = """
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        # Capture stdout to verify output
+        import io
+        import sys
+
+        captured_output = io.StringIO()
+        sys.stdout = captured_output
+
+        try:
+            _ = Config(str(self.config_path))
+            output = captured_output.getvalue()
+
+            # Verify default values are printed
+            self.assertIn("default_score: -1", output)  # default value
+            self.assertIn("apply_default_score_mode: True", output)  # default value
+            self.assertIn("self_window_score: 0", output)  # default value
+            self.assertIn("always_on_top: True", output)  # default value
+            self.assertIn("mild_penalty_mode: False", output)  # default value
+            self.assertIn("window_x: None", output)  # default value (None)
+            self.assertIn("window_y: None", output)  # default value (None)
+        finally:
+            sys.stdout = sys.__stdout__
+
+    def test_print_config_with_no_patterns(self):
+        """Test that print_config handles empty pattern list."""
+        config_content = """
+default_score = 0
+"""
+        self.config_path.write_text(config_content)
+
+        # Capture stdout to verify output
+        import io
+        import sys
+
+        captured_output = io.StringIO()
+        sys.stdout = captured_output
+
+        try:
+            _ = Config(str(self.config_path))
+            output = captured_output.getvalue()
+
+            # Verify output indicates no patterns
+            self.assertIn("No patterns defined", output)
+        finally:
+            sys.stdout = sys.__stdout__
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -241,6 +241,9 @@ class Config:
             # Update last modified timestamp after successful load
             self._last_modified = self.config_path.stat().st_mtime
 
+            # Print configuration values to console
+            self.print_config()
+
         except FileNotFoundError:
             if exit_on_error:
                 print(f"Error: Configuration file '{self.config_path}' not found.")
@@ -275,7 +278,7 @@ class Config:
         if self.is_modified():
             try:
                 self.load_config(exit_on_error=False)
-                print(f"Configuration reloaded from '{self.config_path}'")
+                print(f"設定ファイルがリロードされました (Configuration reloaded from '{self.config_path}')")
                 return True
             except Exception as e:
                 print(f"Warning: Failed to reload configuration: {e}")
@@ -441,3 +444,55 @@ class Config:
             int or None: Initial y coordinate for window position, or None for default
         """
         return self.window_y
+
+    def print_config(self):
+        """Print all configuration values to console.
+
+        This method outputs all settings including default values,
+        helping users understand the current configuration state.
+        """
+        print("=" * 60)
+        print("現在の設定値 (Current Configuration)")
+        print("=" * 60)
+        print(f"設定ファイル (Config file): {self.config_path}")
+        print()
+        print("--- スコア設定 (Score Settings) ---")
+        print(f"default_score: {self.default_score}")
+        print(f"apply_default_score_mode: {self.apply_default_score_mode}")
+        print(f"self_window_score: {self.self_window_score}")
+        print()
+        print("--- ウィンドウ表示設定 (Window Display Settings) ---")
+        print(f"always_on_top: {self.always_on_top}")
+        print(f"hide_on_mouse_proximity: {self.hide_on_mouse_proximity}")
+        print(f"proximity_distance: {self.proximity_distance}")
+        print(f"always_on_top_while_score_decreasing: {self.always_on_top_while_score_decreasing}")
+        print(f"default_transparency: {self.default_transparency}")
+        print(f"window_x: {self.window_x}")
+        print(f"window_y: {self.window_y}")
+        print()
+        print("--- スコア表示設定 (Score Display Settings) ---")
+        print(f"score_up_color: {self.score_up_color}")
+        print(f"score_down_color: {self.score_down_color}")
+        print()
+        print("--- ペナルティモード設定 (Penalty Mode Settings) ---")
+        print(f"mild_penalty_mode: {self.mild_penalty_mode}")
+        print(f"mild_penalty_start_hour: {self.mild_penalty_start_hour}")
+        print(f"mild_penalty_end_hour: {self.mild_penalty_end_hour}")
+        print()
+        print("--- 時間管理設定 (Time Management Settings) ---")
+        print(f"reset_score_every_30_minutes: {self.reset_score_every_30_minutes}")
+        print()
+        print("--- フローモード設定 (Flow Mode Settings) ---")
+        print(f"fade_window_on_flow_mode_enabled: {self.fade_window_on_flow_mode_enabled}")
+        print(f"flow_mode_delay_seconds: {self.flow_mode_delay_seconds}")
+        print(f"flow_mode_fade_rate_percent_per_second: {self.flow_mode_fade_rate_percent_per_second}")
+        print()
+        print("--- ウィンドウパターン (Window Patterns) ---")
+        if self.window_patterns:
+            for i, pattern in enumerate(self.window_patterns, 1):
+                print(f"  [{i}] {pattern['description'] or '(no description)'}")
+                print(f"      regex: {pattern['regex']}")
+                print(f"      score: {pattern['score']}")
+        else:
+            print("  (パターンが定義されていません / No patterns defined)")
+        print("=" * 60)
