@@ -10,6 +10,10 @@ try:
 except ImportError:
     import tomli as tomllib
 
+# ANSI color codes for console output
+ANSI_GREEN = "\033[32m"
+ANSI_RESET = "\033[0m"
+
 
 class Config:
     """Configuration manager for window watcher."""
@@ -291,10 +295,7 @@ class Config:
         if self.is_modified():
             try:
                 timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                # Green ANSI color code for positive/healthy behavior
-                green = "\033[32m"
-                reset = "\033[0m"
-                print(f"{green}Configuration reloaded from '{self.config_path}' at {timestamp}{reset}")
+                print(f"{ANSI_GREEN}Configuration reloaded from '{self.config_path}' at {timestamp}{ANSI_RESET}")
                 self.load_config(exit_on_error=False)
                 return True
             except Exception as e:
