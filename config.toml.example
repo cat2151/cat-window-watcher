@@ -74,18 +74,18 @@ reset_score_every_30_minutes = true
 # Fade window on flow mode - gradually make window transparent when in flow state
 # When enabled, after being in score-up state for flow_mode_delay_seconds,
 # the window will gradually fade (become more transparent) to help you focus
-# Set to true to enable, false to disable (default: false)
-fade_window_on_flow_mode_enabled = false
+# Set to true to enable, false to disable (default: true)
+fade_window_on_flow_mode_enabled = true
 
-# Flow mode delay in seconds - time to wait before starting fade (default: 10)
+# Flow mode delay in seconds - time to wait before starting fade (default: 3)
 # After transitioning from non-score-up to score-up state, the window will wait
 # this many seconds before starting the fade effect
-flow_mode_delay_seconds = 10
+flow_mode_delay_seconds = 3
 
-# Flow mode fade rate - transparency increase per second in percent (default: 1)
+# Flow mode fade rate - transparency increase per second in percent (default: 20)
 # The window will become this percent more transparent each second during flow mode
 # Range: 1-100 (1 = slow fade, 100 = instant transparency)
-flow_mode_fade_rate_percent_per_second = 1
+flow_mode_fade_rate_percent_per_second = 20
 
 # Default transparency - initial transparency level of the window (default: 1.0)
 # Set the default transparency/opacity of the window when it starts

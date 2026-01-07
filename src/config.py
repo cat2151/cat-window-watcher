@@ -48,9 +48,9 @@ class Config:
         self.score_up_color = "#ffffff"
         self.score_down_color = "#ff0000"
         self.reset_score_every_30_minutes = True
-        self.fade_window_on_flow_mode_enabled = False
-        self.flow_mode_delay_seconds = 10
-        self.flow_mode_fade_rate_percent_per_second = 1
+        self.fade_window_on_flow_mode_enabled = True
+        self.flow_mode_delay_seconds = 3
+        self.flow_mode_fade_rate_percent_per_second = 20
         self.default_transparency = 1.0
         self.window_x = None
         self.window_y = None
@@ -175,21 +175,21 @@ class Config:
                 )
 
             # Load fade_window_on_flow_mode_enabled setting (fade window transparency when in flow state)
-            fade_window_on_flow_mode_enabled = config_data.get("fade_window_on_flow_mode_enabled", False)
+            fade_window_on_flow_mode_enabled = config_data.get("fade_window_on_flow_mode_enabled", True)
             if not isinstance(fade_window_on_flow_mode_enabled, bool):
                 raise ValueError(
                     f"Invalid 'fade_window_on_flow_mode_enabled' value: {fade_window_on_flow_mode_enabled!r}. Must be a boolean."
                 )
 
             # Load flow_mode_delay_seconds setting (delay before starting fade in flow mode)
-            flow_mode_delay_seconds = config_data.get("flow_mode_delay_seconds", 10)
+            flow_mode_delay_seconds = config_data.get("flow_mode_delay_seconds", 3)
             if not isinstance(flow_mode_delay_seconds, int) or flow_mode_delay_seconds < 0:
                 raise ValueError(
                     f"Invalid 'flow_mode_delay_seconds' value: {flow_mode_delay_seconds!r}. Must be a non-negative integer."
                 )
 
             # Load flow_mode_fade_rate_percent_per_second setting (fade rate in percent per second)
-            flow_mode_fade_rate_percent_per_second = config_data.get("flow_mode_fade_rate_percent_per_second", 1)
+            flow_mode_fade_rate_percent_per_second = config_data.get("flow_mode_fade_rate_percent_per_second", 20)
             if (
                 not isinstance(flow_mode_fade_rate_percent_per_second, int)
                 or flow_mode_fade_rate_percent_per_second <= 0
