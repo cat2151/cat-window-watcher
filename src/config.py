@@ -2,6 +2,7 @@
 """Configuration module for cat-window-watcher."""
 
 import sys
+from datetime import datetime
 from pathlib import Path
 
 try:
@@ -289,7 +290,11 @@ class Config:
         """
         if self.is_modified():
             try:
-                print(f"設定ファイルがリロードされました (Configuration reloaded from '{self.config_path}')")
+                timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                # Green ANSI color code for positive/healthy behavior
+                green = "\033[32m"
+                reset = "\033[0m"
+                print(f"{green}Configuration reloaded from '{self.config_path}' at {timestamp}{reset}")
                 self.load_config(exit_on_error=False)
                 return True
             except Exception as e:
