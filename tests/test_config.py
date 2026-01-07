@@ -1292,7 +1292,7 @@ class TestFlowModeConfig(unittest.TestCase):
         self.config_path = Path(self.temp_dir) / "test_config.toml"
 
     def test_fade_window_on_flow_mode_enabled_default(self):
-        """Test fade_window_on_flow_mode_enabled defaults to False when not specified."""
+        """Test fade_window_on_flow_mode_enabled defaults to True when not specified."""
         config_content = """
 [[window_patterns]]
 regex = "github"
@@ -1302,7 +1302,7 @@ description = "GitHub"
         self.config_path.write_text(config_content)
 
         config = Config(str(self.config_path), verbose=False)
-        self.assertFalse(config.get_fade_window_on_flow_mode_enabled())
+        self.assertTrue(config.get_fade_window_on_flow_mode_enabled())
 
     def test_fade_window_on_flow_mode_enabled_true(self):
         """Test fade_window_on_flow_mode_enabled set to true."""
@@ -1345,7 +1345,7 @@ fade_window_on_flow_mode_enabled = "yes"
             Config(str(self.config_path), verbose=False)
 
     def test_flow_mode_delay_seconds_default(self):
-        """Test flow_mode_delay_seconds defaults to 10 when not specified."""
+        """Test flow_mode_delay_seconds defaults to 3 when not specified."""
         config_content = """
 [[window_patterns]]
 regex = "github"
@@ -1355,7 +1355,7 @@ description = "GitHub"
         self.config_path.write_text(config_content)
 
         config = Config(str(self.config_path), verbose=False)
-        self.assertEqual(config.get_flow_mode_delay_seconds(), 10)
+        self.assertEqual(config.get_flow_mode_delay_seconds(), 3)
 
     def test_flow_mode_delay_seconds_custom_value(self):
         """Test flow_mode_delay_seconds with custom value."""
@@ -1408,7 +1408,7 @@ flow_mode_delay_seconds = 10.5
             Config(str(self.config_path), verbose=False)
 
     def test_flow_mode_fade_rate_default(self):
-        """Test flow_mode_fade_rate_percent_per_second defaults to 1 when not specified."""
+        """Test flow_mode_fade_rate_percent_per_second defaults to 20 when not specified."""
         config_content = """
 [[window_patterns]]
 regex = "github"
@@ -1418,7 +1418,7 @@ description = "GitHub"
         self.config_path.write_text(config_content)
 
         config = Config(str(self.config_path), verbose=False)
-        self.assertEqual(config.get_flow_mode_fade_rate_percent_per_second(), 1)
+        self.assertEqual(config.get_flow_mode_fade_rate_percent_per_second(), 20)
 
     def test_flow_mode_fade_rate_custom_value(self):
         """Test flow_mode_fade_rate_percent_per_second with custom value."""
@@ -1502,9 +1502,9 @@ description = "GitHub"
     def test_flow_mode_settings_reload_on_config_change(self):
         """Test that flow mode settings are reloaded when config file changes."""
         config_content = """
-fade_window_on_flow_mode_enabled = false
-flow_mode_delay_seconds = 10
-flow_mode_fade_rate_percent_per_second = 1
+fade_window_on_flow_mode_enabled = true
+flow_mode_delay_seconds = 3
+flow_mode_fade_rate_percent_per_second = 20
 
 [[window_patterns]]
 regex = "github"
@@ -1514,8 +1514,8 @@ description = "GitHub"
         self.config_path.write_text(config_content)
 
         config = Config(str(self.config_path), verbose=False)
-        self.assertFalse(config.get_fade_window_on_flow_mode_enabled())
-        self.assertEqual(config.get_flow_mode_delay_seconds(), 10)
+        self.assertTrue(config.get_fade_window_on_flow_mode_enabled())
+        self.assertEqual(config.get_flow_mode_delay_seconds(), 3)
 
         # Wait a bit to ensure file modification time changes
         time.sleep(0.1)
@@ -2176,9 +2176,9 @@ mild_penalty_end_hour = 23
 score_up_color = "#ffffff"
 score_down_color = "#ff0000"
 reset_score_every_30_minutes = true
-fade_window_on_flow_mode_enabled = false
-flow_mode_delay_seconds = 10
-flow_mode_fade_rate_percent_per_second = 1
+fade_window_on_flow_mode_enabled = true
+flow_mode_delay_seconds = 3
+flow_mode_fade_rate_percent_per_second = 20
 default_transparency = 1.0
 window_x = 100
 window_y = 200
@@ -2218,9 +2218,9 @@ description = "Twitter"
             self.assertIn("score_up_color: #ffffff", output)
             self.assertIn("score_down_color: #ff0000", output)
             self.assertIn("reset_score_every_30_minutes: True", output)
-            self.assertIn("fade_window_on_flow_mode_enabled: False", output)
-            self.assertIn("flow_mode_delay_seconds: 10", output)
-            self.assertIn("flow_mode_fade_rate_percent_per_second: 1", output)
+            self.assertIn("fade_window_on_flow_mode_enabled: True", output)
+            self.assertIn("flow_mode_delay_seconds: 3", output)
+            self.assertIn("flow_mode_fade_rate_percent_per_second: 20", output)
             self.assertIn("default_transparency: 1.0", output)
             self.assertIn("window_x: 100", output)
             self.assertIn("window_y: 200", output)
