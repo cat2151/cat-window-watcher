@@ -2,12 +2,17 @@
 """Configuration module for cat-window-watcher."""
 
 import sys
+from datetime import datetime
 from pathlib import Path
 
 try:
     import tomllib
 except ImportError:
     import tomli as tomllib
+
+# ANSI color codes for console output
+ANSI_GREEN = "\033[32m"
+ANSI_RESET = "\033[0m"
 
 
 class Config:
@@ -289,7 +294,8 @@ class Config:
         """
         if self.is_modified():
             try:
-                print(f"設定ファイルがリロードされました (Configuration reloaded from '{self.config_path}')")
+                timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                print(f"{ANSI_GREEN}Configuration reloaded from '{self.config_path}' at {timestamp}{ANSI_RESET}")
                 self.load_config(exit_on_error=False)
                 return True
             except Exception as e:
