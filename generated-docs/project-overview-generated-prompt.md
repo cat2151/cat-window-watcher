@@ -1,4 +1,4 @@
-Last updated: 2026-01-07
+Last updated: 2026-01-08
 
 
 # プロジェクト概要生成プロンプト（来訪者向け）
@@ -399,7 +399,13 @@ pip install pywin32
   📖 48.md
   📖 50.md
   📖 53.md
+  📖 55.md
+  📖 57.md
+  📖 58.md
+  📖 59.md
   📖 6.md
+  📖 60.md
+  📖 61.md
   📖 8.md
   📖 9.md
 📄 pytest.ini
@@ -454,9 +460,10 @@ issue-notes/46.md
 issue-notes/48.md
 issue-notes/50.md
 issue-notes/53.md
-issue-notes/6.md
-issue-notes/8.md
-issue-notes/9.md
+issue-notes/55.md
+issue-notes/57.md
+issue-notes/58.md
+issue-notes/59.md
 
 上記の情報を基に、プロンプトで指定された形式でプロジェクト概要を生成してください。
 特に以下の点を重視してください：
@@ -468,4 +475,4 @@ issue-notes/9.md
 
 
 ---
-Generated at: 2026-01-07 07:05:48 JST
+Generated at: 2026-01-08 07:05:33 JST

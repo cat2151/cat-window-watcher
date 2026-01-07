@@ -1,70 +1,53 @@
-Last updated: 2026-01-07
+Last updated: 2026-01-08
 
 # Development Status
 
 ## 現在のIssues
-- [Issue #26](../issue-notes/26.md): 本プロジェクトを実際に利用する「ドッグフーディング」を実施し、使い勝手や改善点を洗い出すことが課題として挙げられています。
-- [Issue #6](../issue-notes/6.md): GitHubの「Pull requests」や「Code」といった特定のページが、ウィンドウタイトルによって正しくGitHubサイトとして認識されない問題が報告されています。
-- [Issue #53](../issue-notes/53.md): 最近追加されたIssueで、その具体的な内容と目的を確認し、今後の開発における優先度を評価する必要があります。
+- ユーザー体験向上のため、フローモードやデフォルトスコアなど主要設定の初期値改善が進められています。
+- 設定例(`examples/example.txt`)と日本語README(`README.ja.md`)の記述を分かりやすくするための修正が進行中です。
+- アプリケーションの自己利用によるテスト（ドッグフーディング）と、設定ファイルの動的リロード機能の実装が検討されています。
 
 ## 次の一手候補
-1. [Issue #6](../issue-notes/6.md): GitHubサイト閲覧時のウィンドウ認識問題の調査と修正
-   - 最初の小さな一歩: `src/window_monitor.py` でウィンドウタイトルを監視しているロジックを確認し、GitHubのPull RequestやCodeページでのウィンドウタイトルの具体的な取得方法と、`config.toml.example` の設定との比較を行う。
+1. `examples`と`README.ja.md`の記述改善と同期化 ([Issue #60](../issue-notes/60.md), [Issue #59](../issue-notes/59.md), [Issue #57](../issue-notes/57.md))
+   - 最初の小さな一歩: `examples/example.txt`内の`window_patterns`エントリで`description`フィールドを最上部に移動し、重複するコメントを削除します。
    - Agent実行プロンプ:
      ```
-     対象ファイル: `src/window_monitor.py`, `src/config.py`, `config.toml.example`
+     対象ファイル: `examples/example.txt`
 
-     実行内容:
-     1. `src/window_monitor.py` におけるウィンドウタイトル取得とカテゴリ判定ロジックを分析する。
-     2. `config.toml.example` と `src/config.py` でGitHub関連の設定がどのように定義され、利用されているかを特定する。
-     3. GitHubの「Pull requests」や「Code」ページにおける実際のウィンドウタイトル（一般的なブラウザの場合）を調査し、現在のロジックでこれらのタイトルがどのように処理されるかを評価する。
+     実行内容: `examples/example.txt`の内容を分析し、以下の修正を加えてください：
+     1. 各`[[window_patterns]]`ブロック内で、`description`行がそのブロックの一番上の要素になるように移動してください。
+     2. 各`[[window_patterns]]`ブロック内にある、`# Display description`のような`description`の役割を説明する重複したコメントを削除してください。
+     3. 修正後もTOML形式として有効であることを確認してください。
 
-     確認事項:
-     - 現在のウィンドウ監視ロジックが、期待されるGitHubページのタイトルをどのように扱っているか。
-     - `config.toml` の `github` セクションに定義されているキーワードが適切に機能しているか。
-     - ブラウザの種類（Chrome, Firefoxなど）によるウィンドウタイトルの違い。
+     確認事項: 変更がTOML形式の構文を壊さないこと、および意図しないコメントが削除されていないことを確認してください。
 
-     期待する出力:
-     Markdown形式で、GitHubのPull requestsやCodeページを正しく認識するための具体的な修正案（例: `config.toml.example` のキーワード追加案や `src/window_monitor.py` のロジック変更案）を記述してください。
+     期待する出力: 修正された`examples/example.txt`の内容をそのまま出力してください。
      ```
 
-2. [Issue #26](../issue-notes/26.md): ドッグフーディング計画の策定
-   - 最初の小さな一歩: 「ドッグフーディングする」という広範なテーマについて、具体的な目標と検証項目を定義する。例えば、「cat-window-watcher を自分自身で1週間使用し、使いにくい点や改善点をリストアップする」といった計画の骨子を作成する。
+2. フローモードおよびスコア関連のデフォルト値調整と動作確認 ([Issue #62](../issue-notes/62.md), [Issue #61](../issue-notes/61.md), [Issue #58](../issue-notes/58.md))
+   - 最初の小さな一歩: `src/config.py`内の`_parse_window_patterns`関数を分析し、`score`フィールドが`config.toml`で省略された場合にデフォルト値が適用される現在の挙動を把握します。
    - Agent実行プロンプト:
      ```
-     対象ファイル: `issue-notes/26.md` (またはプロジェクト全体の方針に関わるため、`README.md` や関連ドキュメント)
+     対象ファイル: `src/config.py`
 
-     実行内容:
-     1. [Issue #26](../issue-notes/26.md) の「ドッグフーディングする」という目的を具体化するための初期計画を立案する。
-     2. ドッグフーディングの期間、観察項目（例: 誤認識、設定の複雑さ、UXの問題点）、および改善点を記録する方法（例: 新しいissueの起票、メモ作成）を提案する。
-     3. 最初の具体的なドッグフーディングのシナリオ（例: 「日常的な開発作業中に本ツールを使用する」）を記述する。
+     実行内容: `src/config.py`の`_parse_window_patterns`関数に焦点を当て、`config.toml`内の`[[window_patterns]]`ブロックで`score`フィールドが省略された場合に、どのように処理されるか（例えば、エラーになるか、特定のデフォルト値が適用されるかなど）を詳細に分析し、その挙動をmarkdown形式で説明してください。
 
-     確認事項:
-     - この計画が、プロジェクトの品質向上に直接寄与するか。
-     - ハルシネーションを避け、具体的な実行可能なステップに繋がるか。
-     - 現在オープンされている他のissueとの関連性。
+     確認事項: `toml`ライブラリの挙動と、`_parse_window_patterns`関数が`score`の欠落をどのようにハンドリングしているかを確認してください。
 
-     期待する出力:
-     Markdown形式で、ドッグフーディングの初期計画、具体的な実施手順、および期待される成果（例: 収集すべきフィードバックの種類）を記述してください。
+     期待する出力: `score`フィールドが省略された場合の処理フロー、および現在のデフォルト値の適用に関する分析結果をmarkdown形式で出力してください。
      ```
 
-3. [Issue #53](../issue-notes/53.md) の内容確認と優先度評価
-   - 最初の小さな一歩: `issue-notes/53.md` ファイルの内容を読み込み、Issueの具体的な問題点、目的、および現在の状況を把握する。
+3. `config.toml`の変更を監視し、実行中に設定をリロードする機能の実装 ([Issue #8](../issue-notes/8.md))
+   - 最初の小さな一歩: `src/config.py`に、`config.toml`ファイルの最終更新時刻を読み込み、クラス変数として保持する機能を追加します。
    - Agent実行プロンプト:
      ```
-     対象ファイル: `issue-notes/53.md`
+     対象ファイル: `src/config.py`
 
-     実行内容:
-     1. `issue-notes/53.md` の内容を完全に読み込み、その目的、問題提起、および関連する情報（もしあれば）を抽出する。
-     2. このIssueがプロジェクト全体に与える影響、緊急性、および他のオープンなIssueとの関連性を評価する。
+     実行内容: `src/config.py`を分析し、`Config`クラス内に`config.toml`ファイルの最終更新時刻（timestamp）を保持するためのプライベート変数（例: `_last_modified_timestamp`）を追加してください。この変数は`_load_config`メソッドが呼び出された際に、ファイルの現在の最終更新時刻で初期化されるようにしてください。また、現在の`config.toml`を読み込むロジックが変更されないように注意してください。
 
-     確認事項:
-     - Issueの記載内容が明確であるか、不明瞭な点はないか。
-     - 過去のコミット履歴 (`69fba51 Add issue note for #53 [auto]`) との関連性。
-     - もし内容が不明確な場合、追加情報が必要か。
+     確認事項: ファイルの最終更新時刻を取得するOS依存のない適切なPythonモジュール（例: `os.path.getmtime`）が使用されていることを確認してください。
 
-     期待する出力:
-     Markdown形式で、[Issue #53](../issue-notes/53.md) の要約、およびそのIssueに対する次の推奨アクション（例: 修正着手、追加調査、情報整理など）を記述してください。もしIssueの内容が空または不明確な場合は、その旨を報告し、Issueの具体的な内容を追記するステップを提案してください。
+     期待する出力: 修正された`src/config.py`の`Config`クラス定義部分と`_load_config`メソッドのコードブロックをmarkdown形式で出力してください。
 
 ---
-Generated at: 2026-01-07 07:06:09 JST
+Generated at: 2026-01-08 07:05:50 JST

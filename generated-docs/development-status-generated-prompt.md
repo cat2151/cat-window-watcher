@@ -1,4 +1,4 @@
-Last updated: 2026-01-07
+Last updated: 2026-01-08
 
 # 開発状況生成プロンプト（開発者向け）
 
@@ -232,7 +232,13 @@ Last updated: 2026-01-07
 - issue-notes/48.md
 - issue-notes/50.md
 - issue-notes/53.md
+- issue-notes/55.md
+- issue-notes/57.md
+- issue-notes/58.md
+- issue-notes/59.md
 - issue-notes/6.md
+- issue-notes/60.md
+- issue-notes/61.md
 - issue-notes/8.md
 - issue-notes/9.md
 - pytest.ini
@@ -253,6 +259,96 @@ Last updated: 2026-01-07
 - tests/test_window_monitor.py
 
 ## 現在のオープンIssues
+## [Issue #62](../issue-notes/62.md): Update flow mode default values for better UX
+Changed default values for flow mode settings to provide a more responsive and user-friendly experience out of the box.
+
+## Changes
+
+- `fade_window_on_flow_mode_enabled`: `False` → `True` - Enable flow mode by default
+- `flow_mode_delay_seconds`: `10` → `3` - Reduce delay for faster response
+- `flow...
+ラベル: 
+--- issue-notes/62.md の内容 ---
+
+```markdown
+
+```
+
+## [Issue #61](../issue-notes/61.md): いくつかの値のdefaultをtrueにする
+[issue-notes/61.md](https://github.com/cat2151/cat-window-watcher/blob/main/issue-notes/61.md)
+
+...
+ラベル: 
+--- issue-notes/61.md の内容 ---
+
+```markdown
+# issue いくつかの値のdefaultをtrueにする #61
+[issues #61](https://github.com/cat2151/cat-window-watcher/issues/61)
+
+
+
+```
+
+## [Issue #60](../issue-notes/60.md): examplesのja版を生成する。README.ja.mdの説明も、そこを参照、とする
+[issue-notes/60.md](https://github.com/cat2151/cat-window-watcher/blob/main/issue-notes/60.md)
+
+...
+ラベル: 
+--- issue-notes/60.md の内容 ---
+
+```markdown
+# issue examplesのja版を生成する #60
+[issues #60](https://github.com/cat2151/cat-window-watcher/issues/60)
+
+
+
+```
+
+## [Issue #59](../issue-notes/59.md): README.ja.mdの項目説明を読みやすくする。どれがwindow patterns内か、そうでないか、をパッと見でわかるようにする
+[issue-notes/59.md](https://github.com/cat2151/cat-window-watcher/blob/main/issue-notes/59.md)
+
+...
+ラベル: 
+--- issue-notes/59.md の内容 ---
+
+```markdown
+# issue README.ja.mdの項目説明を読みやすくする。どれがwindow patterns内か、そうでないか、をパッと見でわかるようにする #59
+[issues #59](https://github.com/cat2151/cat-window-watcher/issues/59)
+
+
+
+```
+
+## [Issue #58](../issue-notes/58.md): scoreはdefaultで+1にする。また、window_patternsでscore記述省略したらdefaultが使われているか調査し、もし使われていないなら使うようにする
+[issue-notes/58.md](https://github.com/cat2151/cat-window-watcher/blob/main/issue-notes/58.md)
+
+...
+ラベル: 
+--- issue-notes/58.md の内容 ---
+
+```markdown
+# issue scoreはdefaultで+1にする。また、window_patternsでscore記述省略したらdefaultが使われているか調査し、もし使われていないなら使うようにする #58
+[issues #58](https://github.com/cat2151/cat-window-watcher/issues/58)
+
+
+
+```
+
+## [Issue #57](../issue-notes/57.md): examplesを読みやすくする。descriptionは要素の一番下でなく一番上にして、重複した内容のコメントを削除する
+[issue-notes/57.md](https://github.com/cat2151/cat-window-watcher/blob/main/issue-notes/57.md)
+
+...
+ラベル: 
+--- issue-notes/57.md の内容 ---
+
+```markdown
+# issue examplesを読みやすくする。descriptionは要素の一番下でなく一番上にして、重複した内容のコメントを削除する #57
+[issues #57](https://github.com/cat2151/cat-window-watcher/issues/57)
+
+
+
+```
+
 ## [Issue #26](../issue-notes/26.md): ドッグフーディングする
 [issue-notes/26.md](https://github.com/cat2151/cat-window-watcher/blob/main/issue-notes/26.md)
 
@@ -269,6 +365,516 @@ Last updated: 2026-01-07
 ```
 
 ## ドキュメントで言及されているファイルの内容
+### .github/actions-tmp/README.ja.md
+```md
+{% raw %}
+# GitHub Actions 共通ワークフロー集
+
+このリポジトリは、**複数プロジェクトで使い回せるGitHub Actions共通ワークフロー集**です
+
+<p align="left">
+  <a href="README.ja.md"><img src="https://img.shields.io/badge/🇯🇵-Japanese-red.svg" alt="Japanese"></a>
+  <a href="README.md"><img src="https://img.shields.io/badge/🇺🇸-English-blue.svg" alt="English"></a>
+</p>
+
+# 3行で説明
+- 🚀 プロジェクトごとのGitHub Actions管理をもっと楽に
+- 🔗 共通化されたワークフローで、どのプロジェクトからも呼ぶだけでOK
+- ✅ メンテは一括、プロジェクト開発に集中できます
+
+## Quick Links
+| 項目 | リンク |
+|------|--------|
+| 📖 プロジェクト概要 | [generated-docs/project-overview.md](generated-docs/project-overview.md) |
+| 📖 コールグラフ | [generated-docs/callgraph.html](https://cat2151.github.io/github-actions/generated-docs/callgraph.html) |
+| 📊 開発状況 | [generated-docs/development-status.md](generated-docs/development-status.md) |
+
+# notes
+- まだ共通化の作業中です
+- まだワークフロー内容を改善中です
+
+※README.md は README.ja.md を元にGeminiの翻訳でGitHub Actionsで自動生成しています
+
+{% endraw %}
+```
+
+### README.ja.md
+```md
+{% raw %}
+# cat-window-watcher - Cat is watching you -
+
+アクティブなウィンドウを監視し、あなたの作業内容に基づいてスコアを調整するシンプルでスタンドアロンなウィンドウ監視ツール。
+
+<p align="left">
+  <a href="README.ja.md"><img src="https://img.shields.io/badge/🇯🇵-Japanese-red.svg" alt="Japanese"></a>
+  <a href="README.md"><img src="https://img.shields.io/badge/🇺🇸-English-blue.svg" alt="English"></a>
+</p>
+
+## WIP
+
+開発中です。不具合があります。issueを参照ください
+
+## ⚠️ 暫定実装についての注意
+
+これは**テストと検証のための暫定実装**です。現在の実装は以下に焦点を当てています：
+- シンプルでスタンドアロンな操作（この段階では他のアプリとの統合なし）
+- 分かりやすいロジック：1秒ごとにアクティブなウィンドウタイトルをチェック
+- 迅速な開発とテストを促進するための最小限の複雑さ
+
+将来のバージョンでは最適化や統合が含まれる可能性がありますが、このバージョンはシンプルさと理解しやすさを優先しています。
+
+## コンセプト
+
+アプリケーションは現在アクティブなウィンドウを監視し、設定可能なパターンに基づいてスコアを調整します：
+- GitHubで作業中？スコアが上がります！ 🎉
+- SNSを閲覧中？スコアが下がります... 😿
+
+The cat is watching you!
+
+## 機能
+
+- **シンプルなスコア表示**: クリーンなtkinter GUIで現在のスコアを表示
+- **正規表現ベースのウィンドウマッチング**: 正規表現を使用してウィンドウタイトルパターンを設定
+- **設定可能なスコア値**: 各パターンに対してカスタムなスコア増減量を設定
+- **クロスプラットフォーム対応**: Linux、macOS、Windowsで動作
+- **軽量**: 1秒に1回ウィンドウタイトルをチェック、最小限のリソース使用量
+
+## 見た目
+
+```
+╔════════════════════════════════════════════════════════════╗
+║   Cat Window Watcher - Cat is watching you -               ║
+╠════════════════════════════════════════════════════════════╣
+║                                                            ║
+║                                                            ║
+║                       Score: 42                            ║
+║                                                            ║
+║                                                            ║
+║                      GitHub (+10)                          ║
+║                                                            ║
+╚════════════════════════════════════════════════════════════╝
+```
+
+GUIはダークテーマで、大きなスコア表示と現在のアクティビティを表示するステータスを備えています。
+
+## インストール
+
+1. リポジトリをクローン：
+```bash
+git clone https://github.com/cat2151/cat-window-watcher.git
+cd cat-window-watcher
+```
+
+2. Python 3.12以上がインストールされていることを確認：
+```bash
+python --version
+```
+
+3. 依存関係をインストール（必要に応じて）：
+   - Linux: `xdotool` または `xprop`（通常はプリインストール済み）
+   - macOS: 内蔵AppleScriptサポート
+   - Windows: 内蔵APIで動作（より良いサポートのために `pywin32` をオプションで使用）
+
+## 設定
+
+1. 設定例をコピー：
+```bash
+cp config.toml.example config.toml
+```
+
+2. `config.toml`を編集してウィンドウパターンとスコアをカスタマイズ：
+
+```toml
+# デフォルトスコア（パターンがマッチしない場合に適用）
+# 設定ミスを検知しやすくするために使用します
+# -1（デフォルト）で設定ミスを簡単に検知、0に設定で無効化
+default_score = -1
+
+[[window_patterns]]
+regex = "github"           # Regex pattern to match window title
+score = 10                 # Score change when this window is active
+description = "GitHub"     # Display description
+
+[[window_patterns]]
+regex = "twitter|x\\.com"
+score = -5
+description = "Twitter/X"
+```
+
+### 設定オプション
+
+- **verbose**: 設定の詳細を起動時に表示するかどうか（デフォルト: false）
+  - `true`に設定すると、アプリケーション起動時に全ての設定値が表示されます
+  - `false`に設定すると、設定の詳細は表示されません（デフォルト）
+  - デバッグや設定の確認が必要な場合に有効にします
+- **default_score**: パターンがマッチしない場合に適用されるスコア（デフォルト: -1）
+  - -1（デフォルト）に設定すると、パターンが正しく設定されているか確認しやすくなります
+  - 0に設定すると、マッチしない場合はスコアが変化しません
+  - パターンが誤って設定されている場合、スコアが継続的に減少するため、すぐに気づくことができます
+- **apply_default_score_mode**: デフォルトスコアの適用制御（デフォルト: true）
+  - `true`に設定すると、パターンがマッチしない場合に default_score が適用されます
+  - `false`に設定すると、パターンがマッチしない場合でもスコアは変化しません（スコアは維持されます）
+- **self_window_score**: アプリ自身のウィンドウがアクティブな場合に適用されるスコア（デフォルト: 0）
+  - Cat Window Watcherのウィンドウ自体にフォーカスを切り替えた場合、default_scoreや「マッチなし」の代わりにこのスコアが適用されます
+  - 0（デフォルト）に設定すると、アプリを確認している間はスコアが変化しません
+  - 正の値に設定すると、スコアをチェックすることに報酬を与えます
+  - 負の値に設定すると、過度なスコアチェックを抑制します
+- **mild_penalty_mode**: 指定した時間帯にマイナススコアを -1 に制限するモード（デフォルト: false）
+  - **注意**: これはテスト目的の暫定実装です
+  - `true`に設定すると有効化、`false`で無効化
+- **mild_penalty_start_hour**: マイルドペナルティモードの開始時刻（0-23、デフォルト: 22）
+  - mild_penalty_mode が有効な場合、mild_penalty_start_hour から mild_penalty_end_hour までの時間帯にマイナススコアが -1 に制限されます
+- **mild_penalty_end_hour**: マイルドペナルティモードの終了時刻（0-23、デフォルト: 23）
+  - 時間範囲は開始時刻と終了時刻の両方を含みます
+- **always_on_top**: ウィンドウを常に最前面に表示するかどうか（デフォルト: true）
+  - `true`に設定すると、ウィンドウが常に他のウィンドウの上に表示されます
+  - `false`に設定すると、通常のウィンドウとして動作します
+- **hide_on_mouse_proximity**: マウスが近づいたときにウィンドウを最背面に移動するかどうか（デフォルト: true）
+  - `true`に設定すると、マウスカーソルがウィンドウに近づいたときに自動的に最背面に移動し、離れると最前面に戻ります
+  - `false`に設定すると、この機能は無効になります
+  - この機能は `always_on_top` が `true` の場合のみ動作します
+- **proximity_distance**: マウス接近検知の距離（ピクセル単位、デフォルト: 50）
+  - マウスカーソルがウィンドウからこの距離以内に入ったときに、ウィンドウを最背面に移動します
+  - 値を大きくすると、より遠くからマウスを検知します
+  - 値を小さくすると、ウィンドウにより近づかないと反応しません
+- **always_on_top_while_score_decreasing**: スコアが減り続けている間、ウィンドウを最前面に表示（デフォルト: true）
+  - `true`に設定すると、スコアが減少している間、ウィンドウを自動的に最前面に表示します
+  - `false`に設定すると、この機能は無効になります
+  - 集中力が低下している時（例：SNSを見ている時）に気づきやすくなります
+  - スコアが減少している間は、他の最前面設定よりも優先されます
+- **score_up_color**: スコアが上昇または変化しない場合の表示色（デフォルト: "#ffffff" 白）
+  - スコアが増加したり、変化しない場合のフォント色を設定します
+  - カラーコードは16進数形式（例: "#ffffff"）で指定します
+- **score_down_color**: スコアが減少する場合の表示色（デフォルト: "#ff0000" 赤）
+  - スコアが減少した場合のフォント色を設定します
+  - カラーコードは16進数形式（例: "#ff0000"）で指定します
+- **reset_score_every_30_minutes**: 30分ごとにスコアを0にリセットするかどうか（デフォルト: true）
+  - `true`に設定すると、毎時00分と30分にスコアが自動的に0にリセットされます
+  - `false`に設定すると、スコアは蓄積され続けます
+  - ポモドーロ・テクニックに類似して、「今の30分だけ集中する」というイメージを作りやすくします
+  - 例: 10:29にスコアが100でも、10:30になると0にリセットされ、新しい30分間が始まります
+- **fade_window_on_flow_mode_enabled**: フロー状態の時にウィンドウを徐々に透明化するかどうか（デフォルト: false）
+  - `true`に設定すると、スコア上昇状態が flow_mode_delay_seconds 続いた後、ウィンドウが徐々に透明化して集中を助けます
+  - `false`に設定すると、この機能は無効になります
+- **flow_mode_delay_seconds**: フェード開始前の待機時間（秒単位、デフォルト: 10）
+  - 非スコア上昇状態からスコア上昇状態に移行した後、この秒数だけ待ってからフェード効果を開始します
+- **flow_mode_fade_rate_percent_per_second**: フローモードの透明化速度（1秒あたりの透明度増加率、パーセント単位、デフォルト: 1）
+  - フローモード中、ウィンドウは毎秒このパーセント分だけ透明になります
+  - 範囲: 1-100（1 = ゆっくりとしたフェード、100 = 即座に透明化）
+- **default_transparency**: ウィンドウの初期透明度（デフォルト: 1.0）
+  - ウィンドウ起動時の透明度/不透明度を設定します
+  - 範囲: 0.0-1.0（0.0 = 完全に透明、1.0 = 完全に不透明）
+  - デフォルトでウィンドウを少し透明にしたい場合に便利です
+  - デフォルト: 1.0 - 完全に不透明
+- **window_x / window_y**: ウィンドウの初期位置（X座標 / Y座標、ピクセル単位）
+  - 両方が指定されている場合、ウィンドウはその位置に開きます
+  - どちらか一方が指定されていない場合（または null に設定されている場合）は、システムがデフォルト位置を選択します
+  - 座標は画面の左上隅を基準としたピクセル単位です
+  - デフォルト: 未設定（null） - システムが位置を選択
+- **copy_no_match_to_clipboard**: マッチしないウィンドウタイトルを自動的にクリップボードにコピーする（デフォルト: false）
+  - `true`に設定すると、どのパターンにもマッチしないウィンドウタイトルが自動的にクリップボードにコピーされます
+  - `false`に設定すると、この機能は無効になります
+  - 新しいパターンの設定が簡単になります - ウィンドウに切り替えるだけでタイトルが取得でき、設定ファイルにペーストできます
+  - 各ユニークなマッチしないタイトルは一度だけコピーされるため、繰り返しクリップボードが更新されることはありません
+- **regex**: ウィンドウタイトルにマッチする正規表現パターン（大文字小文字を区別しない）
+- **score**: パターンがマッチしたときにスコアに追加する整数値（負の値も可能）
+- **description**: ステータスエリアに表示される人間が読める説明
+
+## 使用法
+
+アプリケーションを実行：
+```bash
+# 方法1: スクリプトを直接実行
+python src/main.py
+
+# 方法2: モジュールとして実行
+python -m src
+
+# 方法3: カスタム設定ファイルで実行
+python src/main.py --config my_config.toml
+python src/main.py -c my_config.toml
+```
+
+GUIには以下が表示されます：
+- 現在のスコアを大きなテキストで表示
+- 現在マッチしたパターンまたはウィンドウタイトルを表示するステータス
+- 1秒ごとに自動更新
+
+## 例
+
+### 例1: 生産性の追跡
+```toml
+[[window_patterns]]
+regex = "github|gitlab"
+score = 10
+description = "コーディング"
+
+[[window_patterns]]
+regex = "twitter|facebook|instagram"
+score = -5
+description = "ソーシャルメディア"
+```
+
+### 例2: 勉強時間
+```toml
+[[window_patterns]]
+regex = "pdf|documentation|docs"
+score = 8
+description = "読書"
+
+[[window_patterns]]
+regex = "youtube|netflix"
+score = -10
+description = "エンターテイメント"
+```
+
+### 例3: 最前面モードでマウス接近時に自動で最背面に移動
+```toml
+# ウィンドウを常に最前面に表示しつつ、マウスが近づいたら自動的に最背面に移動
+always_on_top = true
+hide_on_mouse_proximity = true
+proximity_distance = 50
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+```
+
+この設定により、ウィンドウは通常は最前面に表示されますが、マウスカーソルが50ピクセル以内に近づくと自動的に最背面に移動し、マウスが離れると再び最前面に戻ります。作業の邪魔にならないように設計されています。
+
+## 開発
+
+### テストの実行
+```bash
+python -m unittest discover tests/ -v
+```
+
+### コードフォーマット
+コミット前にコードをフォーマット：
+```bash
+ruff format src/ tests/
+ruff check --fix src/ tests/
+```
+
+### リンティング
+コード品質の検証：
+```bash
+ruff format --check src/ tests/
+ruff check src/ tests/
+```
+
+## アーキテクチャ
+
+アプリケーションはいくつかのモジュールから構成されています：
+
+- **config.py**: TOML設定の読み込みと管理
+- **window_monitor.py**: クロスプラットフォームなウィンドウタイトル検出
+- **score_tracker.py**: ウィンドウタイトルをパターンにマッチさせ、スコアを追跡
+- **gui.py**: tkinterベースのスコア表示インターフェース
+- **main.py**: アプリケーションのエントリポイントとオーケストレーション
+
+## プラットフォーム固有の注意事項
+
+### Linux
+`xdotool` または `xprop` が必要：
+```bash
+sudo apt-get install xdotool  # Debian/Ubuntu
+```
+
+### macOS
+内蔵AppleScriptを使用。追加の依存関係は不要。
+
+### Windows
+内蔵Windows APIで動作。より良い互換性のためにインストール：
+```bash
+pip install pywin32
+```
+
+## ライセンス
+
+詳細はLICENSEファイルをご覧ください。
+
+*Big Brother is watching you. But this time, it's a cat. 🐱*
+
+{% endraw %}
+```
+
+### .github/actions-tmp/issue-notes/2.md
+```md
+{% raw %}
+# issue GitHub Actions「関数コールグラフhtmlビジュアライズ生成」を共通ワークフロー化する #2
+[issues #2](https://github.com/cat2151/github-actions/issues/2)
+
+
+# prompt
+```
+あなたはGitHub Actionsと共通ワークフローのスペシャリストです。
+このymlファイルを、以下の2つのファイルに分割してください。
+1. 共通ワークフロー       cat2151/github-actions/.github/workflows/callgraph_enhanced.yml
+2. 呼び出し元ワークフロー cat2151/github-actions/.github/workflows/call-callgraph_enhanced.yml
+まずplanしてください
+```
+
+# 結果
+- indent
+    - linter？がindentのエラーを出しているがyml内容は見た感じOK
+    - テキストエディタとagentの相性問題と判断する
+    - 別のテキストエディタでsaveしなおし、テキストエディタをreload
+    - indentのエラーは解消した
+- LLMレビュー
+    - agent以外の複数のLLMにレビューさせる
+    - prompt
+```
+あなたはGitHub Actionsと共通ワークフローのスペシャリストです。
+以下の2つのファイルをレビューしてください。最優先で、エラーが発生するかどうかだけレビューしてください。エラー以外の改善事項のチェックをするかわりに、エラー発生有無チェックに最大限注力してください。
+
+--- 共通ワークフロー
+
+# GitHub Actions Reusable Workflow for Call Graph Generation
+name: Generate Call Graph
+
+# TODO Windowsネイティブでのtestをしていた名残が残っているので、今後整理していく。今はWSL act でtestしており、Windowsネイティブ環境依存問題が解決した
+#  ChatGPTにレビューさせるとそこそこ有用そうな提案が得られたので、今後それをやる予定
+#  agentに自己チェックさせる手も、セカンドオピニオンとして選択肢に入れておく
+
+on:
+  workflow_call:
+
+jobs:
+  check-commits:
+    runs-on: ubuntu-latest
+    outputs:
+      should-run: ${{ steps.check.outputs.should-run }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 50 # 過去のコミットを取得
+
+      - name: Check for user commits in last 24 hours
+        id: check
+        run: |
+          node .github/scripts/callgraph_enhanced/check-commits.cjs
+
+  generate-callgraph:
+    needs: check-commits
+    if: needs.check-commits.outputs.should-run == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      security-events: write
+      actions: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set Git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Remove old CodeQL packages cache
+        run: rm -rf ~/.codeql/packages
+
+      - name: Check Node.js version
+        run: |
+          node .github/scripts/callgraph_enhanced/check-node-version.cjs
+
+      - name: Install CodeQL CLI
+        run: |
+          wget https://github.com/github/codeql-cli-binaries/releases/download/v2.22.1/codeql-linux64.zip
+          unzip codeql-linux64.zip
+          sudo mv codeql /opt/codeql
+          echo "/opt/codeql" >> $GITHUB_PATH
+
+      - name: Install CodeQL query packs
+        run: |
+          /opt/codeql/codeql pack install .github/codeql-queries
+
+      - name: Check CodeQL exists
+        run: |
+          node .github/scripts/callgraph_enhanced/check-codeql-exists.cjs
+
+      - name: Verify CodeQL Configuration
+        run: |
+          node .github/scripts/callgraph_enhanced/analyze-codeql.cjs verify-config
+
+      - name: Remove existing CodeQL DB (if any)
+        run: |
+          rm -rf codeql-db
+
+      - name: Perform CodeQL Analysis
+        run: |
+          node .github/scripts/callgraph_enhanced/analyze-codeql.cjs analyze
+
+      - name: Check CodeQL Analysis Results
+        run: |
+          node .github/scripts/callgraph_enhanced/analyze-codeql.cjs check-results
+
+      - name: Debug CodeQL execution
+        run: |
+          node .github/scripts/callgraph_enhanced/analyze-codeql.cjs debug
+
+      - name: Wait for CodeQL results
+        run: |
+          node -e "setTimeout(()=>{}, 10000)"
+
+      - name: Find and process CodeQL results
+        run: |
+          node .github/scripts/callgraph_enhanced/find-process-results.cjs
+
+      - name: Generate HTML graph
+        run: |
+          node .github/scripts/callgraph_enhanced/generate-html-graph.cjs
+
+      - name: Copy files to generated-docs and commit results
+        run: |
+          node .github/scripts/callgraph_enhanced/copy-commit-results.cjs
+
+--- 呼び出し元
+# 呼び出し元ワークフロー: call-callgraph_enhanced.yml
+name: Call Call Graph Enhanced
+
+on:
+  schedule:
+    # 毎日午前5時(JST) = UTC 20:00前日
+    - cron: '0 20 * * *'
+  workflow_dispatch:
+
+jobs:
+  call-callgraph-enhanced:
+    # uses: cat2151/github-actions/.github/workflows/callgraph_enhanced.yml
+    uses: ./.github/workflows/callgraph_enhanced.yml # ローカルでのテスト用
+```
+
+# レビュー結果OKと判断する
+- レビュー結果を人力でレビューした形になった
+
+# test
+- #4 同様にローカル WSL + act でtestする
+- エラー。userのtest設計ミス。
+  - scriptの挙動 : src/ がある前提
+  - 今回の共通ワークフローのリポジトリ : src/ がない
+  - 今回testで実現したいこと
+    - 仮のソースでよいので、関数コールグラフを生成させる
+  - 対策
+    - src/ にダミーを配置する
+- test green
+  - ただしcommit pushはしてないので、html内容が0件NG、といったケースの検知はできない
+  - もしそうなったら別issueとしよう
+
+# test green
+
+# commit用に、yml 呼び出し元 uses をlocal用から本番用に書き換える
+
+# closeとする
+- もしhtml内容が0件NG、などになったら、別issueとするつもり
+
+{% endraw %}
+```
+
 ### .github/actions-tmp/issue-notes/26.md
 ```md
 {% raw %}
@@ -337,6 +943,170 @@ has_recent_human_commit=false
 {% endraw %}
 ```
 
+### .github/actions-tmp/issue-notes/7.md
+```md
+{% raw %}
+# issue issue note生成できるかのtest用 #7
+[issues #7](https://github.com/cat2151/github-actions/issues/7)
+
+- 生成できた
+- closeとする
+
+{% endraw %}
+```
+
+### .github/actions-tmp/issue-notes/8.md
+```md
+{% raw %}
+# issue 関数コールグラフhtmlビジュアライズ生成の対象ソースファイルを、呼び出し元ymlで指定できるようにする #8
+[issues #8](https://github.com/cat2151/github-actions/issues/8)
+
+# これまでの課題
+- 以下が決め打ちになっていた
+```
+  const allowedFiles = [
+    'src/main.js',
+    'src/mml2json.js',
+    'src/play.js'
+  ];
+```
+
+# 対策
+- 呼び出し元ymlで指定できるようにする
+
+# agent
+- agentにやらせることができれば楽なので、初手agentを試した
+- 失敗
+    - ハルシネーションしてscriptを大量破壊した
+- 分析
+    - 修正対象scriptはagentが生成したもの
+    - 低品質な生成結果でありソースが巨大
+    - ハルシネーションで破壊されやすいソース
+    - AIの生成したソースは、必ずしもAIフレンドリーではない
+
+# 人力リファクタリング
+- 低品質コードを、最低限agentが扱えて、ハルシネーションによる大量破壊を防止できる内容、にする
+- 手短にやる
+    - そもそもビジュアライズは、agentに雑に指示してやらせたもので、
+    - 今後別のビジュアライザを選ぶ可能性も高い
+    - 今ここで手間をかけすぎてコンコルド効果（サンクコストバイアス）を増やすのは、project群をトータルで俯瞰して見たとき、損
+- 対象
+    - allowedFiles のあるソース
+        - callgraph-utils.cjs
+            - たかだか300行未満のソースである
+            - この程度でハルシネーションされるのは予想外
+            - やむなし、リファクタリングでソース分割を進める
+
+# agentに修正させる
+## prompt
+```
+allowedFilesを引数で受け取るようにしたいです。
+ないならエラー。
+最終的に呼び出し元すべてに波及して修正したいです。
+
+呼び出し元をたどってエントリポイントも見つけて、
+エントリポイントにおいては、
+引数で受け取ったjsonファイル名 allowedFiles.js から
+jsonファイル allowedFiles.jsonの内容をreadして
+変数 allowedFilesに格納、
+後続処理に引き渡す、としたいです。
+
+まずplanしてください。
+planにおいては、修正対象のソースファイル名と関数名を、呼び出し元を遡ってすべて特定し、listしてください。
+```
+
+# 修正が順調にできた
+- コマンドライン引数から受け取る作りになっていなかったので、そこだけ指示して修正させた
+- yml側は人力で修正した
+
+# 他のリポジトリから呼び出した場合にバグらないよう修正する
+- 気付いた
+    - 共通ワークフローとして他のリポジトリから使った場合はバグるはず。
+        - ymlから、共通ワークフロー側リポジトリのcheckoutが漏れているので。
+- 他のyml同様に修正する
+- あわせて全体にymlをリファクタリングし、修正しやすくし、今後のyml読み書きの学びにしやすくする
+
+# local WSL + act : test green
+
+# closeとする
+- もし生成されたhtmlがNGの場合は、別issueとするつもり
+
+{% endraw %}
+```
+
+### issue-notes/8.md
+```md
+{% raw %}
+# issue tomlをtimestamp更新監視し、更新されたらアプリ設定に反映する #8
+[issues #8](https://github.com/cat2151/cat-window-watcher/issues/8)
+
+
+
+{% endraw %}
+```
+
+### .github/actions-tmp/issue-notes/9.md
+```md
+{% raw %}
+# issue 関数コールグラフhtmlビジュアライズが0件なので、原因を可視化する #9
+[issues #9](https://github.com/cat2151/github-actions/issues/9)
+
+# agentに修正させたり、人力で修正したりした
+- agentがハルシネーションし、いろいろ根の深いバグにつながる、エラー隠蔽などを仕込んでいたため、検知が遅れた
+- 詳しくはcommit logを参照のこと
+- WSL + actの環境を少し変更、act起動時のコマンドライン引数を変更し、generated-docsをmountする（ほかはデフォルト挙動であるcpだけにする）ことで、デバッグ情報をコンテナ外に出力できるようにし、デバッグを効率化した
+
+# test green
+
+# closeとする
+
+{% endraw %}
+```
+
+### issue-notes/9.md
+```md
+{% raw %}
+# issue マッチしない場合のscore、を定義し、マッチ設定ミスを検知しやすくする #9
+[issues #9](https://github.com/cat2151/cat-window-watcher/issues/9)
+
+
+
+{% endraw %}
+```
+
+### issue-notes/57.md
+```md
+{% raw %}
+# issue examplesを読みやすくする。descriptionは要素の一番下でなく一番上にして、重複した内容のコメントを削除する #57
+[issues #57](https://github.com/cat2151/cat-window-watcher/issues/57)
+
+
+
+{% endraw %}
+```
+
+### issue-notes/58.md
+```md
+{% raw %}
+# issue scoreはdefaultで+1にする。また、window_patternsでscore記述省略したらdefaultが使われているか調査し、もし使われていないなら使うようにする #58
+[issues #58](https://github.com/cat2151/cat-window-watcher/issues/58)
+
+
+
+{% endraw %}
+```
+
+### issue-notes/59.md
+```md
+{% raw %}
+# issue README.ja.mdの項目説明を読みやすくする。どれがwindow patterns内か、そうでないか、をパッと見でわかるようにする #59
+[issues #59](https://github.com/cat2151/cat-window-watcher/issues/59)
+
+
+
+{% endraw %}
+```
+
 ### issue-notes/6.md
 ```md
 {% raw %}
@@ -348,36 +1118,50 @@ has_recent_human_commit=false
 {% endraw %}
 ```
 
+### issue-notes/60.md
+```md
+{% raw %}
+# issue examplesのja版を生成する #60
+[issues #60](https://github.com/cat2151/cat-window-watcher/issues/60)
+
+
+
+{% endraw %}
+```
+
+### issue-notes/61.md
+```md
+{% raw %}
+# issue いくつかの値のdefaultをtrueにする #61
+[issues #61](https://github.com/cat2151/cat-window-watcher/issues/61)
+
+
+
+{% endraw %}
+```
+
 ## 最近の変更（過去7日間）
 ### コミット履歴:
-07d32e5 Auto-translate README.ja.md to README.md [auto]
-fdb2330 Merge pull request #54 from cat2151/copilot/add-verbose-mode-toml
-bf89246 Fix verbose parameter initialization and add tearDown cleanup
-381aa54 Clarify verbose parameter deprecation in docstring
-c937b08 Add verbose mode documentation to README files
-90e3e6a Add verbose mode configuration to TOML with default off
-41bf617 Initial plan
-69fba51 Add issue note for #53 [auto]
-8a30293 Merge pull request #52 from cat2151/copilot/output-settings-to-console
-152f26e Add verbose parameter to control config output during tests
+d813755 Add issue note for #61 [auto]
+9c26a88 Merge pull request #56 from cat2151/copilot/update-configuration-reload-language
+c414b0d Extract ANSI color codes to module-level constants for better maintainability
+ac28dd8 Update configuration reload message to English with timestamp and green color
+d48c78c Add issue note for #60 [auto]
+b4f03b8 Add issue note for #59 [auto]
+b5d925f Add issue note for #58 [auto]
+8544538 Add issue note for #57 [auto]
+628c9a2 Initial plan
+6644c08 Add issue note for #55 [auto]
 
 ### 変更されたファイル:
-README.ja.md
-README.md
-config.toml.example
-generated-docs/development-status-generated-prompt.md
-generated-docs/development-status.md
-generated-docs/project-overview-generated-prompt.md
-generated-docs/project-overview.md
-issue-notes/50.md
-issue-notes/53.md
+issue-notes/55.md
+issue-notes/57.md
+issue-notes/58.md
+issue-notes/59.md
+issue-notes/60.md
+issue-notes/61.md
 src/config.py
-src/gui.py
-src/score_tracker.py
-tests/test_config.py
-tests/test_gui.py
-tests/test_score_tracker.py
 
 
 ---
-Generated at: 2026-01-07 07:05:48 JST
+Generated at: 2026-01-08 07:05:33 JST
