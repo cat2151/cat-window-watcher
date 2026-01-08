@@ -1,4 +1,4 @@
-Last updated: 2026-01-08
+Last updated: 2026-01-09
 
 # 開発状況生成プロンプト（開発者向け）
 
@@ -239,6 +239,8 @@ Last updated: 2026-01-08
 - issue-notes/6.md
 - issue-notes/60.md
 - issue-notes/61.md
+- issue-notes/63.md
+- issue-notes/65.md
 - issue-notes/8.md
 - issue-notes/9.md
 - pytest.ini
@@ -246,49 +248,26 @@ Last updated: 2026-01-08
 - src/__init__.py
 - src/__main__.py
 - src/config.py
+- src/config_loader.py
+- src/config_validator.py
 - src/constants.py
+- src/flow_state_manager.py
 - src/gui.py
 - src/main.py
+- src/score_calculator.py
 - src/score_tracker.py
+- src/status_formatter.py
+- src/window_behavior.py
 - src/window_monitor.py
 - tests/test_config.py
 - tests/test_dummy.py
 - tests/test_gui.py
 - tests/test_score_colors.py
 - tests/test_score_tracker.py
+- tests/test_screensaver_detection.py
 - tests/test_window_monitor.py
 
 ## 現在のオープンIssues
-## [Issue #62](../issue-notes/62.md): Update flow mode default values for better UX
-Changed default values for flow mode settings to provide a more responsive and user-friendly experience out of the box.
-
-## Changes
-
-- `fade_window_on_flow_mode_enabled`: `False` → `True` - Enable flow mode by default
-- `flow_mode_delay_seconds`: `10` → `3` - Reduce delay for faster response
-- `flow...
-ラベル: 
---- issue-notes/62.md の内容 ---
-
-```markdown
-
-```
-
-## [Issue #61](../issue-notes/61.md): いくつかの値のdefaultをtrueにする
-[issue-notes/61.md](https://github.com/cat2151/cat-window-watcher/blob/main/issue-notes/61.md)
-
-...
-ラベル: 
---- issue-notes/61.md の内容 ---
-
-```markdown
-# issue いくつかの値のdefaultをtrueにする #61
-[issues #61](https://github.com/cat2151/cat-window-watcher/issues/61)
-
-
-
-```
-
 ## [Issue #60](../issue-notes/60.md): examplesのja版を生成する。README.ja.mdの説明も、そこを参照、とする
 [issue-notes/60.md](https://github.com/cat2151/cat-window-watcher/blob/main/issue-notes/60.md)
 
@@ -700,181 +679,6 @@ pip install pywin32
 {% endraw %}
 ```
 
-### .github/actions-tmp/issue-notes/2.md
-```md
-{% raw %}
-# issue GitHub Actions「関数コールグラフhtmlビジュアライズ生成」を共通ワークフロー化する #2
-[issues #2](https://github.com/cat2151/github-actions/issues/2)
-
-
-# prompt
-```
-あなたはGitHub Actionsと共通ワークフローのスペシャリストです。
-このymlファイルを、以下の2つのファイルに分割してください。
-1. 共通ワークフロー       cat2151/github-actions/.github/workflows/callgraph_enhanced.yml
-2. 呼び出し元ワークフロー cat2151/github-actions/.github/workflows/call-callgraph_enhanced.yml
-まずplanしてください
-```
-
-# 結果
-- indent
-    - linter？がindentのエラーを出しているがyml内容は見た感じOK
-    - テキストエディタとagentの相性問題と判断する
-    - 別のテキストエディタでsaveしなおし、テキストエディタをreload
-    - indentのエラーは解消した
-- LLMレビュー
-    - agent以外の複数のLLMにレビューさせる
-    - prompt
-```
-あなたはGitHub Actionsと共通ワークフローのスペシャリストです。
-以下の2つのファイルをレビューしてください。最優先で、エラーが発生するかどうかだけレビューしてください。エラー以外の改善事項のチェックをするかわりに、エラー発生有無チェックに最大限注力してください。
-
---- 共通ワークフロー
-
-# GitHub Actions Reusable Workflow for Call Graph Generation
-name: Generate Call Graph
-
-# TODO Windowsネイティブでのtestをしていた名残が残っているので、今後整理していく。今はWSL act でtestしており、Windowsネイティブ環境依存問題が解決した
-#  ChatGPTにレビューさせるとそこそこ有用そうな提案が得られたので、今後それをやる予定
-#  agentに自己チェックさせる手も、セカンドオピニオンとして選択肢に入れておく
-
-on:
-  workflow_call:
-
-jobs:
-  check-commits:
-    runs-on: ubuntu-latest
-    outputs:
-      should-run: ${{ steps.check.outputs.should-run }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 50 # 過去のコミットを取得
-
-      - name: Check for user commits in last 24 hours
-        id: check
-        run: |
-          node .github/scripts/callgraph_enhanced/check-commits.cjs
-
-  generate-callgraph:
-    needs: check-commits
-    if: needs.check-commits.outputs.should-run == 'true'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      security-events: write
-      actions: read
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set Git identity
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-      - name: Remove old CodeQL packages cache
-        run: rm -rf ~/.codeql/packages
-
-      - name: Check Node.js version
-        run: |
-          node .github/scripts/callgraph_enhanced/check-node-version.cjs
-
-      - name: Install CodeQL CLI
-        run: |
-          wget https://github.com/github/codeql-cli-binaries/releases/download/v2.22.1/codeql-linux64.zip
-          unzip codeql-linux64.zip
-          sudo mv codeql /opt/codeql
-          echo "/opt/codeql" >> $GITHUB_PATH
-
-      - name: Install CodeQL query packs
-        run: |
-          /opt/codeql/codeql pack install .github/codeql-queries
-
-      - name: Check CodeQL exists
-        run: |
-          node .github/scripts/callgraph_enhanced/check-codeql-exists.cjs
-
-      - name: Verify CodeQL Configuration
-        run: |
-          node .github/scripts/callgraph_enhanced/analyze-codeql.cjs verify-config
-
-      - name: Remove existing CodeQL DB (if any)
-        run: |
-          rm -rf codeql-db
-
-      - name: Perform CodeQL Analysis
-        run: |
-          node .github/scripts/callgraph_enhanced/analyze-codeql.cjs analyze
-
-      - name: Check CodeQL Analysis Results
-        run: |
-          node .github/scripts/callgraph_enhanced/analyze-codeql.cjs check-results
-
-      - name: Debug CodeQL execution
-        run: |
-          node .github/scripts/callgraph_enhanced/analyze-codeql.cjs debug
-
-      - name: Wait for CodeQL results
-        run: |
-          node -e "setTimeout(()=>{}, 10000)"
-
-      - name: Find and process CodeQL results
-        run: |
-          node .github/scripts/callgraph_enhanced/find-process-results.cjs
-
-      - name: Generate HTML graph
-        run: |
-          node .github/scripts/callgraph_enhanced/generate-html-graph.cjs
-
-      - name: Copy files to generated-docs and commit results
-        run: |
-          node .github/scripts/callgraph_enhanced/copy-commit-results.cjs
-
---- 呼び出し元
-# 呼び出し元ワークフロー: call-callgraph_enhanced.yml
-name: Call Call Graph Enhanced
-
-on:
-  schedule:
-    # 毎日午前5時(JST) = UTC 20:00前日
-    - cron: '0 20 * * *'
-  workflow_dispatch:
-
-jobs:
-  call-callgraph-enhanced:
-    # uses: cat2151/github-actions/.github/workflows/callgraph_enhanced.yml
-    uses: ./.github/workflows/callgraph_enhanced.yml # ローカルでのテスト用
-```
-
-# レビュー結果OKと判断する
-- レビュー結果を人力でレビューした形になった
-
-# test
-- #4 同様にローカル WSL + act でtestする
-- エラー。userのtest設計ミス。
-  - scriptの挙動 : src/ がある前提
-  - 今回の共通ワークフローのリポジトリ : src/ がない
-  - 今回testで実現したいこと
-    - 仮のソースでよいので、関数コールグラフを生成させる
-  - 対策
-    - src/ にダミーを配置する
-- test green
-  - ただしcommit pushはしてないので、html内容が0件NG、といったケースの検知はできない
-  - もしそうなったら別issueとしよう
-
-# test green
-
-# commit用に、yml 呼び出し元 uses をlocal用から本番用に書き換える
-
-# closeとする
-- もしhtml内容が0件NG、などになったら、別issueとするつもり
-
-{% endraw %}
-```
-
 ### .github/actions-tmp/issue-notes/26.md
 ```md
 {% raw %}
@@ -1129,39 +933,41 @@ planにおいては、修正対象のソースファイル名と関数名を、�
 {% endraw %}
 ```
 
-### issue-notes/61.md
-```md
-{% raw %}
-# issue いくつかの値のdefaultをtrueにする #61
-[issues #61](https://github.com/cat2151/cat-window-watcher/issues/61)
-
-
-
-{% endraw %}
-```
-
 ## 最近の変更（過去7日間）
 ### コミット履歴:
-d813755 Add issue note for #61 [auto]
-9c26a88 Merge pull request #56 from cat2151/copilot/update-configuration-reload-language
-c414b0d Extract ANSI color codes to module-level constants for better maintainability
-ac28dd8 Update configuration reload message to English with timestamp and green color
-d48c78c Add issue note for #60 [auto]
-b4f03b8 Add issue note for #59 [auto]
-b5d925f Add issue note for #58 [auto]
-8544538 Add issue note for #57 [auto]
-628c9a2 Initial plan
-6644c08 Add issue note for #55 [auto]
+6763c29 Merge pull request #66 from cat2151/copilot/refactor-large-code-base
+3e0f959 Fix validation issues: add missing validations and prevent boolean/integer type confusion
+0478440 Phase 3: Refactor score_tracker.py - split into score_calculator and flow_state_manager modules
+5253e76 Phase 2: Refactor gui.py - split into status_formatter and window_behavior modules
+c2033bb Phase 1: Refactor config.py - split into validator and loader modules
+46fde74 Initial plan
+3955b19 Add issue note for #65 [auto]
+86af2d1 Merge pull request #64 from cat2151/copilot/detect-screensaver-status
+a432476 Address PR review comments: improve error handling and test coverage
+ab16a66 Improve DPMS detection logic for Linux screensaver
 
 ### 変更されたファイル:
-issue-notes/55.md
-issue-notes/57.md
-issue-notes/58.md
-issue-notes/59.md
-issue-notes/60.md
+config.toml.example
+generated-docs/development-status-generated-prompt.md
+generated-docs/development-status.md
+generated-docs/project-overview-generated-prompt.md
+generated-docs/project-overview.md
 issue-notes/61.md
+issue-notes/63.md
+issue-notes/65.md
 src/config.py
+src/config_loader.py
+src/config_validator.py
+src/flow_state_manager.py
+src/gui.py
+src/score_calculator.py
+src/score_tracker.py
+src/status_formatter.py
+src/window_behavior.py
+src/window_monitor.py
+tests/test_config.py
+tests/test_screensaver_detection.py
 
 
 ---
-Generated at: 2026-01-08 07:05:33 JST
+Generated at: 2026-01-09 07:05:55 JST

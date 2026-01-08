@@ -1,4 +1,4 @@
-Last updated: 2026-01-08
+Last updated: 2026-01-09
 
 
 # プロジェクト概要生成プロンプト（来訪者向け）
@@ -406,6 +406,8 @@ pip install pywin32
   📖 6.md
   📖 60.md
   📖 61.md
+  📖 63.md
+  📖 65.md
   📖 8.md
   📖 9.md
 📄 pytest.ini
@@ -414,10 +416,16 @@ pip install pywin32
   📄 __init__.py
   📄 __main__.py
   📄 config.py
+  📄 config_loader.py
+  📄 config_validator.py
   📄 constants.py
+  📄 flow_state_manager.py
   📄 gui.py
   📄 main.py
+  📄 score_calculator.py
   📄 score_tracker.py
+  📄 status_formatter.py
+  📄 window_behavior.py
   📄 window_monitor.py
 📁 tests/
   📄 test_config.py
@@ -425,6 +433,7 @@ pip install pywin32
   📄 test_gui.py
   📄 test_score_colors.py
   📄 test_score_tracker.py
+  📄 test_screensaver_detection.py
   📄 test_window_monitor.py
 
 ## ファイル詳細分析
@@ -475,4 +484,4 @@ issue-notes/59.md
 
 
 ---
-Generated at: 2026-01-08 07:05:33 JST
+Generated at: 2026-01-09 07:05:54 JST
