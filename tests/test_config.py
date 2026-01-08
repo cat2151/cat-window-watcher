@@ -78,7 +78,7 @@ regex = "test"
 
         self.assertEqual(len(patterns), 1)
         self.assertEqual(patterns[0]["regex"], "test")
-        self.assertEqual(patterns[0]["score"], 0)
+        self.assertEqual(patterns[0]["score"], 1)
         self.assertEqual(patterns[0]["description"], "")
 
     def test_default_score_loading(self):

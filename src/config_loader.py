@@ -181,7 +181,7 @@ class ConfigLoader:
             window_patterns.append(
                 {
                     "regex": pattern.get("regex", ""),
-                    "score": pattern.get("score", 0),
+                    "score": pattern.get("score", 1),
                     "description": pattern.get("description", ""),
                 }
             )
