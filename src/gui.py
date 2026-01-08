@@ -310,6 +310,9 @@ class ScoreDisplay:
         # Get current window title
         window_title = self.window_monitor.get_active_window_title()
 
+        # Check if screensaver is active
+        is_screensaver = self.window_monitor.is_screensaver_active()
+
         # Store previous window title before updating to current
         # This is used for clipboard operations (CTRL+C)
         # Only update previous title if current title is non-empty to avoid
@@ -321,7 +324,7 @@ class ScoreDisplay:
         self._current_window_title = window_title
 
         # Update score
-        score_changed, matched_pattern = self.score_tracker.update(window_title)
+        score_changed, matched_pattern = self.score_tracker.update(window_title, is_screensaver=is_screensaver)
 
         # Update score-decreasing-based topmost behavior (after score update)
         # This has highest priority - if it takes control, skip other topmost updates

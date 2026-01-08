@@ -9,6 +9,28 @@ class WindowMonitor:
     """Monitor active window titles across different platforms."""
 
     @staticmethod
+    def is_screensaver_active():
+        """Check if screensaver is currently active.
+
+        Returns:
+            bool: True if screensaver is active, False otherwise
+        """
+        system = platform.system()
+
+        try:
+            if system == "Linux":
+                return WindowMonitor._is_screensaver_active_linux()
+            elif system == "Darwin":  # macOS
+                return WindowMonitor._is_screensaver_active_macos()
+            elif system == "Windows":
+                return WindowMonitor._is_screensaver_active_windows()
+            else:
+                return False
+        except Exception as e:
+            print(f"Warning: Failed to check screensaver status: {e}")
+            return False
+
+    @staticmethod
     def get_active_window_title():
         """Get the title of the currently active window.
 
@@ -126,3 +148,141 @@ class WindowMonitor:
                 return ""
         except Exception:
             return ""
+
+    @staticmethod
+    def _is_screensaver_active_linux():
+        """Check if screensaver is active on Linux.
+
+        Returns:
+            bool: True if screensaver is active, False otherwise
+        """
+        # Try gnome-screensaver first (GNOME desktop environment)
+        try:
+            result = subprocess.run(
+                ["gnome-screensaver-command", "-q"],
+                capture_output=True,
+                text=True,
+                timeout=1,
+            )
+            # Output contains "The screensaver is active" when active
+            if result.returncode == 0 and "is active" in result.stdout.lower():
+                return True
+        except (FileNotFoundError, subprocess.TimeoutExpired):
+            # gnome-screensaver-command not available or too slow; try next method
+            pass
+
+        # Try xscreensaver (older or alternative desktop environments)
+        try:
+            result = subprocess.run(
+                ["xscreensaver-command", "-time"],
+                capture_output=True,
+                text=True,
+                timeout=1,
+            )
+            # Output contains "screen blanked" or "screen locked" when active
+            if result.returncode == 0 and ("blanked" in result.stdout.lower() or "locked" in result.stdout.lower()):
+                return True
+        except (FileNotFoundError, subprocess.TimeoutExpired):
+            # xscreensaver-command not available or too slow; try next method
+            pass
+
+        # Try checking for DPMS (Display Power Management Signaling) state
+        # Note: DPMS detects display power-saving state, not strictly screensaver.
+        # This catches cases where the display is in standby/suspend/off mode,
+        # which often indicates the user is away (idle detection).
+        try:
+            result = subprocess.run(
+                ["xset", "q"],
+                capture_output=True,
+                text=True,
+                timeout=1,
+            )
+            if result.returncode == 0:
+                # Check if display is in standby/suspend/off state
+                # DPMS output looks like: "  Monitor is On" or "  Monitor is Standby"
+                dpms_section = False
+                for line in result.stdout.split("\n"):
+                    if "DPMS" in line:
+                        dpms_section = True
+                    if dpms_section and "Monitor is" in line:
+                        # Check if monitor is in power-saving state
+                        if any(state in line for state in ["Standby", "Suspend", "Off"]):
+                            return True
+                        break  # Stop after finding Monitor status
+        except (FileNotFoundError, subprocess.TimeoutExpired):
+            # xset not available or too slow; no more methods to try
+            pass
+
+        return False
+
+    @staticmethod
+    def _is_screensaver_active_macos():
+        """Check if screensaver is active on macOS.
+
+        Returns:
+            bool: True if screensaver is active, False otherwise
+        """
+        try:
+            # Check if ScreenSaverEngine process is running
+            script = 'tell application "System Events" to get name of every process'
+            result = subprocess.run(
+                ["osascript", "-e", script],
+                capture_output=True,
+                text=True,
+                timeout=1,
+            )
+            if result.returncode == 0 and "ScreenSaverEngine" in result.stdout:
+                return True
+        except (FileNotFoundError, subprocess.TimeoutExpired):
+            # osascript not available or too slow; screensaver not detected
+            pass
+
+        return False
+
+    @staticmethod
+    def _is_screensaver_active_windows():
+        """Check if screensaver is active on Windows.
+
+        Returns:
+            bool: True if screensaver is active, False otherwise
+        """
+        try:
+            import win32gui
+
+            # Get the foreground window class name
+            hwnd = win32gui.GetForegroundWindow()
+            class_name = win32gui.GetClassName(hwnd)
+
+            # Windows screensaver class name is "WindowsScreenSaverClass"
+            if "screensaver" in class_name.lower():
+                return True
+        except ImportError:
+            # Fallback: try using PowerShell
+            try:
+                # PowerShell script to check if screensaver is running using SystemParametersInfo API
+                script = (
+                    "$signature = @'\n"
+                    '[DllImport("user32.dll")]\n'
+                    "public static extern bool SystemParametersInfo(uint uiAction, uint uiParam, ref uint pvParam, uint fWinIni);\n"
+                    "'@\n"
+                    "$type = Add-Type -MemberDefinition $signature -Name Win32Utils -Namespace ScreenSaver -PassThru\n"
+                    "$running = 0\n"
+                    "$type::SystemParametersInfo(0x0072, 0, [ref]$running, 0)\n"
+                    "$running"
+                )
+                result = subprocess.run(
+                    ["powershell", "-Command", script],
+                    capture_output=True,
+                    text=True,
+                    timeout=2,
+                )
+                if result.returncode == 0 and result.stdout.strip() == "1":
+                    return True
+            except (FileNotFoundError, subprocess.TimeoutExpired):
+                # PowerShell is unavailable or too slow; fall back to default False
+                pass
+        except Exception:
+            # Any other unexpected error should not crash the application
+            pass
+
+        return False
