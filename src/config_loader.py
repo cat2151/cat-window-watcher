@@ -83,7 +83,9 @@ class ConfigLoader:
         settings["verbose"] = verbose
 
         # Default score
-        settings["default_score"] = config_data.get("default_score", -1)
+        default_score = config_data.get("default_score", -1)
+        self.validator.validate_integer(default_score, "default_score")
+        settings["default_score"] = default_score
 
         # Apply default score mode
         apply_default_score_mode = config_data.get("apply_default_score_mode", True)
@@ -96,10 +98,14 @@ class ConfigLoader:
         settings["self_window_score"] = self_window_score
 
         # Always on top
-        settings["always_on_top"] = config_data.get("always_on_top", True)
+        always_on_top = config_data.get("always_on_top", True)
+        self.validator.validate_boolean(always_on_top, "always_on_top")
+        settings["always_on_top"] = always_on_top
 
         # Hide on mouse proximity
-        settings["hide_on_mouse_proximity"] = config_data.get("hide_on_mouse_proximity", True)
+        hide_on_mouse_proximity = config_data.get("hide_on_mouse_proximity", True)
+        self.validator.validate_boolean(hide_on_mouse_proximity, "hide_on_mouse_proximity")
+        settings["hide_on_mouse_proximity"] = hide_on_mouse_proximity
 
         # Proximity distance
         proximity_distance = config_data.get("proximity_distance", 50)

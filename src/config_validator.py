@@ -57,7 +57,7 @@ class ConfigValidator:
         Raises:
             ValueError: If value is not an integer
         """
-        if not isinstance(value, int):
+        if isinstance(value, bool) or not isinstance(value, int):
             raise ValueError(f"Invalid '{setting_name}' value: {value!r}. Must be an integer.")
 
     @staticmethod
@@ -71,7 +71,7 @@ class ConfigValidator:
         Raises:
             ValueError: If value is not a non-negative integer
         """
-        if not isinstance(value, int) or value < 0:
+        if isinstance(value, bool) or not isinstance(value, int) or value < 0:
             raise ValueError(f"Invalid '{setting_name}' value: {value!r}. Must be a non-negative integer.")
 
     @staticmethod
@@ -85,7 +85,7 @@ class ConfigValidator:
         Raises:
             ValueError: If value is not an integer between 0 and 23
         """
-        if not isinstance(value, int) or not (0 <= value <= 23):
+        if isinstance(value, bool) or not isinstance(value, int) or not (0 <= value <= 23):
             raise ValueError(f"Invalid '{setting_name}' value: {value!r}. Must be an integer between 0 and 23.")
 
     @staticmethod
@@ -115,7 +115,7 @@ class ConfigValidator:
         Raises:
             ValueError: If value is not an integer between 1 and 100
         """
-        if not isinstance(value, int) or value <= 0 or value > 100:
+        if isinstance(value, bool) or not isinstance(value, int) or value <= 0 or value > 100:
             raise ValueError(f"Invalid '{setting_name}' value: {value!r}. Must be an integer between 1 and 100.")
 
     @staticmethod
@@ -129,5 +129,5 @@ class ConfigValidator:
         Raises:
             ValueError: If value is not None and not an integer
         """
-        if value is not None and not isinstance(value, int):
+        if value is not None and (isinstance(value, bool) or not isinstance(value, int)):
             raise ValueError(f"Invalid '{setting_name}' value: {value!r}. Must be an integer or null.")
