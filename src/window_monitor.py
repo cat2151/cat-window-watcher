@@ -168,6 +168,7 @@ class WindowMonitor:
             if result.returncode == 0 and "is active" in result.stdout.lower():
                 return True
         except (FileNotFoundError, subprocess.TimeoutExpired):
+            # gnome-screensaver-command not available or too slow; try next method
             pass
 
         # Try xscreensaver (older or alternative desktop environments)
@@ -182,9 +183,13 @@ class WindowMonitor:
             if result.returncode == 0 and ("blanked" in result.stdout.lower() or "locked" in result.stdout.lower()):
                 return True
         except (FileNotFoundError, subprocess.TimeoutExpired):
+            # xscreensaver-command not available or too slow; try next method
             pass
 
         # Try checking for DPMS (Display Power Management Signaling) state
+        # Note: DPMS detects display power-saving state, not strictly screensaver.
+        # This catches cases where the display is in standby/suspend/off mode,
+        # which often indicates the user is away (idle detection).
         try:
             result = subprocess.run(
                 ["xset", "q"],
@@ -205,6 +210,7 @@ class WindowMonitor:
                             return True
                         break  # Stop after finding Monitor status
         except (FileNotFoundError, subprocess.TimeoutExpired):
+            # xset not available or too slow; no more methods to try
             pass
 
         return False
@@ -228,6 +234,7 @@ class WindowMonitor:
             if result.returncode == 0 and "ScreenSaverEngine" in result.stdout:
                 return True
         except (FileNotFoundError, subprocess.TimeoutExpired):
+            # osascript not available or too slow; screensaver not detected
             pass
 
         return False
@@ -252,16 +259,17 @@ class WindowMonitor:
         except ImportError:
             # Fallback: try using PowerShell
             try:
-                script = """
-$signature = @'
-[DllImport("user32.dll")]
-public static extern bool SystemParametersInfo(uint uiAction, uint uiParam, ref uint pvParam, uint fWinIni);
-'@
-$type = Add-Type -MemberDefinition $signature -Name Win32Utils -Namespace ScreenSaver -PassThru
-$running = 0
-$type::SystemParametersInfo(0x0072, 0, [ref]$running, 0)
-$running
-"""
+                # PowerShell script to check if screensaver is running using SystemParametersInfo API
+                script = (
+                    "$signature = @'\n"
+                    '[DllImport("user32.dll")]\n'
+                    "public static extern bool SystemParametersInfo(uint uiAction, uint uiParam, ref uint pvParam, uint fWinIni);\n"
+                    "'@\n"
+                    "$type = Add-Type -MemberDefinition $signature -Name Win32Utils -Namespace ScreenSaver -PassThru\n"
+                    "$running = 0\n"
+                    "$type::SystemParametersInfo(0x0072, 0, [ref]$running, 0)\n"
+                    "$running"
+                )
                 result = subprocess.run(
                     ["powershell", "-Command", script],
                     capture_output=True,
@@ -271,8 +279,10 @@ $running
                 if result.returncode == 0 and result.stdout.strip() == "1":
                     return True
             except (FileNotFoundError, subprocess.TimeoutExpired):
+                # PowerShell is unavailable or too slow; fall back to default False
                 pass
         except Exception:
+            # Any other unexpected error should not crash the application
             pass
 
         return False

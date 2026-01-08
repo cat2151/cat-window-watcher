@@ -118,6 +118,92 @@ class TestScreensaverDetection(unittest.TestCase):
         result = WindowMonitor.is_screensaver_active()
         self.assertFalse(result)
 
+    @patch("platform.system", return_value="Linux")
+    @patch("subprocess.run")
+    def test_linux_screensaver_detection_xscreensaver_active(self, mock_run, mock_system):
+        """Test Linux screensaver detection with xscreensaver when active."""
+
+        # Mock gnome-screensaver failing, then xscreensaver succeeding
+        def side_effect(*args, **kwargs):
+            cmd = args[0]
+            if "gnome-screensaver-command" in cmd:
+                raise FileNotFoundError("gnome-screensaver not found")
+            elif "xscreensaver-command" in cmd:
+                return MagicMock(returncode=0, stdout="screen blanked since 10:30:00\n")
+            return MagicMock(returncode=1, stdout="")
+
+        mock_run.side_effect = side_effect
+
+        result = WindowMonitor.is_screensaver_active()
+        self.assertTrue(result)
+
+    @patch("platform.system", return_value="Linux")
+    @patch("subprocess.run")
+    def test_linux_screensaver_detection_xscreensaver_locked(self, mock_run, mock_system):
+        """Test Linux screensaver detection with xscreensaver when locked."""
+
+        # Mock gnome-screensaver failing, then xscreensaver reporting locked state
+        def side_effect(*args, **kwargs):
+            cmd = args[0]
+            if "gnome-screensaver-command" in cmd:
+                raise FileNotFoundError("gnome-screensaver not found")
+            elif "xscreensaver-command" in cmd:
+                return MagicMock(returncode=0, stdout="screen locked since 10:30:00\n")
+            return MagicMock(returncode=1, stdout="")
+
+        mock_run.side_effect = side_effect
+
+        result = WindowMonitor.is_screensaver_active()
+        self.assertTrue(result)
+
+    @patch("platform.system", return_value="Linux")
+    @patch("subprocess.run")
+    def test_linux_screensaver_detection_dpms_standby(self, mock_run, mock_system):
+        """Test Linux screensaver detection with DPMS in standby state."""
+
+        # Mock gnome-screensaver and xscreensaver failing, then DPMS succeeding
+        def side_effect(*args, **kwargs):
+            cmd = args[0]
+            if "gnome-screensaver-command" in cmd:
+                raise FileNotFoundError("gnome-screensaver not found")
+            elif "xscreensaver-command" in cmd:
+                raise FileNotFoundError("xscreensaver not found")
+            elif "xset" in cmd:
+                return MagicMock(
+                    returncode=0,
+                    stdout="DPMS is Enabled\n  Monitor is Standby\n",
+                )
+            return MagicMock(returncode=1, stdout="")
+
+        mock_run.side_effect = side_effect
+
+        result = WindowMonitor.is_screensaver_active()
+        self.assertTrue(result)
+
+    @patch("platform.system", return_value="Linux")
+    @patch("subprocess.run")
+    def test_linux_screensaver_detection_dpms_on(self, mock_run, mock_system):
+        """Test Linux screensaver detection with DPMS monitor on (not in power-saving)."""
+
+        # Mock all methods, DPMS reports monitor is on
+        def side_effect(*args, **kwargs):
+            cmd = args[0]
+            if "gnome-screensaver-command" in cmd:
+                raise FileNotFoundError("gnome-screensaver not found")
+            elif "xscreensaver-command" in cmd:
+                raise FileNotFoundError("xscreensaver not found")
+            elif "xset" in cmd:
+                return MagicMock(
+                    returncode=0,
+                    stdout="DPMS is Enabled\n  Monitor is On\n",
+                )
+            return MagicMock(returncode=1, stdout="")
+
+        mock_run.side_effect = side_effect
+
+        result = WindowMonitor.is_screensaver_active()
+        self.assertFalse(result)
+
     @patch("platform.system", return_value="Darwin")
     @patch("subprocess.run")
     def test_macos_screensaver_detection_active(self, mock_run, mock_system):
@@ -139,9 +225,58 @@ class TestScreensaverDetection(unittest.TestCase):
         self.assertFalse(result)
 
     @patch("platform.system", return_value="Windows")
+    def test_windows_screensaver_detection_with_win32gui_active(self, mock_system):
+        """Test Windows screensaver detection with win32gui when screensaver is active."""
+        # Mock win32gui module
+        with patch.dict("sys.modules", {"win32gui": MagicMock()}):
+            import sys
+
+            mock_win32gui = sys.modules["win32gui"]
+            mock_win32gui.GetForegroundWindow.return_value = 12345
+            mock_win32gui.GetClassName.return_value = "WindowsScreenSaverClass"
+
+            result = WindowMonitor.is_screensaver_active()
+            self.assertTrue(result)
+
+    @patch("platform.system", return_value="Windows")
+    def test_windows_screensaver_detection_with_win32gui_inactive(self, mock_system):
+        """Test Windows screensaver detection with win32gui when screensaver is inactive."""
+        # Mock win32gui module
+        with patch.dict("sys.modules", {"win32gui": MagicMock()}):
+            import sys
+
+            mock_win32gui = sys.modules["win32gui"]
+            mock_win32gui.GetForegroundWindow.return_value = 12345
+            mock_win32gui.GetClassName.return_value = "Chrome_WidgetWin_1"
+
+            result = WindowMonitor.is_screensaver_active()
+            self.assertFalse(result)
+
+    @patch("platform.system", return_value="Windows")
+    @patch("subprocess.run")
+    def test_windows_screensaver_detection_powershell_active(self, mock_run, mock_system):
+        """Test Windows screensaver detection with PowerShell when screensaver is active."""
+        # win32gui not available, PowerShell returns 1 (screensaver active)
+        mock_run.return_value = MagicMock(returncode=0, stdout="1\n")
+
+        result = WindowMonitor.is_screensaver_active()
+        self.assertTrue(result)
+
+    @patch("platform.system", return_value="Windows")
+    @patch("subprocess.run")
+    def test_windows_screensaver_detection_powershell_inactive(self, mock_run, mock_system):
+        """Test Windows screensaver detection with PowerShell when screensaver is inactive."""
+        # win32gui not available, PowerShell returns 0 (screensaver inactive)
+        mock_run.return_value = MagicMock(returncode=0, stdout="0\n")
+
+        result = WindowMonitor.is_screensaver_active()
+        self.assertFalse(result)
+
+    @patch("platform.system", return_value="Windows")
     def test_windows_screensaver_detection_fallback(self, mock_system):
-        """Test Windows screensaver detection fallback when win32gui not available."""
-        # Since win32gui may not be available in test environment, we just test that it doesn't crash
+        """Test Windows screensaver detection fallback when both methods fail."""
+        # Since win32gui may not be available and PowerShell may fail,
+        # we just test that it returns False and doesn't crash
         result = WindowMonitor.is_screensaver_active()
         self.assertIsInstance(result, bool)
 
