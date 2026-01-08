@@ -145,11 +145,12 @@ class ScoreTracker:
             self.score = 0
             self._last_reset_time_slot = current_time_slot
 
-    def update(self, window_title):
+    def update(self, window_title, is_screensaver=False):
         """Update score based on current window title.
 
         Args:
             window_title: Current active window title
+            is_screensaver: Whether screensaver is currently active (default: False)
 
         Returns:
             tuple: (score_changed, current_match) where score_changed is bool
@@ -169,8 +170,17 @@ class ScoreTracker:
         # Update last window title
         self.last_window_title = window_title
 
-        # Check if this is the app's own window first
-        if self.self_window_title and window_title == self.self_window_title:
+        # If screensaver is active, don't change score (score delta = 0)
+        if is_screensaver:
+            # Mark as matched with score 0 to prevent default_score from being applied
+            self.current_match = {
+                "regex": "",
+                "score": 0,
+                "description": "スクリーンセーバー",
+            }
+            # score_changed remains False, score stays the same
+        # Check if this is the app's own window
+        elif self.self_window_title and window_title == self.self_window_title:
             if self.self_window_score != 0:
                 # Apply mild penalty to self window score if applicable
                 adjusted_self_window_score = self._apply_mild_penalty(self.self_window_score)
