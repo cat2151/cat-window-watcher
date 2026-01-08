@@ -1,8 +1,14 @@
 #!/usr/bin/env python3
 """Score tracking module for cat-window-watcher."""
 
-import re
 from datetime import datetime
+
+try:
+    from .flow_state_manager import FlowStateManager
+    from .score_calculator import ScoreCalculator
+except ImportError:
+    from flow_state_manager import FlowStateManager
+    from score_calculator import ScoreCalculator
 
 
 class ScoreTracker:
@@ -33,22 +39,28 @@ class ScoreTracker:
             self_window_score: Score to apply when app's own window is active (default: 0)
             self_window_title: Title of app's own window (default: "")
         """
-        self.window_patterns = window_patterns
+        # Initialize calculator and flow state manager
+        self.calculator = ScoreCalculator(
+            window_patterns,
+            default_score,
+            apply_default_score_mode,
+            mild_penalty_mode,
+            mild_penalty_start_hour,
+            mild_penalty_end_hour,
+            self_window_score,
+            self_window_title,
+        )
+        self.flow_manager = FlowStateManager()
+
+        # Store settings for getter methods
         self.default_score = default_score
-        self.apply_default_score_mode = apply_default_score_mode
-        self.mild_penalty_mode = mild_penalty_mode
-        self.mild_penalty_start_hour = mild_penalty_start_hour
-        self.mild_penalty_end_hour = mild_penalty_end_hour
         self.reset_score_every_30_minutes = reset_score_every_30_minutes
-        self.self_window_score = self_window_score
-        self.self_window_title = self_window_title
+
+        # Score tracking state
         self.score = 0
         self.last_window_title = ""
         self.current_match = None
         self._last_reset_time_slot = self._get_current_time_slot() if reset_score_every_30_minutes else None
-        self._in_score_up_state = False
-        self._score_up_state_start_time = None
-        self._in_score_decreasing_state = False
         self._current_window_start_time = datetime.now()  # Track when current window became active
 
     def update_config(
@@ -76,51 +88,25 @@ class ScoreTracker:
             self_window_score: Score to apply when app's own window is active
             self_window_title: Title of app's own window
         """
-        self.window_patterns = window_patterns
+        # Update calculator configuration
+        self.calculator.update_config(
+            window_patterns,
+            default_score,
+            apply_default_score_mode,
+            mild_penalty_mode,
+            mild_penalty_start_hour,
+            mild_penalty_end_hour,
+            self_window_score,
+            self_window_title,
+        )
+
+        # Update local settings
         self.default_score = default_score
-        self.apply_default_score_mode = apply_default_score_mode
-        self.mild_penalty_mode = mild_penalty_mode
-        self.mild_penalty_start_hour = mild_penalty_start_hour
-        self.mild_penalty_end_hour = mild_penalty_end_hour
         self.reset_score_every_30_minutes = reset_score_every_30_minutes
-        self.self_window_score = self_window_score
-        self.self_window_title = self_window_title
 
         # Initialize last reset time slot if the feature is newly enabled
         if reset_score_every_30_minutes and self._last_reset_time_slot is None:
             self._last_reset_time_slot = self._get_current_time_slot()
-
-    def _is_in_mild_penalty_hours(self):
-        """Check if current time is within mild penalty hours.
-
-        Returns:
-            bool: True if current time is within mild penalty hours, False otherwise
-        """
-        if not self.mild_penalty_mode:
-            return False
-
-        current_hour = datetime.now().hour
-
-        # Handle time range that wraps around midnight
-        if self.mild_penalty_start_hour <= self.mild_penalty_end_hour:
-            # Normal range (e.g., 22:00-23:59)
-            return self.mild_penalty_start_hour <= current_hour <= self.mild_penalty_end_hour
-        else:
-            # Wrapped range (e.g., 23:00-01:00)
-            return current_hour >= self.mild_penalty_start_hour or current_hour <= self.mild_penalty_end_hour
-
-    def _apply_mild_penalty(self, score_delta):
-        """Apply mild penalty if conditions are met.
-
-        Args:
-            score_delta: Original score delta
-
-        Returns:
-            int: Modified score delta (-1 if negative during mild penalty hours, otherwise original)
-        """
-        if self._is_in_mild_penalty_hours() and score_delta < 0:
-            return -1
-        return score_delta
 
     def _get_current_time_slot(self):
         """Get the current 30-minute time slot as a tuple (hour, half).
@@ -160,7 +146,6 @@ class ScoreTracker:
         self._check_and_reset_if_needed()
 
         score_changed = False
-        self.current_match = None
         previous_score = self.score
 
         # Track window change - reset start time when window title changes
@@ -170,84 +155,20 @@ class ScoreTracker:
         # Update last window title
         self.last_window_title = window_title
 
-        # If screensaver is active, don't change score (score delta = 0)
-        if is_screensaver:
-            # Mark as matched with score 0 to prevent default_score from being applied
-            self.current_match = {
-                "regex": "",
-                "score": 0,
-                "description": "スクリーンセーバー",
-            }
-            # score_changed remains False, score stays the same
-        # Check if this is the app's own window
-        elif self.self_window_title and window_title == self.self_window_title:
-            if self.self_window_score != 0:
-                # Apply mild penalty to self window score if applicable
-                adjusted_self_window_score = self._apply_mild_penalty(self.self_window_score)
-                self.score += adjusted_self_window_score
-                score_changed = True
-            # Mark as matched (even if score is 0) to prevent default_score from being applied
-            self.current_match = {
-                "regex": "",
-                "score": self.self_window_score,
-                "description": "Cat Window Watcher (self)",
-            }
-        else:
-            # Check each pattern against window title
-            for pattern in self.window_patterns:
-                regex = pattern.get("regex", "")
-                score_delta = pattern.get("score", 0)
+        # Calculate score delta and get matched pattern
+        score_delta, self.current_match = self.calculator.calculate_score_delta(
+            window_title, is_screensaver, datetime.now()
+        )
 
-                if regex and re.search(regex, window_title, re.IGNORECASE):
-                    # Apply mild penalty if applicable
-                    adjusted_score_delta = self._apply_mild_penalty(score_delta)
-                    self.score += adjusted_score_delta
-                    self.current_match = pattern
-                    score_changed = True
-                    break  # Only match first pattern
-
-            # If no pattern matched, apply default score (if mode is enabled)
-            if not self.current_match and self.apply_default_score_mode and self.default_score != 0:
-                # Apply mild penalty to default score if applicable
-                adjusted_default_score = self._apply_mild_penalty(self.default_score)
-                self.score += adjusted_default_score
-                score_changed = True
+        # Apply score change
+        if score_delta != 0:
+            self.score += score_delta
+            score_changed = True
 
         # Update flow state tracking
-        self._update_flow_state(previous_score)
+        self.flow_manager.update_flow_state(self.score, previous_score, datetime.now())
 
         return score_changed, self.current_match
-
-    def _update_flow_state(self, previous_score):
-        """Update flow state based on score changes.
-
-        Args:
-            previous_score: Score before the current update
-        """
-        current_score = self.score
-        was_in_score_up = self._in_score_up_state
-
-        # Enter flow (score-up) state only when score actually increases.
-        # Once in flow, maintain it when score stays equal (but not on initial equal scores).
-        if current_score > previous_score:
-            # Score increased: transition from non-score-up to score-up if needed
-            if not was_in_score_up:
-                self._in_score_up_state = True
-                self._score_up_state_start_time = datetime.now()
-            # Score increased: leave score-decreasing state
-            self._in_score_decreasing_state = False
-        elif current_score < previous_score:
-            # Score decreased: leave flow state
-            self._in_score_up_state = False
-            self._score_up_state_start_time = None
-            # Score decreased: enter score-decreasing state
-            self._in_score_decreasing_state = True
-        else:
-            # Score stayed the same: leave score-decreasing state
-            self._in_score_decreasing_state = False
-        # If current_score == previous_score, we intentionally keep the existing
-        # flow state as-is (maintain if already in flow, remain out otherwise),
-        # while also clearing any active score-decreasing state.
 
     def get_flow_state_duration(self):
         """Get duration in seconds that we've been in score-up state.
@@ -255,11 +176,7 @@ class ScoreTracker:
         Returns:
             float: Duration in seconds, or 0 if not in score-up state
         """
-        if not self._in_score_up_state or self._score_up_state_start_time is None:
-            return 0.0
-
-        duration = (datetime.now() - self._score_up_state_start_time).total_seconds()
-        return duration
+        return self.flow_manager.get_flow_state_duration(datetime.now())
 
     def is_in_flow_state(self):
         """Check if currently in score-up state.
@@ -267,7 +184,7 @@ class ScoreTracker:
         Returns:
             bool: True if in score-up state, False otherwise
         """
-        return self._in_score_up_state
+        return self.flow_manager.is_in_flow_state()
 
     def is_score_decreasing(self):
         """Check if score is currently decreasing.
@@ -275,7 +192,7 @@ class ScoreTracker:
         Returns:
             bool: True if score is decreasing, False otherwise
         """
-        return self._in_score_decreasing_state
+        return self.flow_manager.is_score_decreasing()
 
     def get_score(self):
         """Get current score.
@@ -314,6 +231,4 @@ class ScoreTracker:
         Returns:
             int: Elapsed seconds since flow mode started, or 0 if not in flow state
         """
-        if self.is_in_flow_state():
-            return int(self.get_flow_state_duration())
-        return 0
+        return self.flow_manager.get_flow_mode_elapsed_seconds(datetime.now())
