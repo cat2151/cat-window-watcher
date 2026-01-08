@@ -194,11 +194,16 @@ class WindowMonitor:
             )
             if result.returncode == 0:
                 # Check if display is in standby/suspend/off state
+                # DPMS output looks like: "  Monitor is On" or "  Monitor is Standby"
+                dpms_section = False
                 for line in result.stdout.split("\n"):
-                    if "DPMS is Enabled" in line:
-                        continue
-                    if "Monitor is" in line and any(state in line for state in ["Standby", "Suspend", "Off"]):
-                        return True
+                    if "DPMS" in line:
+                        dpms_section = True
+                    if dpms_section and "Monitor is" in line:
+                        # Check if monitor is in power-saving state
+                        if any(state in line for state in ["Standby", "Suspend", "Off"]):
+                            return True
+                        break  # Stop after finding Monitor status
         except (FileNotFoundError, subprocess.TimeoutExpired):
             pass
 
