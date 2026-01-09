@@ -1,74 +1,51 @@
-Last updated: 2026-01-09
+Last updated: 2026-01-10
 
 # Development Status
 
 ## 現在のIssues
-- [Issue #60](../issue-notes/60.md) および [Issue #57](../issue-notes/57.md) では、`examples` ファイルの日本語版生成とフォーマット改善を進めています。
-- [Issue #59](../issue-notes/59.md) では、`README.ja.md` 内の `window_patterns` 項目説明の可読性を高める作業中です。
-- [Issue #58](../issue-notes/58.md) では、`score` のデフォルト値設定と省略時の挙動に関する調査・実装を進めています。
+- [Issue #60](../issue-notes/60.md), [Issue #59](../issue-notes/59.md), [Issue #57](../issue-notes/57.md) は、examplesの日本語版生成、README.ja.mdの説明改善、examplesの書式調整を通じて、設定ファイルのドキュメントと利用体験の向上を図っています。
+- [Issue #9](../issue-notes/9.md) では、`default_score`の導入により、パターン不一致時のスコア挙動を明確にし、設定ミスを検知しやすくする機能改善を進めています。
+- [Issue #6](../issue-notes/6.md) は `config.toml.example` の `github` パターンがGitHubの特定ページで動作しない問題を解決し、パターンマッチングの精度を向上させます。
 
 ## 次の一手候補
-1. [Issue #58](../issue-notes/58.md): scoreはdefaultで+1にする。また、window_patternsでscore記述省略したらdefaultが使われているか調査し、もし使われていないなら使うようにする
-   - 最初の小さな一歩: `src/config_loader.py` および `src/score_calculator.py` を確認し、`window_patterns` の `score` が省略された場合の現在の挙動を把握する。
+1. [Issue #60](../issue-notes/60.md): examplesのja版を生成する。README.ja.mdの説明も、そこを参照、とする
+   - 最初の小さな一歩: 既存の `examples/example.txt` を `examples/example.ja.txt` としてコピーし、内容を日本語に翻訳する。
    - Agent実行プロンプト:
      ```
-     対象ファイル: src/config_loader.py, src/config_validator.py, src/score_calculator.py, config.toml.example
+     対象ファイル: `examples/example.txt`
 
-     実行内容:
-     1. `config_loader.py` で `window_patterns` の `score` フィールドが省略された場合の処理ロジックを分析する。
-     2. `config.toml.example` を参考に、`window_patterns` に `score` が記載されていない場合でも `default_score` (または新たに定義する `default_pattern_score`) が適用されるように `config_loader.py` を修正する。
-     3. `config_validator.py` に `score` フィールドの存在チェックを追加し、省略された場合は適切なデフォルト値を適用するロジックを実装する。
-     4. `score_calculator.py` でこの新しい挙動が正しく処理されるかを確認し、必要であれば修正する。
-     5. `config.toml.example` を更新し、`score` を省略した場合の例を追加するか、`default_pattern_score` の説明を追記する。
+     実行内容: `examples/example.txt` の内容を日本語に翻訳し、`examples/example.ja.txt` として新規作成する。翻訳は自然で、設定例として理解しやすいものにしてください。
 
-     確認事項:
-     - `default_score` (パターンマッチしない場合のスコア) と `window_patterns` 内の `score` のデフォルト値が混同されないこと。
-     - 既存の `config.toml` の挙動が意図せず変更されないこと。
-     - `score` が明示的に `0` や負の値に設定された場合に、それが正しく適用されること。
-     - 新しい挙動に対する単体テストの必要性を検討する。
+     確認事項: 日本語として自然か、元の `example.txt` の意図が正確に反映されているかを確認してください。
 
-     期待する出力: 変更されたPythonスクリプトファイル (`src/config_loader.py`, `src/config_validator.py`, `src/score_calculator.py`) の差分、および更新された `config.toml.example` の内容。
+     期待する出力: `examples/example.ja.txt` の新規作成と、その内容（翻訳結果）をMarkdownコードブロックで出力してください。
      ```
 
-2. [Issue #59](../issue-notes/59.md): README.ja.mdの項目説明を読みやすくする。どれがwindow patterns内か、そうでないか、をパッと見でわかるようにする
-   - 最初の小さな一歩: `README.ja.md` の「設定オプション」セクションをレビューし、`window_patterns` 内の設定とトップレベルの設定を区別するための具体的な改善案を複数考案する（例: 見出しの追加、インデント、ボックス表示など）。
+2. [Issue #57](../issue-notes/57.md): examplesを読みやすくする。descriptionは要素の一番下でなく一番上にして、重複した内容のコメントを削除する
+   - 最初の小さな一歩: `examples/example.txt` を開き、`[[window_patterns]]` 内の `description` を一番上に移動させ、重複したコメントを削除する。その後、`examples/example.ja.txt`（前のステップで生成されたもの）にも同様の変更を適用する。
    - Agent実行プロンプト:
      ```
-     対象ファイル: README.ja.md
+     対象ファイル: `examples/example.txt`, `examples/example.ja.txt`
 
-     実行内容:
-     1. `README.ja.md` の「設定オプション」セクションを分析し、どの項目がトップレベルで、どの項目が `[[window_patterns]]` の内部で定義されるべきかを特定する。
-     2. この区別が視覚的に明確になるように、Markdown形式でセクション構成を改善する。具体的には、`[[window_patterns]]` 内のオプションをサブセクションとして記述し、インデントや区切り線、または強調表示を用いて視覚的な階層構造を表現する。
-     3. 重複する説明や冗長な表現を削除し、簡潔にする。
+     実行内容: `examples/example.txt` と `examples/example.ja.txt` (もし存在すれば) 内の各 `[[window_patterns]]` ブロックにおいて、`description` キーを当該ブロックの一番上に移動させてください。また、各フィールドに付随する重複したコメント（例: `regex = "github" # Regex pattern to match window title` の `# Regex pattern to match window title` 部分など）を削除し、簡潔にしてください。
 
-     確認事項:
-     - 変更後も全体的な情報が欠落していないか。
-     - Markdownのレンダリングが意図通りになるか。
-     - `README.md` (英語版) との整合性を考慮に入れる（翻訳時に自動生成される場合、そのプロセスに影響しないか）。
+     確認事項: TOML形式の構文が壊れていないか、`description` が正しく一番上にあるか、コメントが適切に削除されているかを確認してください。
 
-     期待する出力: 更新された `README.ja.md` の内容。
+     期待する出力: `examples/example.txt` および `examples/example.ja.txt` の内容を修正した結果をMarkdownコードブロックでそれぞれ出力してください。
      ```
 
-3. [Issue #60](../issue-notes/60.md): examplesのja版を生成する。README.ja.mdの説明も、そこを参照、とする
-   - 最初の小さな一歩: `examples/example.txt` の内容を日本語に翻訳し、`examples/example.ja.txt` として保存する。同時に、`README.ja.md` の既存の「例」セクションを削除し、`examples/example.ja.txt` への参照を追記する場所を特定する。
+3. [Issue #59](../issue-notes/59.md): README.ja.mdの項目説明を読みやすくする。どれがwindow patterns内か、そうでないか、をパッと見でわかるようにする
+   - 最初の小さな一歩: `README.ja.md` を開き、「設定オプション」セクションを見直す。`[[window_patterns]]` の内部で定義されるオプションと、それ以外のグローバルオプションを視覚的に区別できるように説明文を改善し、`examples/example.ja.txt` への参照を追加する。
    - Agent実行プロンプト:
      ```
-     対象ファイル: examples/example.txt, README.ja.md
+     対象ファイル: `README.ja.md`
 
-     実行内容:
-     1. `examples/example.txt` の内容を日本語に翻訳し、`examples/example.ja.txt` として新規作成する。翻訳は自然で、設定内容が正確に伝わるようにする。
-     2. `README.ja.md` 内の「例」セクションを特定し、その内容を削除する。
-     3. 削除したセクションの代わりに、`examples/example.ja.txt` を参照する旨の記述を追加する。例: 「詳細な設定例は [examples/example.ja.txt](examples/example.ja.txt) を参照してください。」
-     4. `README.ja.md` の他のセクションで、設定例に言及している箇所がないか確認し、必要であれば `examples/example.ja.txt` への参照に変更する。
+     実行内容: `README.ja.md` の「設定オプション」セクションにおいて、`[[window_patterns]]` 配下の項目（`regex`, `score`, `description`）と、それ以外のグローバル設定項目を明確に区別できるように説明文の構造を修正してください。例えば、サブセクションを設ける、インデントを深くする、などの方法で視覚的な区別を強調してください。また、`examples/example.ja.txt` への参照を「設定」セクション内の適切な場所に追加してください。
 
-     確認事項:
-     - `example.ja.txt` の翻訳が正確で、元の意図を損なっていないか。
-     - `README.ja.md` からのリンクが正しく機能するか。
-     - `README.ja.md` の全体的なレイアウトや情報フローが損なわれないこと。
-     - `README.md` (英語版) に影響がないか、または対応する変更が必要か確認する（今回は `ja.md` のみ対象なので無視）。
+     確認事項: 設定オプションの分類が明確になっているか、日本語として自然で理解しやすいか、`examples/example.ja.txt` への参照が適切に追加されているかを確認してください。
 
-     期待する出力: `examples/example.ja.txt` の新規作成された内容、および更新された `README.ja.md` の内容の差分。
+     期待する出力: `README.ja.md` の内容を修正した結果をMarkdownコードブロックで出力してください。
      ```
 
 ---
-Generated at: 2026-01-09 07:06:28 JST
+Generated at: 2026-01-10 07:06:21 JST

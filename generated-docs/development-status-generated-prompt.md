@@ -1,4 +1,4 @@
-Last updated: 2026-01-09
+Last updated: 2026-01-10
 
 # 開発状況生成プロンプト（開発者向け）
 
@@ -293,21 +293,6 @@ Last updated: 2026-01-09
 ```markdown
 # issue README.ja.mdの項目説明を読みやすくする。どれがwindow patterns内か、そうでないか、をパッと見でわかるようにする #59
 [issues #59](https://github.com/cat2151/cat-window-watcher/issues/59)
-
-
-
-```
-
-## [Issue #58](../issue-notes/58.md): scoreはdefaultで+1にする。また、window_patternsでscore記述省略したらdefaultが使われているか調査し、もし使われていないなら使うようにする
-[issue-notes/58.md](https://github.com/cat2151/cat-window-watcher/blob/main/issue-notes/58.md)
-
-...
-ラベル: 
---- issue-notes/58.md の内容 ---
-
-```markdown
-# issue scoreはdefaultで+1にする。また、window_patternsでscore記述省略したらdefaultが使われているか調査し、もし使われていないなら使うようにする #58
-[issues #58](https://github.com/cat2151/cat-window-watcher/issues/58)
 
 
 
@@ -759,96 +744,6 @@ has_recent_human_commit=false
 {% endraw %}
 ```
 
-### .github/actions-tmp/issue-notes/8.md
-```md
-{% raw %}
-# issue 関数コールグラフhtmlビジュアライズ生成の対象ソースファイルを、呼び出し元ymlで指定できるようにする #8
-[issues #8](https://github.com/cat2151/github-actions/issues/8)
-
-# これまでの課題
-- 以下が決め打ちになっていた
-```
-  const allowedFiles = [
-    'src/main.js',
-    'src/mml2json.js',
-    'src/play.js'
-  ];
-```
-
-# 対策
-- 呼び出し元ymlで指定できるようにする
-
-# agent
-- agentにやらせることができれば楽なので、初手agentを試した
-- 失敗
-    - ハルシネーションしてscriptを大量破壊した
-- 分析
-    - 修正対象scriptはagentが生成したもの
-    - 低品質な生成結果でありソースが巨大
-    - ハルシネーションで破壊されやすいソース
-    - AIの生成したソースは、必ずしもAIフレンドリーではない
-
-# 人力リファクタリング
-- 低品質コードを、最低限agentが扱えて、ハルシネーションによる大量破壊を防止できる内容、にする
-- 手短にやる
-    - そもそもビジュアライズは、agentに雑に指示してやらせたもので、
-    - 今後別のビジュアライザを選ぶ可能性も高い
-    - 今ここで手間をかけすぎてコンコルド効果（サンクコストバイアス）を増やすのは、project群をトータルで俯瞰して見たとき、損
-- 対象
-    - allowedFiles のあるソース
-        - callgraph-utils.cjs
-            - たかだか300行未満のソースである
-            - この程度でハルシネーションされるのは予想外
-            - やむなし、リファクタリングでソース分割を進める
-
-# agentに修正させる
-## prompt
-```
-allowedFilesを引数で受け取るようにしたいです。
-ないならエラー。
-最終的に呼び出し元すべてに波及して修正したいです。
-
-呼び出し元をたどってエントリポイントも見つけて、
-エントリポイントにおいては、
-引数で受け取ったjsonファイル名 allowedFiles.js から
-jsonファイル allowedFiles.jsonの内容をreadして
-変数 allowedFilesに格納、
-後続処理に引き渡す、としたいです。
-
-まずplanしてください。
-planにおいては、修正対象のソースファイル名と関数名を、呼び出し元を遡ってすべて特定し、listしてください。
-```
-
-# 修正が順調にできた
-- コマンドライン引数から受け取る作りになっていなかったので、そこだけ指示して修正させた
-- yml側は人力で修正した
-
-# 他のリポジトリから呼び出した場合にバグらないよう修正する
-- 気付いた
-    - 共通ワークフローとして他のリポジトリから使った場合はバグるはず。
-        - ymlから、共通ワークフロー側リポジトリのcheckoutが漏れているので。
-- 他のyml同様に修正する
-- あわせて全体にymlをリファクタリングし、修正しやすくし、今後のyml読み書きの学びにしやすくする
-
-# local WSL + act : test green
-
-# closeとする
-- もし生成されたhtmlがNGの場合は、別issueとするつもり
-
-{% endraw %}
-```
-
-### issue-notes/8.md
-```md
-{% raw %}
-# issue tomlをtimestamp更新監視し、更新されたらアプリ設定に反映する #8
-[issues #8](https://github.com/cat2151/cat-window-watcher/issues/8)
-
-
-
-{% endraw %}
-```
-
 ### .github/actions-tmp/issue-notes/9.md
 ```md
 {% raw %}
@@ -883,17 +778,6 @@ planにおいては、修正対象のソースファイル名と関数名を、�
 {% raw %}
 # issue examplesを読みやすくする。descriptionは要素の一番下でなく一番上にして、重複した内容のコメントを削除する #57
 [issues #57](https://github.com/cat2151/cat-window-watcher/issues/57)
-
-
-
-{% endraw %}
-```
-
-### issue-notes/58.md
-```md
-{% raw %}
-# issue scoreはdefaultで+1にする。また、window_patternsでscore記述省略したらdefaultが使われているか調査し、もし使われていないなら使うようにする #58
-[issues #58](https://github.com/cat2151/cat-window-watcher/issues/58)
 
 
 
@@ -935,16 +819,16 @@ planにおいては、修正対象のソースファイル名と関数名を、�
 
 ## 最近の変更（過去7日間）
 ### コミット履歴:
+9585d19 Merge pull request #67 from cat2151/copilot/set-default-score-to-plus-one
+15fc1da Change default score for window_patterns from 0 to +1
+c020078 Initial plan
+99add34 Update project summaries (overview & development status) [auto]
 6763c29 Merge pull request #66 from cat2151/copilot/refactor-large-code-base
 3e0f959 Fix validation issues: add missing validations and prevent boolean/integer type confusion
 0478440 Phase 3: Refactor score_tracker.py - split into score_calculator and flow_state_manager modules
 5253e76 Phase 2: Refactor gui.py - split into status_formatter and window_behavior modules
 c2033bb Phase 1: Refactor config.py - split into validator and loader modules
 46fde74 Initial plan
-3955b19 Add issue note for #65 [auto]
-86af2d1 Merge pull request #64 from cat2151/copilot/detect-screensaver-status
-a432476 Address PR review comments: improve error handling and test coverage
-ab16a66 Improve DPMS detection logic for Linux screensaver
 
 ### 変更されたファイル:
 config.toml.example
@@ -952,7 +836,6 @@ generated-docs/development-status-generated-prompt.md
 generated-docs/development-status.md
 generated-docs/project-overview-generated-prompt.md
 generated-docs/project-overview.md
-issue-notes/61.md
 issue-notes/63.md
 issue-notes/65.md
 src/config.py
@@ -970,4 +853,4 @@ tests/test_screensaver_detection.py
 
 
 ---
-Generated at: 2026-01-09 07:05:55 JST
+Generated at: 2026-01-10 07:05:55 JST

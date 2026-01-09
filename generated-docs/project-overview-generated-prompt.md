@@ -1,4 +1,4 @@
-Last updated: 2026-01-09
+Last updated: 2026-01-10
 
 
 # プロジェクト概要生成プロンプト（来訪者向け）
@@ -484,4 +484,4 @@ issue-notes/59.md
 
 
 ---
-Generated at: 2026-01-09 07:05:54 JST
+Generated at: 2026-01-10 07:05:54 JST
