@@ -88,14 +88,14 @@ cp config.toml.example config.toml
 default_score = -1
 
 [[window_patterns]]
-regex = "github"           # Regex pattern to match window title
-score = 10                 # Score change when this window is active
-description = "GitHub"     # Display description
+description = "GitHub"
+regex = "github"
+score = 10
 
 [[window_patterns]]
+description = "Twitter/X"
 regex = "twitter|x\\.com"
 score = -5
-description = "Twitter/X"
 ```
 
 ### 設定オプション
@@ -202,27 +202,27 @@ GUIには以下が表示されます：
 ### 例1: 生産性の追跡
 ```toml
 [[window_patterns]]
+description = "コーディング"
 regex = "github|gitlab"
 score = 10
-description = "コーディング"
 
 [[window_patterns]]
+description = "ソーシャルメディア"
 regex = "twitter|facebook|instagram"
 score = -5
-description = "ソーシャルメディア"
 ```
 
 ### 例2: 勉強時間
 ```toml
 [[window_patterns]]
+description = "読書"
 regex = "pdf|documentation|docs"
 score = 8
-description = "読書"
 
 [[window_patterns]]
+description = "エンターテイメント"
 regex = "youtube|netflix"
 score = -10
-description = "エンターテイメント"
 ```
 
 ### 例3: 最前面モードでマウス接近時に自動で最背面に移動
@@ -233,9 +233,9 @@ hide_on_mouse_proximity = true
 proximity_distance = 50
 
 [[window_patterns]]
+description = "GitHub"
 regex = "github"
 score = 10
-description = "GitHub"
 ```
 
 この設定により、ウィンドウは通常は最前面に表示されますが、マウスカーソルが50ピクセル以内に近づくと自動的に最背面に移動し、マウスが離れると再び最前面に戻ります。作業の邪魔にならないように設計されています。

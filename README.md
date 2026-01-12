@@ -88,14 +88,14 @@ cp config.toml.example config.toml
 default_score = -1
 
 [[window_patterns]]
-regex = "github"           # Regex pattern to match window title
-score = 10                 # Score change when this window is active
-description = "GitHub"     # Display description
+description = "GitHub"
+regex = "github"
+score = 10
 
 [[window_patterns]]
+description = "Twitter/X"
 regex = "twitter|x\\.com"
 score = -5
-description = "Twitter/X"
 ```
 
 ### Configuration Options
@@ -202,27 +202,27 @@ The GUI will display:
 ### Example 1: Productivity Tracking
 ```toml
 [[window_patterns]]
+description = "Coding"
 regex = "github|gitlab"
 score = 10
-description = "Coding"
 
 [[window_patterns]]
+description = "Social Media"
 regex = "twitter|facebook|instagram"
 score = -5
-description = "Social Media"
 ```
 
 ### Example 2: Study Time
 ```toml
 [[window_patterns]]
+description = "Reading"
 regex = "pdf|documentation|docs"
 score = 8
-description = "Reading"
 
 [[window_patterns]]
+description = "Entertainment"
 regex = "youtube|netflix"
 score = -10
-description = "Entertainment"
 ```
 
 ### Example 3: Always On Top Mode with Auto-Background on Mouse Proximity
@@ -233,9 +233,9 @@ hide_on_mouse_proximity = true
 proximity_distance = 50
 
 [[window_patterns]]
+description = "GitHub"
 regex = "github"
 score = 10
-description = "GitHub"
 ```
 
 With this configuration, the window will typically remain always on top. However, if the mouse cursor approaches within 50 pixels, it will automatically move to the background, and return to the foreground when the mouse moves away. This is designed to not interfere with your work.
