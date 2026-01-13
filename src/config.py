@@ -58,6 +58,9 @@ class Config:
         self.window_x = None
         self.window_y = None
 
+        # Load configuration and print initial load message
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        print(f"{ANSI_GREEN}Configuration loaded from '{self.config_path}' at {timestamp}{ANSI_RESET}")
         self.load_config()
 
     def load_config(self, exit_on_error=True):
