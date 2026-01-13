@@ -100,6 +100,10 @@ score = -5
 
 ### Configuration Options
 
+#### Global Configuration Options
+
+The following options should be specified at the top level of `config.toml` (outside of `[[window_patterns]]`):
+
 - **verbose**: Whether to display configuration details on startup (default: false)
   - If set to `true`, all configuration values will be displayed when the application starts
   - If set to `false`, configuration details will not be displayed (default)
@@ -173,6 +177,11 @@ score = -5
   - If set to `false`, this feature is disabled
   - Makes it easier to set up new patterns – just switch to a window to get its title and paste it into the config file
   - Each unique unmatched title is copied only once, so the clipboard won't be repeatedly updated
+
+#### Window Pattern Specific Options
+
+The following options should be specified inside `[[window_patterns]]` sections:
+
 - **regex**: Regular expression pattern to match window titles (case-insensitive)
 - **score**: Integer value to add to the score when the pattern matches (can be negative)
 - **description**: Human-readable description to display in the status area
