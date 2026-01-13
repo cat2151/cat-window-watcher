@@ -1,4 +1,4 @@
-Last updated: 2026-01-10
+Last updated: 2026-01-14
 
 # 開発状況生成プロンプト（開発者向け）
 
@@ -207,7 +207,14 @@ Last updated: 2026-01-10
 - README.md
 - _config.yml
 - config.toml.example
-- examples/example.txt
+- examples/README.ja.md
+- examples/README.md
+- examples/example1_productivity.ja.toml
+- examples/example1_productivity.toml
+- examples/example2_study_time.ja.toml
+- examples/example2_study_time.toml
+- examples/example3_always_on_top.ja.toml
+- examples/example3_always_on_top.toml
 - generated-docs/project-overview-generated-prompt.md
 - issue-notes/11.md
 - issue-notes/12.md
@@ -268,51 +275,6 @@ Last updated: 2026-01-10
 - tests/test_window_monitor.py
 
 ## 現在のオープンIssues
-## [Issue #60](../issue-notes/60.md): examplesのja版を生成する。README.ja.mdの説明も、そこを参照、とする
-[issue-notes/60.md](https://github.com/cat2151/cat-window-watcher/blob/main/issue-notes/60.md)
-
-...
-ラベル: 
---- issue-notes/60.md の内容 ---
-
-```markdown
-# issue examplesのja版を生成する #60
-[issues #60](https://github.com/cat2151/cat-window-watcher/issues/60)
-
-
-
-```
-
-## [Issue #59](../issue-notes/59.md): README.ja.mdの項目説明を読みやすくする。どれがwindow patterns内か、そうでないか、をパッと見でわかるようにする
-[issue-notes/59.md](https://github.com/cat2151/cat-window-watcher/blob/main/issue-notes/59.md)
-
-...
-ラベル: 
---- issue-notes/59.md の内容 ---
-
-```markdown
-# issue README.ja.mdの項目説明を読みやすくする。どれがwindow patterns内か、そうでないか、をパッと見でわかるようにする #59
-[issues #59](https://github.com/cat2151/cat-window-watcher/issues/59)
-
-
-
-```
-
-## [Issue #57](../issue-notes/57.md): examplesを読みやすくする。descriptionは要素の一番下でなく一番上にして、重複した内容のコメントを削除する
-[issue-notes/57.md](https://github.com/cat2151/cat-window-watcher/blob/main/issue-notes/57.md)
-
-...
-ラベル: 
---- issue-notes/57.md の内容 ---
-
-```markdown
-# issue examplesを読みやすくする。descriptionは要素の一番下でなく一番上にして、重複した内容のコメントを削除する #57
-[issues #57](https://github.com/cat2151/cat-window-watcher/issues/57)
-
-
-
-```
-
 ## [Issue #26](../issue-notes/26.md): ドッグフーディングする
 [issue-notes/26.md](https://github.com/cat2151/cat-window-watcher/blob/main/issue-notes/26.md)
 
@@ -329,341 +291,6 @@ Last updated: 2026-01-10
 ```
 
 ## ドキュメントで言及されているファイルの内容
-### .github/actions-tmp/README.ja.md
-```md
-{% raw %}
-# GitHub Actions 共通ワークフロー集
-
-このリポジトリは、**複数プロジェクトで使い回せるGitHub Actions共通ワークフロー集**です
-
-<p align="left">
-  <a href="README.ja.md"><img src="https://img.shields.io/badge/🇯🇵-Japanese-red.svg" alt="Japanese"></a>
-  <a href="README.md"><img src="https://img.shields.io/badge/🇺🇸-English-blue.svg" alt="English"></a>
-</p>
-
-# 3行で説明
-- 🚀 プロジェクトごとのGitHub Actions管理をもっと楽に
-- 🔗 共通化されたワークフローで、どのプロジェクトからも呼ぶだけでOK
-- ✅ メンテは一括、プロジェクト開発に集中できます
-
-## Quick Links
-| 項目 | リンク |
-|------|--------|
-| 📖 プロジェクト概要 | [generated-docs/project-overview.md](generated-docs/project-overview.md) |
-| 📖 コールグラフ | [generated-docs/callgraph.html](https://cat2151.github.io/github-actions/generated-docs/callgraph.html) |
-| 📊 開発状況 | [generated-docs/development-status.md](generated-docs/development-status.md) |
-
-# notes
-- まだ共通化の作業中です
-- まだワークフロー内容を改善中です
-
-※README.md は README.ja.md を元にGeminiの翻訳でGitHub Actionsで自動生成しています
-
-{% endraw %}
-```
-
-### README.ja.md
-```md
-{% raw %}
-# cat-window-watcher - Cat is watching you -
-
-アクティブなウィンドウを監視し、あなたの作業内容に基づいてスコアを調整するシンプルでスタンドアロンなウィンドウ監視ツール。
-
-<p align="left">
-  <a href="README.ja.md"><img src="https://img.shields.io/badge/🇯🇵-Japanese-red.svg" alt="Japanese"></a>
-  <a href="README.md"><img src="https://img.shields.io/badge/🇺🇸-English-blue.svg" alt="English"></a>
-</p>
-
-## WIP
-
-開発中です。不具合があります。issueを参照ください
-
-## ⚠️ 暫定実装についての注意
-
-これは**テストと検証のための暫定実装**です。現在の実装は以下に焦点を当てています：
-- シンプルでスタンドアロンな操作（この段階では他のアプリとの統合なし）
-- 分かりやすいロジック：1秒ごとにアクティブなウィンドウタイトルをチェック
-- 迅速な開発とテストを促進するための最小限の複雑さ
-
-将来のバージョンでは最適化や統合が含まれる可能性がありますが、このバージョンはシンプルさと理解しやすさを優先しています。
-
-## コンセプト
-
-アプリケーションは現在アクティブなウィンドウを監視し、設定可能なパターンに基づいてスコアを調整します：
-- GitHubで作業中？スコアが上がります！ 🎉
-- SNSを閲覧中？スコアが下がります... 😿
-
-The cat is watching you!
-
-## 機能
-
-- **シンプルなスコア表示**: クリーンなtkinter GUIで現在のスコアを表示
-- **正規表現ベースのウィンドウマッチング**: 正規表現を使用してウィンドウタイトルパターンを設定
-- **設定可能なスコア値**: 各パターンに対してカスタムなスコア増減量を設定
-- **クロスプラットフォーム対応**: Linux、macOS、Windowsで動作
-- **軽量**: 1秒に1回ウィンドウタイトルをチェック、最小限のリソース使用量
-
-## 見た目
-
-```
-╔════════════════════════════════════════════════════════════╗
-║   Cat Window Watcher - Cat is watching you -               ║
-╠════════════════════════════════════════════════════════════╣
-║                                                            ║
-║                                                            ║
-║                       Score: 42                            ║
-║                                                            ║
-║                                                            ║
-║                      GitHub (+10)                          ║
-║                                                            ║
-╚════════════════════════════════════════════════════════════╝
-```
-
-GUIはダークテーマで、大きなスコア表示と現在のアクティビティを表示するステータスを備えています。
-
-## インストール
-
-1. リポジトリをクローン：
-```bash
-git clone https://github.com/cat2151/cat-window-watcher.git
-cd cat-window-watcher
-```
-
-2. Python 3.12以上がインストールされていることを確認：
-```bash
-python --version
-```
-
-3. 依存関係をインストール（必要に応じて）：
-   - Linux: `xdotool` または `xprop`（通常はプリインストール済み）
-   - macOS: 内蔵AppleScriptサポート
-   - Windows: 内蔵APIで動作（より良いサポートのために `pywin32` をオプションで使用）
-
-## 設定
-
-1. 設定例をコピー：
-```bash
-cp config.toml.example config.toml
-```
-
-2. `config.toml`を編集してウィンドウパターンとスコアをカスタマイズ：
-
-```toml
-# デフォルトスコア（パターンがマッチしない場合に適用）
-# 設定ミスを検知しやすくするために使用します
-# -1（デフォルト）で設定ミスを簡単に検知、0に設定で無効化
-default_score = -1
-
-[[window_patterns]]
-regex = "github"           # Regex pattern to match window title
-score = 10                 # Score change when this window is active
-description = "GitHub"     # Display description
-
-[[window_patterns]]
-regex = "twitter|x\\.com"
-score = -5
-description = "Twitter/X"
-```
-
-### 設定オプション
-
-- **verbose**: 設定の詳細を起動時に表示するかどうか（デフォルト: false）
-  - `true`に設定すると、アプリケーション起動時に全ての設定値が表示されます
-  - `false`に設定すると、設定の詳細は表示されません（デフォルト）
-  - デバッグや設定の確認が必要な場合に有効にします
-- **default_score**: パターンがマッチしない場合に適用されるスコア（デフォルト: -1）
-  - -1（デフォルト）に設定すると、パターンが正しく設定されているか確認しやすくなります
-  - 0に設定すると、マッチしない場合はスコアが変化しません
-  - パターンが誤って設定されている場合、スコアが継続的に減少するため、すぐに気づくことができます
-- **apply_default_score_mode**: デフォルトスコアの適用制御（デフォルト: true）
-  - `true`に設定すると、パターンがマッチしない場合に default_score が適用されます
-  - `false`に設定すると、パターンがマッチしない場合でもスコアは変化しません（スコアは維持されます）
-- **self_window_score**: アプリ自身のウィンドウがアクティブな場合に適用されるスコア（デフォルト: 0）
-  - Cat Window Watcherのウィンドウ自体にフォーカスを切り替えた場合、default_scoreや「マッチなし」の代わりにこのスコアが適用されます
-  - 0（デフォルト）に設定すると、アプリを確認している間はスコアが変化しません
-  - 正の値に設定すると、スコアをチェックすることに報酬を与えます
-  - 負の値に設定すると、過度なスコアチェックを抑制します
-- **mild_penalty_mode**: 指定した時間帯にマイナススコアを -1 に制限するモード（デフォルト: false）
-  - **注意**: これはテスト目的の暫定実装です
-  - `true`に設定すると有効化、`false`で無効化
-- **mild_penalty_start_hour**: マイルドペナルティモードの開始時刻（0-23、デフォルト: 22）
-  - mild_penalty_mode が有効な場合、mild_penalty_start_hour から mild_penalty_end_hour までの時間帯にマイナススコアが -1 に制限されます
-- **mild_penalty_end_hour**: マイルドペナルティモードの終了時刻（0-23、デフォルト: 23）
-  - 時間範囲は開始時刻と終了時刻の両方を含みます
-- **always_on_top**: ウィンドウを常に最前面に表示するかどうか（デフォルト: true）
-  - `true`に設定すると、ウィンドウが常に他のウィンドウの上に表示されます
-  - `false`に設定すると、通常のウィンドウとして動作します
-- **hide_on_mouse_proximity**: マウスが近づいたときにウィンドウを最背面に移動するかどうか（デフォルト: true）
-  - `true`に設定すると、マウスカーソルがウィンドウに近づいたときに自動的に最背面に移動し、離れると最前面に戻ります
-  - `false`に設定すると、この機能は無効になります
-  - この機能は `always_on_top` が `true` の場合のみ動作します
-- **proximity_distance**: マウス接近検知の距離（ピクセル単位、デフォルト: 50）
-  - マウスカーソルがウィンドウからこの距離以内に入ったときに、ウィンドウを最背面に移動します
-  - 値を大きくすると、より遠くからマウスを検知します
-  - 値を小さくすると、ウィンドウにより近づかないと反応しません
-- **always_on_top_while_score_decreasing**: スコアが減り続けている間、ウィンドウを最前面に表示（デフォルト: true）
-  - `true`に設定すると、スコアが減少している間、ウィンドウを自動的に最前面に表示します
-  - `false`に設定すると、この機能は無効になります
-  - 集中力が低下している時（例：SNSを見ている時）に気づきやすくなります
-  - スコアが減少している間は、他の最前面設定よりも優先されます
-- **score_up_color**: スコアが上昇または変化しない場合の表示色（デフォルト: "#ffffff" 白）
-  - スコアが増加したり、変化しない場合のフォント色を設定します
-  - カラーコードは16進数形式（例: "#ffffff"）で指定します
-- **score_down_color**: スコアが減少する場合の表示色（デフォルト: "#ff0000" 赤）
-  - スコアが減少した場合のフォント色を設定します
-  - カラーコードは16進数形式（例: "#ff0000"）で指定します
-- **reset_score_every_30_minutes**: 30分ごとにスコアを0にリセットするかどうか（デフォルト: true）
-  - `true`に設定すると、毎時00分と30分にスコアが自動的に0にリセットされます
-  - `false`に設定すると、スコアは蓄積され続けます
-  - ポモドーロ・テクニックに類似して、「今の30分だけ集中する」というイメージを作りやすくします
-  - 例: 10:29にスコアが100でも、10:30になると0にリセットされ、新しい30分間が始まります
-- **fade_window_on_flow_mode_enabled**: フロー状態の時にウィンドウを徐々に透明化するかどうか（デフォルト: false）
-  - `true`に設定すると、スコア上昇状態が flow_mode_delay_seconds 続いた後、ウィンドウが徐々に透明化して集中を助けます
-  - `false`に設定すると、この機能は無効になります
-- **flow_mode_delay_seconds**: フェード開始前の待機時間（秒単位、デフォルト: 10）
-  - 非スコア上昇状態からスコア上昇状態に移行した後、この秒数だけ待ってからフェード効果を開始します
-- **flow_mode_fade_rate_percent_per_second**: フローモードの透明化速度（1秒あたりの透明度増加率、パーセント単位、デフォルト: 1）
-  - フローモード中、ウィンドウは毎秒このパーセント分だけ透明になります
-  - 範囲: 1-100（1 = ゆっくりとしたフェード、100 = 即座に透明化）
-- **default_transparency**: ウィンドウの初期透明度（デフォルト: 1.0）
-  - ウィンドウ起動時の透明度/不透明度を設定します
-  - 範囲: 0.0-1.0（0.0 = 完全に透明、1.0 = 完全に不透明）
-  - デフォルトでウィンドウを少し透明にしたい場合に便利です
-  - デフォルト: 1.0 - 完全に不透明
-- **window_x / window_y**: ウィンドウの初期位置（X座標 / Y座標、ピクセル単位）
-  - 両方が指定されている場合、ウィンドウはその位置に開きます
-  - どちらか一方が指定されていない場合（または null に設定されている場合）は、システムがデフォルト位置を選択します
-  - 座標は画面の左上隅を基準としたピクセル単位です
-  - デフォルト: 未設定（null） - システムが位置を選択
-- **copy_no_match_to_clipboard**: マッチしないウィンドウタイトルを自動的にクリップボードにコピーする（デフォルト: false）
-  - `true`に設定すると、どのパターンにもマッチしないウィンドウタイトルが自動的にクリップボードにコピーされます
-  - `false`に設定すると、この機能は無効になります
-  - 新しいパターンの設定が簡単になります - ウィンドウに切り替えるだけでタイトルが取得でき、設定ファイルにペーストできます
-  - 各ユニークなマッチしないタイトルは一度だけコピーされるため、繰り返しクリップボードが更新されることはありません
-- **regex**: ウィンドウタイトルにマッチする正規表現パターン（大文字小文字を区別しない）
-- **score**: パターンがマッチしたときにスコアに追加する整数値（負の値も可能）
-- **description**: ステータスエリアに表示される人間が読める説明
-
-## 使用法
-
-アプリケーションを実行：
-```bash
-# 方法1: スクリプトを直接実行
-python src/main.py
-
-# 方法2: モジュールとして実行
-python -m src
-
-# 方法3: カスタム設定ファイルで実行
-python src/main.py --config my_config.toml
-python src/main.py -c my_config.toml
-```
-
-GUIには以下が表示されます：
-- 現在のスコアを大きなテキストで表示
-- 現在マッチしたパターンまたはウィンドウタイトルを表示するステータス
-- 1秒ごとに自動更新
-
-## 例
-
-### 例1: 生産性の追跡
-```toml
-[[window_patterns]]
-regex = "github|gitlab"
-score = 10
-description = "コーディング"
-
-[[window_patterns]]
-regex = "twitter|facebook|instagram"
-score = -5
-description = "ソーシャルメディア"
-```
-
-### 例2: 勉強時間
-```toml
-[[window_patterns]]
-regex = "pdf|documentation|docs"
-score = 8
-description = "読書"
-
-[[window_patterns]]
-regex = "youtube|netflix"
-score = -10
-description = "エンターテイメント"
-```
-
-### 例3: 最前面モードでマウス接近時に自動で最背面に移動
-```toml
-# ウィンドウを常に最前面に表示しつつ、マウスが近づいたら自動的に最背面に移動
-always_on_top = true
-hide_on_mouse_proximity = true
-proximity_distance = 50
-
-[[window_patterns]]
-regex = "github"
-score = 10
-description = "GitHub"
-```
-
-この設定により、ウィンドウは通常は最前面に表示されますが、マウスカーソルが50ピクセル以内に近づくと自動的に最背面に移動し、マウスが離れると再び最前面に戻ります。作業の邪魔にならないように設計されています。
-
-## 開発
-
-### テストの実行
-```bash
-python -m unittest discover tests/ -v
-```
-
-### コードフォーマット
-コミット前にコードをフォーマット：
-```bash
-ruff format src/ tests/
-ruff check --fix src/ tests/
-```
-
-### リンティング
-コード品質の検証：
-```bash
-ruff format --check src/ tests/
-ruff check src/ tests/
-```
-
-## アーキテクチャ
-
-アプリケーションはいくつかのモジュールから構成されています：
-
-- **config.py**: TOML設定の読み込みと管理
-- **window_monitor.py**: クロスプラットフォームなウィンドウタイトル検出
-- **score_tracker.py**: ウィンドウタイトルをパターンにマッチさせ、スコアを追跡
-- **gui.py**: tkinterベースのスコア表示インターフェース
-- **main.py**: アプリケーションのエントリポイントとオーケストレーション
-
-## プラットフォーム固有の注意事項
-
-### Linux
-`xdotool` または `xprop` が必要：
-```bash
-sudo apt-get install xdotool  # Debian/Ubuntu
-```
-
-### macOS
-内蔵AppleScriptを使用。追加の依存関係は不要。
-
-### Windows
-内蔵Windows APIで動作。より良い互換性のためにインストール：
-```bash
-pip install pywin32
-```
-
-## ライセンス
-
-詳細はLICENSEファイルをご覧ください。
-
-*Big Brother is watching you. But this time, it's a cat. 🐱*
-
-{% endraw %}
-```
-
 ### .github/actions-tmp/issue-notes/26.md
 ```md
 {% raw %}
@@ -732,69 +359,6 @@ has_recent_human_commit=false
 {% endraw %}
 ```
 
-### .github/actions-tmp/issue-notes/7.md
-```md
-{% raw %}
-# issue issue note生成できるかのtest用 #7
-[issues #7](https://github.com/cat2151/github-actions/issues/7)
-
-- 生成できた
-- closeとする
-
-{% endraw %}
-```
-
-### .github/actions-tmp/issue-notes/9.md
-```md
-{% raw %}
-# issue 関数コールグラフhtmlビジュアライズが0件なので、原因を可視化する #9
-[issues #9](https://github.com/cat2151/github-actions/issues/9)
-
-# agentに修正させたり、人力で修正したりした
-- agentがハルシネーションし、いろいろ根の深いバグにつながる、エラー隠蔽などを仕込んでいたため、検知が遅れた
-- 詳しくはcommit logを参照のこと
-- WSL + actの環境を少し変更、act起動時のコマンドライン引数を変更し、generated-docsをmountする（ほかはデフォルト挙動であるcpだけにする）ことで、デバッグ情報をコンテナ外に出力できるようにし、デバッグを効率化した
-
-# test green
-
-# closeとする
-
-{% endraw %}
-```
-
-### issue-notes/9.md
-```md
-{% raw %}
-# issue マッチしない場合のscore、を定義し、マッチ設定ミスを検知しやすくする #9
-[issues #9](https://github.com/cat2151/cat-window-watcher/issues/9)
-
-
-
-{% endraw %}
-```
-
-### issue-notes/57.md
-```md
-{% raw %}
-# issue examplesを読みやすくする。descriptionは要素の一番下でなく一番上にして、重複した内容のコメントを削除する #57
-[issues #57](https://github.com/cat2151/cat-window-watcher/issues/57)
-
-
-
-{% endraw %}
-```
-
-### issue-notes/59.md
-```md
-{% raw %}
-# issue README.ja.mdの項目説明を読みやすくする。どれがwindow patterns内か、そうでないか、をパッと見でわかるようにする #59
-[issues #59](https://github.com/cat2151/cat-window-watcher/issues/59)
-
-
-
-{% endraw %}
-```
-
 ### issue-notes/6.md
 ```md
 {% raw %}
@@ -806,51 +370,34 @@ has_recent_human_commit=false
 {% endraw %}
 ```
 
-### issue-notes/60.md
-```md
-{% raw %}
-# issue examplesのja版を生成する #60
-[issues #60](https://github.com/cat2151/cat-window-watcher/issues/60)
-
-
-
-{% endraw %}
-```
-
 ## 最近の変更（過去7日間）
 ### コミット履歴:
-9585d19 Merge pull request #67 from cat2151/copilot/set-default-score-to-plus-one
-15fc1da Change default score for window_patterns from 0 to +1
-c020078 Initial plan
-99add34 Update project summaries (overview & development status) [auto]
-6763c29 Merge pull request #66 from cat2151/copilot/refactor-large-code-base
-3e0f959 Fix validation issues: add missing validations and prevent boolean/integer type confusion
-0478440 Phase 3: Refactor score_tracker.py - split into score_calculator and flow_state_manager modules
-5253e76 Phase 2: Refactor gui.py - split into status_formatter and window_behavior modules
-c2033bb Phase 1: Refactor config.py - split into validator and loader modules
-46fde74 Initial plan
+9d14e1e Auto-translate README.ja.md to README.md [auto]
+ccc615a Merge pull request #72 from cat2151/copilot/add-ja-version-examples
+f34f950 Reorder default_score before window settings in example3 for consistency
+ab3f260 Add README files for examples directory in both English and Japanese
+c1f2f88 Add Japanese and English example files and update READMEs to reference them
+984f3ed Initial plan
+a655e2c Auto-translate README.ja.md to README.md [auto]
+71e61f5 Merge pull request #71 from cat2151/copilot/improve-readability-of-readme
+4f05386 Improve README configuration section readability by separating global and window_patterns options
+0ffac0c Initial plan
 
 ### 変更されたファイル:
+README.ja.md
+README.md
 config.toml.example
-generated-docs/development-status-generated-prompt.md
-generated-docs/development-status.md
-generated-docs/project-overview-generated-prompt.md
-generated-docs/project-overview.md
-issue-notes/63.md
-issue-notes/65.md
+examples/README.ja.md
+examples/README.md
+examples/example.txt
+examples/example1_productivity.ja.toml
+examples/example1_productivity.toml
+examples/example2_study_time.ja.toml
+examples/example2_study_time.toml
+examples/example3_always_on_top.ja.toml
+examples/example3_always_on_top.toml
 src/config.py
-src/config_loader.py
-src/config_validator.py
-src/flow_state_manager.py
-src/gui.py
-src/score_calculator.py
-src/score_tracker.py
-src/status_formatter.py
-src/window_behavior.py
-src/window_monitor.py
-tests/test_config.py
-tests/test_screensaver_detection.py
 
 
 ---
-Generated at: 2026-01-10 07:05:55 JST
+Generated at: 2026-01-14 07:05:54 JST

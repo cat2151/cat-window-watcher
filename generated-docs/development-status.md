@@ -1,51 +1,53 @@
-Last updated: 2026-01-10
+Last updated: 2026-01-14
 
 # Development Status
 
 ## 現在のIssues
-- [Issue #60](../issue-notes/60.md), [Issue #59](../issue-notes/59.md), [Issue #57](../issue-notes/57.md) は、examplesの日本語版生成、README.ja.mdの説明改善、examplesの書式調整を通じて、設定ファイルのドキュメントと利用体験の向上を図っています。
-- [Issue #9](../issue-notes/9.md) では、`default_score`の導入により、パターン不一致時のスコア挙動を明確にし、設定ミスを検知しやすくする機能改善を進めています。
-- [Issue #6](../issue-notes/6.md) は `config.toml.example` の `github` パターンがGitHubの特定ページで動作しない問題を解決し、パターンマッチングの精度を向上させます。
+- [Issue #26](../issue-notes/26.md): プロジェクトの運用状況を改善するため、ツール自身を積極的に利用する「ドッグフーディング」の推進。
+- [Issue #6](../issue-notes/6.md): GitHubサイト閲覧時（特にPull requestsやCodeページ）にウィンドウタイトルがGitHubと認識されない問題の解決と、認識ロジックの改善。
+- 最近のコミットに見られるように、多言語対応のREADMEと具体的な使用例の追加により、ドキュメントの拡充が進められています。
 
 ## 次の一手候補
-1. [Issue #60](../issue-notes/60.md): examplesのja版を生成する。README.ja.mdの説明も、そこを参照、とする
-   - 最初の小さな一歩: 既存の `examples/example.txt` を `examples/example.ja.txt` としてコピーし、内容を日本語に翻訳する。
+1. [Issue #6](../issue-notes/6.md): GitHubサイト認識ロジックの改善と精度向上
+   - 最初の小さな一歩: `src/window_monitor.py` 内でGitHub関連のウィンドウタイトルパターンを洗い出し、現在の検出ロジックと`config.toml.example`の`github`カテゴリ設定を分析する。
    - Agent実行プロンプト:
      ```
-     対象ファイル: `examples/example.txt`
+     対象ファイル: `src/window_monitor.py`, `config.toml.example`
 
-     実行内容: `examples/example.txt` の内容を日本語に翻訳し、`examples/example.ja.txt` として新規作成する。翻訳は自然で、設定例として理解しやすいものにしてください。
+     実行内容: `src/window_monitor.py`の`is_github_site`または関連するウィンドウタイトル判定ロジックを分析し、GitHubのPull RequestsやCodeページが適切に認識されない原因となるパターンを特定してください。特に、`config.toml.example`の`github`カテゴリにおける現行設定と実際のウィンドウタイトル例（例: "Pull requests", "Code")を比較し、検出漏れの原因を特定してください。
 
-     確認事項: 日本語として自然か、元の `example.txt` の意図が正確に反映されているかを確認してください。
+     確認事項: 既存のウィンドウ監視ロジックや`src/config.py`で定義されている設定項目との整合性を確認してください。また、GitHub以外のサイトへの誤認識が発生しないかも考慮に入れてください。
 
-     期待する出力: `examples/example.ja.txt` の新規作成と、その内容（翻訳結果）をMarkdownコードブロックで出力してください。
+     期待する出力: 特定された問題点と、改善のための具体的な提案（正規表現の追加やロジック変更案）をmarkdown形式で出力してください。
      ```
 
-2. [Issue #57](../issue-notes/57.md): examplesを読みやすくする。descriptionは要素の一番下でなく一番上にして、重複した内容のコメントを削除する
-   - 最初の小さな一歩: `examples/example.txt` を開き、`[[window_patterns]]` 内の `description` を一番上に移動させ、重複したコメントを削除する。その後、`examples/example.ja.txt`（前のステップで生成されたもの）にも同様の変更を適用する。
+2. [Issue #11](../issue-notes/11.md): 設定ファイルのバリデーションとエラーハンドリングの強化
+   - 最初の小さな一歩: `src/config_validator.py` および `src/config_loader.py` をレビューし、現在のバリデーションロジックとエラー処理の現状を把握する。
    - Agent実行プロンプト:
      ```
-     対象ファイル: `examples/example.txt`, `examples/example.ja.txt`
+     対象ファイル: `src/config_loader.py`, `src/config_validator.py`, `src/config.py`
 
-     実行内容: `examples/example.txt` と `examples/example.ja.txt` (もし存在すれば) 内の各 `[[window_patterns]]` ブロックにおいて、`description` キーを当該ブロックの一番上に移動させてください。また、各フィールドに付随する重複したコメント（例: `regex = "github" # Regex pattern to match window title` の `# Regex pattern to match window title` 部分など）を削除し、簡潔にしてください。
+     実行内容: 既存の設定ファイル読み込みおよびバリデーションロジックを分析し、特に無効な設定値や欠落した必須項目に対するエラーハンドリングが適切に行われているか評価してください。最近`config.toml.example`で導入された新たな設定構造（例: `global`, `window_patterns`の分離）がバリデーションに与える影響も分析に含めてください。
 
-     確認事項: TOML形式の構文が壊れていないか、`description` が正しく一番上にあるか、コメントが適切に削除されているかを確認してください。
+     確認事項: 設定ファイルのスキーマ変更が他のモジュールに与える影響、および既存の設定例（`examples/`ディレクトリ）との整合性を確認してください。ユーザーにとって分かりやすいエラーメッセージが提供されているかどうかも考慮してください。
 
-     期待する出力: `examples/example.txt` および `examples/example.ja.txt` の内容を修正した結果をMarkdownコードブロックでそれぞれ出力してください。
+     期待する出力: 現在のバリデーションの課題点、およびエラーメッセージの改善、またはバリデーションルールの追加に関する具体的な提案をmarkdown形式で出力してください。
      ```
 
-3. [Issue #59](../issue-notes/59.md): README.ja.mdの項目説明を読みやすくする。どれがwindow patterns内か、そうでないか、をパッと見でわかるようにする
-   - 最初の小さな一歩: `README.ja.md` を開き、「設定オプション」セクションを見直す。`[[window_patterns]]` の内部で定義されるオプションと、それ以外のグローバルオプションを視覚的に区別できるように説明文を改善し、`examples/example.ja.txt` への参照を追加する。
+3. [Issue #4](../issue-notes/4.md): ドキュメントと設定例の一貫性向上と最新化
+   - 最初の小さな一歩: `README.md`, `README.ja.md`、そして`examples/`ディレクトリ内の設定例を比較し、内容の不整合や古い情報がないか確認する。
    - Agent実行プロンプト:
      ```
-     対象ファイル: `README.ja.md`
+     対象ファイル: `README.md`, `README.ja.md`, `examples/`ディレクトリ内の全`.toml`ファイル
 
-     実行内容: `README.ja.md` の「設定オプション」セクションにおいて、`[[window_patterns]]` 配下の項目（`regex`, `score`, `description`）と、それ以外のグローバル設定項目を明確に区別できるように説明文の構造を修正してください。例えば、サブセクションを設ける、インデントを深くする、などの方法で視覚的な区別を強調してください。また、`examples/example.ja.txt` への参照を「設定」セクション内の適切な場所に追加してください。
+     実行内容: 以下の点について対象ファイルを分析してください：
+     1) 各READMEが最新の設定オプション（特に`config.toml.example`で導入された新しい構造）を適切に反映しているか。
+     2) `examples/`内の設定例がREADMEで説明されている内容と完全に一致し、最新のアプリケーション動作を反映しているか。
+     3) 日本語と英語のドキュメント間で内容の一貫性が保たれており、自動翻訳プロセスで問題が発生していないか。
 
-     確認事項: 設定オプションの分類が明確になっているか、日本語として自然で理解しやすいか、`examples/example.ja.txt` への参照が適切に追加されているかを確認してください。
+     確認事項: 自動翻訳ワークフロー（`.github/workflows/call-translate-readme.yml`）の挙動、および`src/config.py`で定義されているデフォルト設定やバリデーションルールとの整合性を確認してください。
 
-     期待する出力: `README.ja.md` の内容を修正した結果をMarkdownコードブロックで出力してください。
-     ```
+     期待する出力: ドキュメントと設定例における不整合や改善が必要な箇所を具体的に指摘し、修正案をmarkdown形式で出力してください。
 
 ---
-Generated at: 2026-01-10 07:06:21 JST
+Generated at: 2026-01-14 07:06:30 JST

@@ -1,4 +1,4 @@
-Last updated: 2026-01-10
+Last updated: 2026-01-14
 
 
 # プロジェクト概要生成プロンプト（来訪者向け）
@@ -151,17 +151,21 @@ cp config.toml.example config.toml
 default_score = -1
 
 [[window_patterns]]
-regex = "github"           # Regex pattern to match window title
-score = 10                 # Score change when this window is active
-description = "GitHub"     # Display description
+description = "GitHub"
+regex = "github"
+score = 10
 
 [[window_patterns]]
+description = "Twitter/X"
 regex = "twitter|x\\.com"
 score = -5
-description = "Twitter/X"
 ```
 
 ### 設定オプション
+
+#### グローバル設定オプション
+
+以下のオプションは `config.toml` のトップレベルに記述します（`[[window_patterns]]` の外側）：
 
 - **verbose**: 設定の詳細を起動時に表示するかどうか（デフォルト: false）
   - `true`に設定すると、アプリケーション起動時に全ての設定値が表示されます
@@ -236,6 +240,11 @@ description = "Twitter/X"
   - `false`に設定すると、この機能は無効になります
   - 新しいパターンの設定が簡単になります - ウィンドウに切り替えるだけでタイトルが取得でき、設定ファイルにペーストできます
   - 各ユニークなマッチしないタイトルは一度だけコピーされるため、繰り返しクリップボードが更新されることはありません
+
+#### ウィンドウパターン固有オプション
+
+以下のオプションは `[[window_patterns]]` セクション内に記述します：
+
 - **regex**: ウィンドウタイトルにマッチする正規表現パターン（大文字小文字を区別しない）
 - **score**: パターンがマッチしたときにスコアに追加する整数値（負の値も可能）
 - **description**: ステータスエリアに表示される人間が読める説明
@@ -262,33 +271,44 @@ GUIには以下が表示されます：
 
 ## 例
 
+より詳細な設定例は、[examples/](examples/) ディレクトリを参照してください。
+
 ### 例1: 生産性の追跡
+
+[examples/example1_productivity.ja.toml](examples/example1_productivity.ja.toml) を参照
+
 ```toml
 [[window_patterns]]
+description = "コーディング"
 regex = "github|gitlab"
 score = 10
-description = "コーディング"
 
 [[window_patterns]]
+description = "ソーシャルメディア"
 regex = "twitter|facebook|instagram"
 score = -5
-description = "ソーシャルメディア"
 ```
 
 ### 例2: 勉強時間
+
+[examples/example2_study_time.ja.toml](examples/example2_study_time.ja.toml) を参照
+
 ```toml
 [[window_patterns]]
+description = "読書"
 regex = "pdf|documentation|docs"
 score = 8
-description = "読書"
 
 [[window_patterns]]
+description = "エンターテイメント"
 regex = "youtube|netflix"
 score = -10
-description = "エンターテイメント"
 ```
 
 ### 例3: 最前面モードでマウス接近時に自動で最背面に移動
+
+[examples/example3_always_on_top.ja.toml](examples/example3_always_on_top.ja.toml) を参照
+
 ```toml
 # ウィンドウを常に最前面に表示しつつ、マウスが近づいたら自動的に最背面に移動
 always_on_top = true
@@ -296,9 +316,9 @@ hide_on_mouse_proximity = true
 proximity_distance = 50
 
 [[window_patterns]]
+description = "GitHub"
 regex = "github"
 score = 10
-description = "GitHub"
 ```
 
 この設定により、ウィンドウは通常は最前面に表示されますが、マウスカーソルが50ピクセル以内に近づくと自動的に最背面に移動し、マウスが離れると再び最前面に戻ります。作業の邪魔にならないように設計されています。
@@ -373,7 +393,14 @@ pip install pywin32
 📄 _config.yml
 📄 config.toml.example
 📁 examples/
-  📄 example.txt
+  📖 README.ja.md
+  📖 README.md
+  📄 example1_productivity.ja.toml
+  📄 example1_productivity.toml
+  📄 example2_study_time.ja.toml
+  📄 example2_study_time.toml
+  📄 example3_always_on_top.ja.toml
+  📄 example3_always_on_top.toml
 📁 generated-docs/
 📁 issue-notes/
   📖 11.md
@@ -446,6 +473,8 @@ pip install pywin32
 .vscode/settings.json
 README.ja.md
 README.md
+examples/README.ja.md
+examples/README.md
 issue-notes/11.md
 issue-notes/12.md
 issue-notes/13.md
@@ -471,8 +500,6 @@ issue-notes/50.md
 issue-notes/53.md
 issue-notes/55.md
 issue-notes/57.md
-issue-notes/58.md
-issue-notes/59.md
 
 上記の情報を基に、プロンプトで指定された形式でプロジェクト概要を生成してください。
 特に以下の点を重視してください：
@@ -484,4 +511,4 @@ issue-notes/59.md
 
 
 ---
-Generated at: 2026-01-10 07:05:54 JST
+Generated at: 2026-01-14 07:05:54 JST
