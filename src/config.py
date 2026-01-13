@@ -58,18 +58,15 @@ class Config:
         self.window_x = None
         self.window_y = None
 
-        # Load configuration
-        self.load_config()
-        
-        # Print initial load success message
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        print(f"{ANSI_GREEN}Configuration loaded from '{self.config_path}' at {timestamp}{ANSI_RESET}")
+        # Load configuration and print initial success message
+        self.load_config(print_success=True)
 
-    def load_config(self, exit_on_error=True):
+    def load_config(self, exit_on_error=True, print_success=False):
         """Load configuration from TOML file.
 
         Args:
             exit_on_error: If True, exit on error. If False, raise exception.
+            print_success: If True, print success message after loading.
 
         Raises:
             FileNotFoundError: If config file doesn't exist
@@ -104,6 +101,11 @@ class Config:
         # Print configuration values to console if verbose mode is enabled
         if self.verbose:
             self.print_config()
+        
+        # Print success message if requested
+        if print_success:
+            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            print(f"{ANSI_GREEN}Configuration loaded from '{self.config_path}' at {timestamp}{ANSI_RESET}")
 
     def is_modified(self):
         """Check if configuration file has been modified.
