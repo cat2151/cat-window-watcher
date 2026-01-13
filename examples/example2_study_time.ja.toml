@@ -1,0 +1,15 @@
+# 例2: 勉強時間
+# この設定は、勉強や読書の時間とエンターテイメントを追跡します
+
+# デフォルトスコア（パターンがマッチしない場合に適用）
+default_score = -1
+
+[[window_patterns]]
+description = "読書"
+regex = "pdf|documentation|docs"
+score = 8
+
+[[window_patterns]]
+description = "エンターテイメント"
+regex = "youtube|netflix"
+score = -10

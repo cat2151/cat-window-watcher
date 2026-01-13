@@ -1,0 +1,15 @@
+# Example 3: Always-on-top mode with automatic hide on mouse proximity
+# Display the window always on top, but automatically move it to the bottom when the mouse approaches
+
+# Window display settings
+always_on_top = true
+hide_on_mouse_proximity = true
+proximity_distance = 50
+
+# Default score applied when no window pattern matches
+default_score = -1
+
+[[window_patterns]]
+description = "GitHub"
+regex = "github"
+score = 10

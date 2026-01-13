@@ -1,0 +1,15 @@
+# Example 2: Study Time
+# This configuration helps track study and reading time vs entertainment
+
+# Default score applied when no window pattern matches
+default_score = -1
+
+[[window_patterns]]
+description = "Reading"
+regex = "pdf|documentation|docs"
+score = 8
+
+[[window_patterns]]
+description = "Entertainment"
+regex = "youtube|netflix"
+score = -10

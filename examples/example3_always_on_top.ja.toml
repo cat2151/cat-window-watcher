@@ -1,0 +1,15 @@
+# 例3: 最前面モードでマウス接近時に自動で最背面に移動
+# ウィンドウを常に最前面に表示しつつ、マウスが近づいたら自動的に最背面に移動
+
+# ウィンドウ表示設定
+always_on_top = true
+hide_on_mouse_proximity = true
+proximity_distance = 50
+
+# デフォルトスコア（パターンがマッチしない場合に適用）
+default_score = -1
+
+[[window_patterns]]
+description = "GitHub"
+regex = "github"
+score = 10
