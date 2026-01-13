@@ -106,51 +106,41 @@ flow_mode_fade_rate_percent_per_second = 20
 # and the score change when that window becomes active
 
 [[window_patterns]]
-# GitHub - increases score when working on GitHub
-# Matches both embedded "github" (e.g., "github.com", "GitHub - Profile")
-# and GitHub pages format (e.g., "Pull requests · owner/repo · GitHub")
+description = "GitHub"
 regex = "github|· GitHub$"
 score = 10
-description = "GitHub"
 
 [[window_patterns]]
-# Twitter/X - decreases score when browsing social media
+description = "Twitter/X"
 regex = 'twitter|x\.com'
 score = -5
-description = "Twitter/X"
 
 [[window_patterns]]
-# Facebook - decreases score when browsing social media
+description = "Facebook"
 regex = "facebook"
 score = -5
-description = "Facebook"
 
 [[window_patterns]]
-# Instagram - decreases score when browsing social media
+description = "Instagram"
 regex = "instagram"
 score = -5
-description = "Instagram"
 
 [[window_patterns]]
-# Reddit - decreases score when browsing social media
+description = "Reddit"
 regex = "reddit"
 score = -3
-description = "Reddit"
 
 [[window_patterns]]
-# Visual Studio Code - increases score when coding
+description = "VS Code"
 regex = "visual studio code|vscode"
 score = 8
-description = "VS Code"
 
 [[window_patterns]]
-# Terminal - increases score when using terminal
+description = "Terminal"
 regex = "terminal|bash|zsh|powershell"
 score = 5
-description = "Terminal"
 
 [[window_patterns]]
-# YouTube - decreases score when watching videos
+description = "YouTube"
 regex = "youtube"
 score = -7
-description = "YouTube"
