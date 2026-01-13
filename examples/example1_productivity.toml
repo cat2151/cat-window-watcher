@@ -1,0 +1,15 @@
+# Example 1: Tracking Productivity
+# This configuration tracks your productivity by monitoring work-related and social media windows
+
+# Default score applied when no window pattern matches
+default_score = -1
+
+[[window_patterns]]
+description = "Coding"
+regex = "github|gitlab"
+score = 10
+
+[[window_patterns]]
+description = "Social Media"
+regex = "twitter|facebook|instagram"
+score = -5

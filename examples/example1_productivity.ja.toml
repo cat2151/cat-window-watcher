@@ -1,0 +1,15 @@
+# 例1: 生産性の追跡
+# この設定は、仕事関連のウィンドウとソーシャルメディアを監視して生産性を追跡します
+
+# デフォルトスコア（パターンがマッチしない場合に適用）
+default_score = -1
+
+[[window_patterns]]
+description = "コーディング"
+regex = "github|gitlab"
+score = 10
+
+[[window_patterns]]
+description = "ソーシャルメディア"
+regex = "twitter|facebook|instagram"
+score = -5

@@ -208,7 +208,12 @@ GUIには以下が表示されます：
 
 ## 例
 
+より詳細な設定例は、[examples/](examples/) ディレクトリを参照してください。
+
 ### 例1: 生産性の追跡
+
+[examples/example1_productivity.ja.toml](examples/example1_productivity.ja.toml) を参照
+
 ```toml
 [[window_patterns]]
 description = "コーディング"
@@ -222,6 +227,9 @@ score = -5
 ```
 
 ### 例2: 勉強時間
+
+[examples/example2_study_time.ja.toml](examples/example2_study_time.ja.toml) を参照
+
 ```toml
 [[window_patterns]]
 description = "読書"
@@ -235,6 +243,9 @@ score = -10
 ```
 
 ### 例3: 最前面モードでマウス接近時に自動で最背面に移動
+
+[examples/example3_always_on_top.ja.toml](examples/example3_always_on_top.ja.toml) を参照
+
 ```toml
 # ウィンドウを常に最前面に表示しつつ、マウスが近づいたら自動的に最背面に移動
 always_on_top = true

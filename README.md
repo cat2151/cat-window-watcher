@@ -208,7 +208,12 @@ The GUI will display:
 
 ## Examples
 
+For more detailed configuration examples, please refer to the [examples/](examples/) directory.
+
 ### Example 1: Tracking Productivity
+
+See [examples/example1_productivity.toml](examples/example1_productivity.toml)
+
 ```toml
 [[window_patterns]]
 description = "Coding"
@@ -222,6 +227,9 @@ score = -5
 ```
 
 ### Example 2: Study Time
+
+See [examples/example2_study_time.toml](examples/example2_study_time.toml)
+
 ```toml
 [[window_patterns]]
 description = "Reading"
@@ -235,6 +243,9 @@ score = -10
 ```
 
 ### Example 3: Always-on-top mode with automatic hide on mouse proximity
+
+See [examples/example3_always_on_top.toml](examples/example3_always_on_top.toml)
+
 ```toml
 # Display the window always on top, but automatically move it to the bottom when the mouse approaches
 always_on_top = true
