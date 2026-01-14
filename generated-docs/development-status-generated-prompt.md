@@ -1,4 +1,4 @@
-Last updated: 2026-01-14
+Last updated: 2026-01-15
 
 # 開発状況生成プロンプト（開発者向け）
 
@@ -248,6 +248,8 @@ Last updated: 2026-01-14
 - issue-notes/61.md
 - issue-notes/63.md
 - issue-notes/65.md
+- issue-notes/73.md
+- issue-notes/75.md
 - issue-notes/8.md
 - issue-notes/9.md
 - pytest.ini
@@ -275,6 +277,21 @@ Last updated: 2026-01-14
 - tests/test_window_monitor.py
 
 ## 現在のオープンIssues
+## [Issue #75](../issue-notes/75.md): PR 74 を参考に、スクリーンセーバー認識がなぜ失敗しているか調査を進める
+[issue-notes/75.md](https://github.com/cat2151/cat-window-watcher/blob/main/issue-notes/75.md)
+
+...
+ラベル: 
+--- issue-notes/75.md の内容 ---
+
+```markdown
+# issue PR 74 を参考に、スクリーンセーバー認識がなぜ失敗しているか調査を進める #75
+[issues #75](https://github.com/cat2151/cat-window-watcher/issues/75)
+
+
+
+```
+
 ## [Issue #26](../issue-notes/26.md): ドッグフーディングする
 [issue-notes/26.md](https://github.com/cat2151/cat-window-watcher/blob/main/issue-notes/26.md)
 
@@ -370,18 +387,29 @@ has_recent_human_commit=false
 {% endraw %}
 ```
 
+### issue-notes/75.md
+```md
+{% raw %}
+# issue PR 74 を参考に、スクリーンセーバー認識がなぜ失敗しているか調査を進める #75
+[issues #75](https://github.com/cat2151/cat-window-watcher/issues/75)
+
+
+
+{% endraw %}
+```
+
 ## 最近の変更（過去7日間）
 ### コミット履歴:
+8825b41 Add issue note for #75 [auto]
+17617a5 Merge pull request #74 from cat2151/copilot/add-screensaver-status-print
+1e3a0a4 Add debug_screensaver_detection configuration option
+162fe5f Initial plan
+de6a7c9 Add issue note for #73 [auto]
+a6f8d41 Update project summaries (overview & development status) [auto]
 9d14e1e Auto-translate README.ja.md to README.md [auto]
 ccc615a Merge pull request #72 from cat2151/copilot/add-ja-version-examples
 f34f950 Reorder default_score before window settings in example3 for consistency
 ab3f260 Add README files for examples directory in both English and Japanese
-c1f2f88 Add Japanese and English example files and update READMEs to reference them
-984f3ed Initial plan
-a655e2c Auto-translate README.ja.md to README.md [auto]
-71e61f5 Merge pull request #71 from cat2151/copilot/improve-readability-of-readme
-4f05386 Improve README configuration section readability by separating global and window_patterns options
-0ffac0c Initial plan
 
 ### 変更されたファイル:
 README.ja.md
@@ -396,8 +424,18 @@ examples/example2_study_time.ja.toml
 examples/example2_study_time.toml
 examples/example3_always_on_top.ja.toml
 examples/example3_always_on_top.toml
+generated-docs/development-status-generated-prompt.md
+generated-docs/development-status.md
+generated-docs/project-overview-generated-prompt.md
+generated-docs/project-overview.md
+issue-notes/73.md
+issue-notes/75.md
 src/config.py
+src/config_loader.py
+src/gui.py
+src/window_monitor.py
+tests/test_config.py
 
 
 ---
-Generated at: 2026-01-14 07:05:54 JST
+Generated at: 2026-01-15 07:05:55 JST

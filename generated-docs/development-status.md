@@ -1,53 +1,51 @@
-Last updated: 2026-01-14
+Last updated: 2026-01-15
 
 # Development Status
 
 ## 現在のIssues
-- [Issue #26](../issue-notes/26.md): プロジェクトの運用状況を改善するため、ツール自身を積極的に利用する「ドッグフーディング」の推進。
-- [Issue #6](../issue-notes/6.md): GitHubサイト閲覧時（特にPull requestsやCodeページ）にウィンドウタイトルがGitHubと認識されない問題の解決と、認識ロジックの改善。
-- 最近のコミットに見られるように、多言語対応のREADMEと具体的な使用例の追加により、ドキュメントの拡充が進められています。
+- [Issue #75](../issue-notes/75.md) は、PR #74 で追加されたデバッグ機能を用いて、スクリーンセーバー認識が失敗する原因の調査を進めています。
+- [Issue #26](../issue-notes/26.md) は、アプリケーションのドッグフーディングを行い、実際の使用感や潜在的な課題を特定することを目標としています。
+- [Issue #6](../issue-notes/6.md) は、GitHubサイトを閲覧している際に、ウィンドウタイトルによっては適切に認識されない問題を扱っており、その原因究明が必要です。
 
 ## 次の一手候補
-1. [Issue #6](../issue-notes/6.md): GitHubサイト認識ロジックの改善と精度向上
-   - 最初の小さな一歩: `src/window_monitor.py` 内でGitHub関連のウィンドウタイトルパターンを洗い出し、現在の検出ロジックと`config.toml.example`の`github`カテゴリ設定を分析する。
-   - Agent実行プロンプト:
+1. [Issue #75](../issue-notes/75.md) スクリーンセーバー認識の失敗原因を調査する
+   - 最初の小さな一歩: `config.toml.example` に `debug_screensaver_detection = true` を設定し、アプリケーションを起動してスクリーンセーバーが認識されない状況でのログ出力を確認する。
+   - Agent実行プロンプ:
      ```
-     対象ファイル: `src/window_monitor.py`, `config.toml.example`
+     対象ファイル: `src/window_monitor.py`, `src/config.py`, `src/config_loader.py`, `config.toml.example`
 
-     実行内容: `src/window_monitor.py`の`is_github_site`または関連するウィンドウタイトル判定ロジックを分析し、GitHubのPull RequestsやCodeページが適切に認識されない原因となるパターンを特定してください。特に、`config.toml.example`の`github`カテゴリにおける現行設定と実際のウィンドウタイトル例（例: "Pull requests", "Code")を比較し、検出漏れの原因を特定してください。
+     実行内容: `PR #74` で追加された `debug_screensaver_detection` オプションがどのように機能するかを分析してください。具体的には、`src/window_monitor.py` 内のスクリーンセーバー検出ロジックとデバッグログ出力箇所を確認し、検出失敗時にどのような情報がログに出力されるか（または出力されるべきか）を特定してください。また、`config.toml.example` に `debug_screensaver_detection = true` を追加する変更案を提示してください。
 
-     確認事項: 既存のウィンドウ監視ロジックや`src/config.py`で定義されている設定項目との整合性を確認してください。また、GitHub以外のサイトへの誤認識が発生しないかも考慮に入れてください。
+     確認事項: `PR #74` (コミット `1e3a0a4`) の変更内容を確認し、既存のスクリーンセーバー検出ロジックと `debug_screensaver_detection` の整合性、および `src/config_loader.py` で正しく設定が読み込まれることを確認してください。
 
-     期待する出力: 特定された問題点と、改善のための具体的な提案（正規表現の追加やロジック変更案）をmarkdown形式で出力してください。
-     ```
-
-2. [Issue #11](../issue-notes/11.md): 設定ファイルのバリデーションとエラーハンドリングの強化
-   - 最初の小さな一歩: `src/config_validator.py` および `src/config_loader.py` をレビューし、現在のバリデーションロジックとエラー処理の現状を把握する。
-   - Agent実行プロンプト:
-     ```
-     対象ファイル: `src/config_loader.py`, `src/config_validator.py`, `src/config.py`
-
-     実行内容: 既存の設定ファイル読み込みおよびバリデーションロジックを分析し、特に無効な設定値や欠落した必須項目に対するエラーハンドリングが適切に行われているか評価してください。最近`config.toml.example`で導入された新たな設定構造（例: `global`, `window_patterns`の分離）がバリデーションに与える影響も分析に含めてください。
-
-     確認事項: 設定ファイルのスキーマ変更が他のモジュールに与える影響、および既存の設定例（`examples/`ディレクトリ）との整合性を確認してください。ユーザーにとって分かりやすいエラーメッセージが提供されているかどうかも考慮してください。
-
-     期待する出力: 現在のバリデーションの課題点、およびエラーメッセージの改善、またはバリデーションルールの追加に関する具体的な提案をmarkdown形式で出力してください。
+     期待する出力: `src/window_monitor.py` のスクリーンセーバー検出関連コードと、`debug_screensaver_detection` を有効にした際の期待されるデバッグログの内容に関する分析結果をMarkdownで出力してください。また、`config.toml.example` に `debug_screensaver_detection = true` を追記する変更案を提示してください。
      ```
 
-3. [Issue #4](../issue-notes/4.md): ドキュメントと設定例の一貫性向上と最新化
-   - 最初の小さな一歩: `README.md`, `README.ja.md`、そして`examples/`ディレクトリ内の設定例を比較し、内容の不整合や古い情報がないか確認する。
-   - Agent実行プロンプト:
+2. [Issue #26](../issue-notes/26.md) アプリケーションのドッグフーディングを開始する
+   - 最初の小さな一歩: 現在のプロジェクトをローカルにクローンし、`README.md`または`README.ja.md`に記載されている手順に従ってアプリケーションをセットアップし、基本的なウィンドウ監視とスコアリング機能を数時間試用する。
+   - Agent実行プロンプ:
      ```
-     対象ファイル: `README.md`, `README.ja.md`, `examples/`ディレクトリ内の全`.toml`ファイル
+     対象ファイル: `README.md`, `README.ja.md`, `config.toml.example`, `examples/example1_productivity.toml`
 
-     実行内容: 以下の点について対象ファイルを分析してください：
-     1) 各READMEが最新の設定オプション（特に`config.toml.example`で導入された新しい構造）を適切に反映しているか。
-     2) `examples/`内の設定例がREADMEで説明されている内容と完全に一致し、最新のアプリケーション動作を反映しているか。
-     3) 日本語と英語のドキュメント間で内容の一貫性が保たれており、自動翻訳プロセスで問題が発生していないか。
+     実行内容: `README.md`または`README.ja.md`に記載されているアプリケーションのセットアップ手順と基本的な使用方法を分析してください。その上で、ユーザーが初めてドッグフーディングを行う際に、どのような設定ファイル（`config.toml.example`や`examples/`のファイルを参考に）を利用し、どのようなシナリオ（例：特定の作業時間の計測、休憩の管理など）でアプリケーションを試すべきかの計画を策定してください。
 
-     確認事項: 自動翻訳ワークフロー（`.github/workflows/call-translate-readme.yml`）の挙動、および`src/config.py`で定義されているデフォルト設定やバリデーションルールとの整合性を確認してください。
+     確認事項: アプリケーションの実行環境（Pythonバージョン、OS）と、`README`に記載されたセットアップ手順に不足がないかを確認してください。特に、`config.toml.example`や`examples/`の設定ファイルが、初心者が理解しやすいように構成されているかを確認してください。
 
-     期待する出力: ドキュメントと設定例における不整合や改善が必要な箇所を具体的に指摘し、修正案をmarkdown形式で出力してください。
+     期待する出力: ドッグフーディングを開始するための具体的なセットアップ手順と、最初の数日間の使用計画（どの設定ファイルを基にするか、何を監視し、どのような点を意識して使用するか）をMarkdown形式で記述してください。また、その過程で発見された設定ファイルの改善点があれば提案してください。
+     ```
+
+3. [Issue #6](../issue-notes/6.md) GitHubサイトのウィンドウタイトル認識漏れを調査する
+   - 最初の小さな一歩: 複数のGitHubページ（例: Pull requests, Code, Issues）をブラウザで開いた際の正確なウィンドウタイトルを特定し、それらのタイトルが現在の `config.toml.example` 内の `window_patterns` でどのようにマッチングされるか、またはされないかを手動で確認する。
+   - Agent実行プロンプ:
+     ```
+     対象ファイル: `src/window_monitor.py`, `src/config.py`, `config.toml.example`
+
+     実行内容: GitHubのPull Requestページ（例: `https://github.com/cat2151/cat-window-watcher/pull/XX`）とCodeページ、Issuesページをブラウザで開いた際の典型的なウィンドウタイトルを複数想定してください。これらの想定されるウィンドウタイトルが、`src/window_monitor.py` でどのように取得され、`src/config.py` の `window_patterns` （特に`config.toml.example`のGitHub関連設定）でどのようにマッチングされるか（またはされないか）を分析してください。
+
+     確認事項: `config.toml.example` 内の現在のGitHub関連 `window_patterns` 設定を確認し、その意図を理解してください。また、ブラウザの種類やOSによってウィンドウタイトルの形式が異なる可能性も考慮に入れてください。
+
+     期待する出力: 想定されるGitHubページのウィンドウタイトルの具体的な例（複数パターン）と、それらのタイトルが現在の `window_patterns` でどのように評価されるかの詳細な分析結果をMarkdownで出力してください。さらに、認識漏れを改善するための `config.toml.example` 内の `window_patterns` の修正案を提示してください。
+     ```
 
 ---
-Generated at: 2026-01-14 07:06:30 JST
+Generated at: 2026-01-15 07:06:17 JST
