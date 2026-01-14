@@ -9,8 +9,11 @@ class WindowMonitor:
     """Monitor active window titles across different platforms."""
 
     @staticmethod
-    def is_screensaver_active():
+    def is_screensaver_active(debug=False):
         """Check if screensaver is currently active.
+
+        Args:
+            debug: If True, print debug information about screensaver detection
 
         Returns:
             bool: True if screensaver is active, False otherwise
@@ -19,14 +22,21 @@ class WindowMonitor:
 
         try:
             if system == "Linux":
-                return WindowMonitor._is_screensaver_active_linux()
+                result = WindowMonitor._is_screensaver_active_linux()
             elif system == "Darwin":  # macOS
-                return WindowMonitor._is_screensaver_active_macos()
+                result = WindowMonitor._is_screensaver_active_macos()
             elif system == "Windows":
-                return WindowMonitor._is_screensaver_active_windows()
+                result = WindowMonitor._is_screensaver_active_windows(debug=debug)
             else:
-                return False
+                result = False
+
+            if debug:
+                print(f"[DEBUG] Screensaver detection result: {result}")
+
+            return result
         except Exception as e:
+            if debug:
+                print(f"[DEBUG] Exception during screensaver detection: {e}")
             print(f"Warning: Failed to check screensaver status: {e}")
             return False
 
@@ -240,8 +250,11 @@ class WindowMonitor:
         return False
 
     @staticmethod
-    def _is_screensaver_active_windows():
+    def _is_screensaver_active_windows(debug=False):
         """Check if screensaver is active on Windows.
+
+        Args:
+            debug: If True, print debug information
 
         Returns:
             bool: True if screensaver is active, False otherwise
@@ -253,10 +266,21 @@ class WindowMonitor:
             hwnd = win32gui.GetForegroundWindow()
             class_name = win32gui.GetClassName(hwnd)
 
+            if debug:
+                window_title = win32gui.GetWindowText(hwnd)
+                print("[DEBUG] Windows screensaver check (win32gui):")
+                print(f"[DEBUG]   - Window handle: {hwnd}")
+                print(f"[DEBUG]   - Window class name: '{class_name}'")
+                print(f"[DEBUG]   - Window title: '{window_title}'")
+
             # Windows screensaver class name is "WindowsScreenSaverClass"
             if "screensaver" in class_name.lower():
+                if debug:
+                    print("[DEBUG]   - Screensaver detected via class name")
                 return True
         except ImportError:
+            if debug:
+                print("[DEBUG] Windows screensaver check: win32gui not available, trying PowerShell")
             # Fallback: try using PowerShell
             try:
                 # PowerShell script to check if screensaver is running using SystemParametersInfo API
@@ -276,12 +300,24 @@ class WindowMonitor:
                     text=True,
                     timeout=2,
                 )
+
+                if debug:
+                    print(
+                        f"[DEBUG] PowerShell result: returncode={result.returncode}, stdout='{result.stdout.strip()}'"
+                    )
+
                 if result.returncode == 0 and result.stdout.strip() == "1":
+                    if debug:
+                        print("[DEBUG]   - Screensaver detected via PowerShell")
                     return True
-            except (FileNotFoundError, subprocess.TimeoutExpired):
+            except (FileNotFoundError, subprocess.TimeoutExpired) as e:
+                if debug:
+                    print(f"[DEBUG] PowerShell check failed: {e}")
                 # PowerShell is unavailable or too slow; fall back to default False
                 pass
-        except Exception:
+        except Exception as e:
+            if debug:
+                print(f"[DEBUG] Unexpected error in Windows screensaver detection: {e}")
             # Any other unexpected error should not crash the application
             pass
 
