@@ -1960,6 +1960,130 @@ description = "GitHub"
         self.assertTrue(config.get_verbose())
 
 
+class TestDebugScreensaverDetectionConfig(unittest.TestCase):
+    """Test cases for debug_screensaver_detection configuration."""
+
+    def setUp(self):
+        """Set up test fixtures."""
+        self.temp_dir = tempfile.mkdtemp()
+        self.config_path = Path(self.temp_dir) / "test_config.toml"
+
+    def tearDown(self):
+        """Clean up test fixtures."""
+        import shutil
+
+        if hasattr(self, "temp_dir") and Path(self.temp_dir).exists():
+            shutil.rmtree(self.temp_dir)
+
+    def test_debug_screensaver_detection_default(self):
+        """Test debug_screensaver_detection defaults to False when not specified."""
+        config_content = """
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path), verbose=False)
+        self.assertFalse(config.get_debug_screensaver_detection())
+
+    def test_debug_screensaver_detection_true(self):
+        """Test debug_screensaver_detection set to true."""
+        config_content = """
+debug_screensaver_detection = true
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path), verbose=False)
+        self.assertTrue(config.get_debug_screensaver_detection())
+
+    def test_debug_screensaver_detection_false(self):
+        """Test debug_screensaver_detection explicitly set to false."""
+        config_content = """
+debug_screensaver_detection = false
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        config = Config(str(self.config_path), verbose=False)
+        self.assertFalse(config.get_debug_screensaver_detection())
+
+    def test_debug_screensaver_detection_invalid_string(self):
+        """Test debug_screensaver_detection with string value raises SystemExit."""
+        config_content = """
+debug_screensaver_detection = "true"
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        with self.assertRaises(SystemExit):
+            Config(str(self.config_path), verbose=False)
+
+    def test_debug_screensaver_detection_invalid_integer(self):
+        """Test debug_screensaver_detection with integer value raises SystemExit."""
+        config_content = """
+debug_screensaver_detection = 1
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+
+        with self.assertRaises(SystemExit):
+            Config(str(self.config_path), verbose=False)
+
+    def test_debug_screensaver_detection_reloaded_on_config_change(self):
+        """Test that debug_screensaver_detection setting is reloaded when config file changes."""
+        config_content = """
+debug_screensaver_detection = false
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(config_content)
+        config = Config(str(self.config_path), verbose=False)
+
+        # Verify initial config
+        self.assertFalse(config.get_debug_screensaver_detection())
+
+        # Modify the file to change debug_screensaver_detection
+        time.sleep(0.01)  # Ensure timestamp changes
+        new_content = """
+debug_screensaver_detection = true
+
+[[window_patterns]]
+regex = "github"
+score = 10
+description = "GitHub"
+"""
+        self.config_path.write_text(new_content)
+
+        # Reload configuration
+        reloaded = config.reload_if_modified()
+        self.assertTrue(reloaded)
+
+        # Verify debug_screensaver_detection setting was updated
+        self.assertTrue(config.get_debug_screensaver_detection())
+
+
 class TestDefaultTransparencyConfig(unittest.TestCase):
     """Test cases for default_transparency configuration settings."""
 

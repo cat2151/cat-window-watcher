@@ -130,7 +130,16 @@ class ScoreDisplay:
         window_title = self.window_monitor.get_active_window_title()
 
         # Check if screensaver is active
-        is_screensaver = self.window_monitor.is_screensaver_active()
+        debug_screensaver = self.config.get_debug_screensaver_detection()
+        if debug_screensaver:
+            print("=" * 60)
+            print("[DEBUG] Screensaver detection check:")
+            print(f"[DEBUG]   - Current window title: '{window_title}'")
+
+        is_screensaver = self.window_monitor.is_screensaver_active(debug=debug_screensaver)
+
+        if debug_screensaver:
+            print("=" * 60)
 
         # Store previous window title before updating to current
         # This is used for clipboard operations (CTRL+C)

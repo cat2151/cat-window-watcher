@@ -5,6 +5,13 @@
 # Set to true to enable detailed output, false to disable (default: false)
 verbose = false
 
+# Debug screensaver detection - print detailed information about screensaver detection
+# When enabled, prints window title and all screensaver detection information every time
+# the screensaver detection logic runs. This helps diagnose issues with screensaver
+# detection, especially on Windows where the screensaver may not be recognized correctly.
+# Set to true to enable debug output, false to disable (default: false)
+debug_screensaver_detection = false
+
 # Default score applied when no window pattern matches
 # This helps detect configuration errors - if patterns are misconfigured,
 # you'll see this score being applied repeatedly

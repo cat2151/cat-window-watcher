@@ -82,6 +82,11 @@ class ConfigLoader:
         self.validator.validate_boolean(verbose, "verbose")
         settings["verbose"] = verbose
 
+        # Debug screensaver detection
+        debug_screensaver_detection = config_data.get("debug_screensaver_detection", False)
+        self.validator.validate_boolean(debug_screensaver_detection, "debug_screensaver_detection")
+        settings["debug_screensaver_detection"] = debug_screensaver_detection
+
         # Default score
         default_score = config_data.get("default_score", -1)
         self.validator.validate_integer(default_score, "default_score")

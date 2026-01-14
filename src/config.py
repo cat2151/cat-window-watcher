@@ -37,6 +37,7 @@ class Config:
 
         # Initialize default values
         self.verbose = False
+        self.debug_screensaver_detection = False
         self.window_patterns = []
         self.default_score = -1
         self.apply_default_score_mode = True
@@ -76,6 +77,7 @@ class Config:
 
         # Update instance attributes with loaded settings
         self.verbose = settings["verbose"]
+        self.debug_screensaver_detection = settings["debug_screensaver_detection"]
         self.default_score = settings["default_score"]
         self.apply_default_score_mode = settings["apply_default_score_mode"]
         self.self_window_score = settings["self_window_score"]
@@ -101,7 +103,7 @@ class Config:
         # Print configuration values to console if verbose mode is enabled
         if self.verbose:
             self.print_config()
-        
+
         # Print success message if requested
         if print_success:
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -304,6 +306,14 @@ class Config:
         """
         return self.verbose
 
+    def get_debug_screensaver_detection(self):
+        """Get debug_screensaver_detection setting.
+
+        Returns:
+            bool: True if screensaver detection debug mode is enabled, False otherwise
+        """
+        return self.debug_screensaver_detection
+
     def print_config(self, context: str = ""):
         """Print all configuration values to console.
 
@@ -320,6 +330,10 @@ class Config:
         print(header)
         print("=" * 60)
         print(f"設定ファイル (Config file): {self.config_path}")
+        print()
+        print("--- デバッグ設定 (Debug Settings) ---")
+        print(f"verbose: {self.verbose}")
+        print(f"debug_screensaver_detection: {self.debug_screensaver_detection}")
         print()
         print("--- スコア設定 (Score Settings) ---")
         print(f"default_score: {self.default_score}")
