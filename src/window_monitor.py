@@ -278,18 +278,19 @@ class WindowMonitor:
                 try:
                     _, pid = win32process.GetWindowThreadProcessId(hwnd)
                     print(f"[DEBUG]   - Process ID: {pid}")
-                    
+
                     # Try to get process name and executable path
                     try:
                         import psutil
+
                         process = psutil.Process(pid)
                         process_name = process.name()
                         process_exe = process.exe()
                         print(f"[DEBUG]   - Process name: {process_name}")
                         print(f"[DEBUG]   - Process executable: {process_exe}")
-                        
+
                         # Check if it's a screensaver executable (.scr file)
-                        if process_exe.lower().endswith('.scr'):
+                        if process_exe.lower().endswith(".scr"):
                             print("[DEBUG]   - Process is a .scr file (screensaver executable)")
                     except ImportError:
                         print("[DEBUG]   - psutil not available for detailed process info")
@@ -309,13 +310,14 @@ class WindowMonitor:
             # This catches screensavers that don't use the standard class name
             try:
                 _, pid = win32process.GetWindowThreadProcessId(hwnd)
-                
+
                 # Try using psutil if available
                 try:
                     import psutil
+
                     process = psutil.Process(pid)
                     process_exe = process.exe()
-                    if process_exe.lower().endswith('.scr'):
+                    if process_exe.lower().endswith(".scr"):
                         if debug:
                             print("[DEBUG]   - Screensaver detected via .scr process")
                         return True
