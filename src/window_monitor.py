@@ -319,6 +319,9 @@ class WindowMonitor:
                         # Check if it's a screensaver executable (.scr file)
                         if process_exe.lower().endswith(".scr"):
                             print("[DEBUG]   - Process is a .scr file (screensaver executable)")
+                            # Specifically identify scrnsave.scr (Blank screensaver)
+                            if "scrnsave.scr" in process_exe.lower():
+                                print("[DEBUG]   - Detected: Blank screensaver (scrnsave.scr)")
                     else:
                         print("[DEBUG]   - psutil not available for detailed process info")
                 else:
@@ -336,6 +339,13 @@ class WindowMonitor:
             if process_exe is not None and process_exe.lower().endswith(".scr"):
                 if debug:
                     print("[DEBUG]   - Screensaver detected via .scr process")
+                return True
+
+            # Method 3: Specifically check for scrnsave.scr (Blank screensaver)
+            # This provides explicit detection for Windows' simplest screensaver
+            if process_exe is not None and "scrnsave.scr" in process_exe.lower():
+                if debug:
+                    print("[DEBUG]   - Screensaver detected via scrnsave.scr (Blank screensaver)")
                 return True
         except ImportError:
             if debug:
