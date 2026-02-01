@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Window monitoring module for cat-window-watcher."""
 
+import os
 import platform
 import subprocess
 
@@ -250,6 +251,36 @@ class WindowMonitor:
         return False
 
     @staticmethod
+    def _get_windows_process_info(hwnd, win32process):
+        """Get process information for a Windows window handle.
+
+        Args:
+            hwnd: Window handle
+            win32process: win32process module
+
+        Returns:
+            tuple: (process_id, process_executable_path) or (None, None) if unavailable
+        """
+        try:
+            _, pid = win32process.GetWindowThreadProcessId(hwnd)
+
+            # Try using psutil if available
+            try:
+                import psutil
+
+                process = psutil.Process(pid)
+                process_exe = process.exe()
+                return (pid, process_exe)
+            except ImportError:
+                # psutil not available
+                return (pid, None)
+            except Exception:
+                # Could not get process details
+                return (pid, None)
+        except Exception:
+            return (None, None)
+
+    @staticmethod
     def _is_screensaver_active_windows(debug=False):
         """Check if screensaver is active on Windows.
 
@@ -261,10 +292,14 @@ class WindowMonitor:
         """
         try:
             import win32gui
+            import win32process
 
             # Get the foreground window class name
             hwnd = win32gui.GetForegroundWindow()
             class_name = win32gui.GetClassName(hwnd)
+
+            # Get process information
+            pid, process_exe = WindowMonitor._get_windows_process_info(hwnd, win32process)
 
             if debug:
                 window_title = win32gui.GetWindowText(hwnd)
@@ -273,10 +308,37 @@ class WindowMonitor:
                 print(f"[DEBUG]   - Window class name: '{class_name}'")
                 print(f"[DEBUG]   - Window title: '{window_title}'")
 
-            # Windows screensaver class name is "WindowsScreenSaverClass"
+                if pid is not None:
+                    print(f"[DEBUG]   - Process ID: {pid}")
+
+                    if process_exe is not None:
+                        process_name = os.path.basename(process_exe)
+                        print(f"[DEBUG]   - Process name: {process_name}")
+                        print(f"[DEBUG]   - Process executable: {process_exe}")
+
+                        # Check if it's a screensaver executable (.scr file)
+                        if process_exe.lower().endswith(".scr"):
+                            print("[DEBUG]   - Process is a .scr file (screensaver executable)")
+                            # Specifically identify scrnsave.scr (Blank screensaver)
+                            if "scrnsave.scr" in process_exe.lower():
+                                print("[DEBUG]   - Detected: Blank screensaver (scrnsave.scr)")
+                    else:
+                        print("[DEBUG]   - psutil not available for detailed process info")
+                else:
+                    print("[DEBUG]   - Could not get process information")
+
+            # Method 1: Check if window class name contains "screensaver"
+            # Windows screensaver class name is typically "WindowsScreenSaverClass"
             if "screensaver" in class_name.lower():
                 if debug:
                     print("[DEBUG]   - Screensaver detected via class name")
+                return True
+
+            # Method 2: Check if the foreground process is a screensaver executable (.scr)
+            # This catches all screensavers including scrnsave.scr (Blank screensaver)
+            if process_exe is not None and process_exe.lower().endswith(".scr"):
+                if debug:
+                    print("[DEBUG]   - Screensaver detected via .scr process")
                 return True
         except ImportError:
             if debug:

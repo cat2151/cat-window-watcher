@@ -227,13 +227,16 @@ class TestScreensaverDetection(unittest.TestCase):
     @patch("platform.system", return_value="Windows")
     def test_windows_screensaver_detection_with_win32gui_active(self, mock_system):
         """Test Windows screensaver detection with win32gui when screensaver is active."""
-        # Mock win32gui module
-        with patch.dict("sys.modules", {"win32gui": MagicMock()}):
+        # Mock win32gui and win32process modules
+        with patch.dict("sys.modules", {"win32gui": MagicMock(), "win32process": MagicMock()}):
             import sys
 
             mock_win32gui = sys.modules["win32gui"]
             mock_win32gui.GetForegroundWindow.return_value = 12345
             mock_win32gui.GetClassName.return_value = "WindowsScreenSaverClass"
+
+            mock_win32process = sys.modules["win32process"]
+            mock_win32process.GetWindowThreadProcessId.return_value = (1, 9999)
 
             result = WindowMonitor.is_screensaver_active()
             self.assertTrue(result)
@@ -241,13 +244,16 @@ class TestScreensaverDetection(unittest.TestCase):
     @patch("platform.system", return_value="Windows")
     def test_windows_screensaver_detection_with_win32gui_inactive(self, mock_system):
         """Test Windows screensaver detection with win32gui when screensaver is inactive."""
-        # Mock win32gui module
-        with patch.dict("sys.modules", {"win32gui": MagicMock()}):
+        # Mock win32gui and win32process modules
+        with patch.dict("sys.modules", {"win32gui": MagicMock(), "win32process": MagicMock()}):
             import sys
 
             mock_win32gui = sys.modules["win32gui"]
             mock_win32gui.GetForegroundWindow.return_value = 12345
             mock_win32gui.GetClassName.return_value = "Chrome_WidgetWin_1"
+
+            mock_win32process = sys.modules["win32process"]
+            mock_win32process.GetWindowThreadProcessId.return_value = (1, 9999)
 
             result = WindowMonitor.is_screensaver_active()
             self.assertFalse(result)
@@ -279,6 +285,160 @@ class TestScreensaverDetection(unittest.TestCase):
         # we just test that it returns False and doesn't crash
         result = WindowMonitor.is_screensaver_active()
         self.assertIsInstance(result, bool)
+
+    @patch("platform.system", return_value="Windows")
+    def test_windows_screensaver_detection_via_scr_process(self, mock_system):
+        """Test Windows screensaver detection via .scr process name."""
+        # Mock win32gui and win32process modules
+        with patch.dict("sys.modules", {"win32gui": MagicMock(), "win32process": MagicMock(), "psutil": MagicMock()}):
+            import sys
+
+            # Setup win32gui mock
+            mock_win32gui = sys.modules["win32gui"]
+            mock_win32gui.GetForegroundWindow.return_value = 12345
+            mock_win32gui.GetClassName.return_value = "SomeCustomClass"  # Not screensaver class
+            mock_win32gui.GetWindowText.return_value = ""
+
+            # Setup win32process mock
+            mock_win32process = sys.modules["win32process"]
+            mock_win32process.GetWindowThreadProcessId.return_value = (1, 9999)
+
+            # Setup psutil mock
+            mock_psutil = sys.modules["psutil"]
+            mock_process = MagicMock()
+            mock_process.exe.return_value = r"C:\Windows\System32\Bubbles.scr"
+            mock_psutil.Process.return_value = mock_process
+
+            result = WindowMonitor.is_screensaver_active()
+            self.assertTrue(result)
+
+    @patch("platform.system", return_value="Windows")
+    def test_windows_screensaver_detection_non_scr_process(self, mock_system):
+        """Test Windows screensaver detection with non-.scr process."""
+        # Mock win32gui and win32process modules
+        with patch.dict("sys.modules", {"win32gui": MagicMock(), "win32process": MagicMock(), "psutil": MagicMock()}):
+            import sys
+
+            # Setup win32gui mock
+            mock_win32gui = sys.modules["win32gui"]
+            mock_win32gui.GetForegroundWindow.return_value = 12345
+            mock_win32gui.GetClassName.return_value = "Chrome_WidgetWin_1"
+            mock_win32gui.GetWindowText.return_value = "Google Chrome"
+
+            # Setup win32process mock
+            mock_win32process = sys.modules["win32process"]
+            mock_win32process.GetWindowThreadProcessId.return_value = (1, 9999)
+
+            # Setup psutil mock
+            mock_psutil = sys.modules["psutil"]
+            mock_process = MagicMock()
+            mock_process.exe.return_value = r"C:\Program Files\Google\Chrome\chrome.exe"
+            mock_psutil.Process.return_value = mock_process
+
+            result = WindowMonitor.is_screensaver_active()
+            self.assertFalse(result)
+
+    @patch("platform.system", return_value="Windows")
+    def test_windows_screensaver_detection_without_psutil(self, mock_system):
+        """Test Windows screensaver detection when psutil is not available."""
+        # Mock only win32gui and win32process, psutil not available
+        with patch.dict("sys.modules", {"win32gui": MagicMock(), "win32process": MagicMock()}):
+            import sys
+
+            # Setup win32gui mock
+            mock_win32gui = sys.modules["win32gui"]
+            mock_win32gui.GetForegroundWindow.return_value = 12345
+            mock_win32gui.GetClassName.return_value = "SomeCustomClass"
+            mock_win32gui.GetWindowText.return_value = ""
+
+            # Setup win32process mock
+            mock_win32process = sys.modules["win32process"]
+            mock_win32process.GetWindowThreadProcessId.return_value = (1, 9999)
+
+            # No psutil available - should not crash
+            result = WindowMonitor.is_screensaver_active()
+            self.assertIsInstance(result, bool)
+
+    @patch("platform.system", return_value="Windows")
+    def test_windows_screensaver_detection_scr_with_class_name(self, mock_system):
+        """Test Windows screensaver detection with both class name and .scr process."""
+        # Mock win32gui and win32process modules
+        with patch.dict("sys.modules", {"win32gui": MagicMock(), "win32process": MagicMock(), "psutil": MagicMock()}):
+            import sys
+
+            # Setup win32gui mock - with screensaver class name
+            mock_win32gui = sys.modules["win32gui"]
+            mock_win32gui.GetForegroundWindow.return_value = 12345
+            mock_win32gui.GetClassName.return_value = "WindowsScreenSaverClass"
+            mock_win32gui.GetWindowText.return_value = ""
+
+            # Setup win32process mock
+            mock_win32process = sys.modules["win32process"]
+            mock_win32process.GetWindowThreadProcessId.return_value = (1, 9999)
+
+            # Setup psutil mock - also .scr file
+            mock_psutil = sys.modules["psutil"]
+            mock_process = MagicMock()
+            mock_process.exe.return_value = r"C:\Windows\System32\Mystify.scr"
+            mock_psutil.Process.return_value = mock_process
+
+            # Should detect via class name (first method)
+            result = WindowMonitor.is_screensaver_active()
+            self.assertTrue(result)
+
+    @patch("platform.system", return_value="Windows")
+    def test_windows_screensaver_detection_scrnsave_scr(self, mock_system):
+        """Test Windows screensaver detection for scrnsave.scr (Blank screensaver)."""
+        # Mock win32gui and win32process modules
+        with patch.dict("sys.modules", {"win32gui": MagicMock(), "win32process": MagicMock(), "psutil": MagicMock()}):
+            import sys
+
+            # Setup win32gui mock - not standard screensaver class
+            mock_win32gui = sys.modules["win32gui"]
+            mock_win32gui.GetForegroundWindow.return_value = 12345
+            mock_win32gui.GetClassName.return_value = "SomeOtherClass"
+            mock_win32gui.GetWindowText.return_value = ""
+
+            # Setup win32process mock
+            mock_win32process = sys.modules["win32process"]
+            mock_win32process.GetWindowThreadProcessId.return_value = (1, 9999)
+
+            # Setup psutil mock - scrnsave.scr (Blank screensaver)
+            mock_psutil = sys.modules["psutil"]
+            mock_process = MagicMock()
+            mock_process.exe.return_value = r"C:\Windows\System32\scrnsave.scr"
+            mock_psutil.Process.return_value = mock_process
+
+            # Should detect via scrnsave.scr specific check
+            result = WindowMonitor.is_screensaver_active()
+            self.assertTrue(result)
+
+    @patch("platform.system", return_value="Windows")
+    def test_windows_screensaver_detection_scrnsave_scr_with_class_name(self, mock_system):
+        """Test Windows screensaver detection for scrnsave.scr with standard class name."""
+        # Mock win32gui and win32process modules
+        with patch.dict("sys.modules", {"win32gui": MagicMock(), "win32process": MagicMock(), "psutil": MagicMock()}):
+            import sys
+
+            # Setup win32gui mock - with standard screensaver class
+            mock_win32gui = sys.modules["win32gui"]
+            mock_win32gui.GetForegroundWindow.return_value = 12345
+            mock_win32gui.GetClassName.return_value = "WindowsScreenSaverClass"
+            mock_win32gui.GetWindowText.return_value = ""
+
+            # Setup win32process mock
+            mock_win32process = sys.modules["win32process"]
+            mock_win32process.GetWindowThreadProcessId.return_value = (1, 9999)
+
+            # Setup psutil mock - scrnsave.scr (Blank screensaver)
+            mock_psutil = sys.modules["psutil"]
+            mock_process = MagicMock()
+            mock_process.exe.return_value = r"C:\Windows\System32\scrnsave.scr"
+            mock_psutil.Process.return_value = mock_process
+
+            # Should detect via class name (first method)
+            result = WindowMonitor.is_screensaver_active()
+            self.assertTrue(result)
 
 
 if __name__ == "__main__":
