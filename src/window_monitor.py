@@ -250,6 +250,36 @@ class WindowMonitor:
         return False
 
     @staticmethod
+    def _get_windows_process_info(hwnd, win32process):
+        """Get process information for a Windows window handle.
+
+        Args:
+            hwnd: Window handle
+            win32process: win32process module
+
+        Returns:
+            tuple: (process_id, process_executable_path) or (None, None) if unavailable
+        """
+        try:
+            _, pid = win32process.GetWindowThreadProcessId(hwnd)
+
+            # Try using psutil if available
+            try:
+                import psutil
+
+                process = psutil.Process(pid)
+                process_exe = process.exe()
+                return (pid, process_exe)
+            except ImportError:
+                # psutil not available
+                return (pid, None)
+            except Exception:
+                # Could not get process details
+                return (pid, None)
+        except Exception:
+            return (None, None)
+
+    @staticmethod
     def _is_screensaver_active_windows(debug=False):
         """Check if screensaver is active on Windows.
 
@@ -267,6 +297,9 @@ class WindowMonitor:
             hwnd = win32gui.GetForegroundWindow()
             class_name = win32gui.GetClassName(hwnd)
 
+            # Get process information
+            pid, process_exe = WindowMonitor._get_windows_process_info(hwnd, win32process)
+
             if debug:
                 window_title = win32gui.GetWindowText(hwnd)
                 print("[DEBUG] Windows screensaver check (win32gui):")
@@ -274,30 +307,23 @@ class WindowMonitor:
                 print(f"[DEBUG]   - Window class name: '{class_name}'")
                 print(f"[DEBUG]   - Window title: '{window_title}'")
 
-                # Get process information for better diagnosis
-                try:
-                    _, pid = win32process.GetWindowThreadProcessId(hwnd)
+                if pid is not None:
                     print(f"[DEBUG]   - Process ID: {pid}")
 
-                    # Try to get process name and executable path
-                    try:
-                        import psutil
+                    if process_exe is not None:
+                        import os
 
-                        process = psutil.Process(pid)
-                        process_name = process.name()
-                        process_exe = process.exe()
+                        process_name = os.path.basename(process_exe)
                         print(f"[DEBUG]   - Process name: {process_name}")
                         print(f"[DEBUG]   - Process executable: {process_exe}")
 
                         # Check if it's a screensaver executable (.scr file)
                         if process_exe.lower().endswith(".scr"):
                             print("[DEBUG]   - Process is a .scr file (screensaver executable)")
-                    except ImportError:
+                    else:
                         print("[DEBUG]   - psutil not available for detailed process info")
-                    except (Exception,) as e:
-                        print(f"[DEBUG]   - Could not get process details: {e}")
-                except Exception as e:
-                    print(f"[DEBUG]   - Could not get process information: {e}")
+                else:
+                    print("[DEBUG]   - Could not get process information")
 
             # Method 1: Check if window class name contains "screensaver"
             # Windows screensaver class name is typically "WindowsScreenSaverClass"
@@ -308,27 +334,10 @@ class WindowMonitor:
 
             # Method 2: Check if the foreground process is a screensaver executable (.scr)
             # This catches screensavers that don't use the standard class name
-            try:
-                _, pid = win32process.GetWindowThreadProcessId(hwnd)
-
-                # Try using psutil if available
-                try:
-                    import psutil
-
-                    process = psutil.Process(pid)
-                    process_exe = process.exe()
-                    if process_exe.lower().endswith(".scr"):
-                        if debug:
-                            print("[DEBUG]   - Screensaver detected via .scr process")
-                        return True
-                except ImportError:
-                    # psutil not available, skip this check
-                    if debug:
-                        print("[DEBUG]   - psutil not available for .scr detection")
-                except Exception:
-                    pass
-            except Exception:
-                pass
+            if process_exe is not None and process_exe.lower().endswith(".scr"):
+                if debug:
+                    print("[DEBUG]   - Screensaver detected via .scr process")
+                return True
         except ImportError:
             if debug:
                 print("[DEBUG] Windows screensaver check: win32gui not available, trying PowerShell")
