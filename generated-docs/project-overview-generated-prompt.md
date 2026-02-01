@@ -1,4 +1,4 @@
-Last updated: 2026-01-15
+Last updated: 2026-02-02
 
 
 # プロジェクト概要生成プロンプト（来訪者向け）
@@ -437,6 +437,7 @@ pip install pywin32
   📖 65.md
   📖 73.md
   📖 75.md
+  📖 77.md
   📖 8.md
   📖 9.md
 📄 pytest.ini
@@ -513,4 +514,4 @@ issue-notes/57.md
 
 
 ---
-Generated at: 2026-01-15 07:05:55 JST
+Generated at: 2026-02-02 07:06:09 JST
