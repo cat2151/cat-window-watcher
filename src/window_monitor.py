@@ -261,6 +261,7 @@ class WindowMonitor:
         """
         try:
             import win32gui
+            import win32process
 
             # Get the foreground window class name
             hwnd = win32gui.GetForegroundWindow()
@@ -273,11 +274,59 @@ class WindowMonitor:
                 print(f"[DEBUG]   - Window class name: '{class_name}'")
                 print(f"[DEBUG]   - Window title: '{window_title}'")
 
-            # Windows screensaver class name is "WindowsScreenSaverClass"
+                # Get process information for better diagnosis
+                try:
+                    _, pid = win32process.GetWindowThreadProcessId(hwnd)
+                    print(f"[DEBUG]   - Process ID: {pid}")
+                    
+                    # Try to get process name and executable path
+                    try:
+                        import psutil
+                        process = psutil.Process(pid)
+                        process_name = process.name()
+                        process_exe = process.exe()
+                        print(f"[DEBUG]   - Process name: {process_name}")
+                        print(f"[DEBUG]   - Process executable: {process_exe}")
+                        
+                        # Check if it's a screensaver executable (.scr file)
+                        if process_exe.lower().endswith('.scr'):
+                            print("[DEBUG]   - Process is a .scr file (screensaver executable)")
+                    except ImportError:
+                        print("[DEBUG]   - psutil not available for detailed process info")
+                    except (Exception,) as e:
+                        print(f"[DEBUG]   - Could not get process details: {e}")
+                except Exception as e:
+                    print(f"[DEBUG]   - Could not get process information: {e}")
+
+            # Method 1: Check if window class name contains "screensaver"
+            # Windows screensaver class name is typically "WindowsScreenSaverClass"
             if "screensaver" in class_name.lower():
                 if debug:
                     print("[DEBUG]   - Screensaver detected via class name")
                 return True
+
+            # Method 2: Check if the foreground process is a screensaver executable (.scr)
+            # This catches screensavers that don't use the standard class name
+            try:
+                _, pid = win32process.GetWindowThreadProcessId(hwnd)
+                
+                # Try using psutil if available
+                try:
+                    import psutil
+                    process = psutil.Process(pid)
+                    process_exe = process.exe()
+                    if process_exe.lower().endswith('.scr'):
+                        if debug:
+                            print("[DEBUG]   - Screensaver detected via .scr process")
+                        return True
+                except ImportError:
+                    # psutil not available, skip this check
+                    if debug:
+                        print("[DEBUG]   - psutil not available for .scr detection")
+                except Exception:
+                    pass
+            except Exception:
+                pass
         except ImportError:
             if debug:
                 print("[DEBUG] Windows screensaver check: win32gui not available, trying PowerShell")
