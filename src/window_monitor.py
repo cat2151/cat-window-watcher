@@ -335,17 +335,10 @@ class WindowMonitor:
                 return True
 
             # Method 2: Check if the foreground process is a screensaver executable (.scr)
-            # This catches screensavers that don't use the standard class name
+            # This catches all screensavers including scrnsave.scr (Blank screensaver)
             if process_exe is not None and process_exe.lower().endswith(".scr"):
                 if debug:
                     print("[DEBUG]   - Screensaver detected via .scr process")
-                return True
-
-            # Method 3: Specifically check for scrnsave.scr (Blank screensaver)
-            # This provides explicit detection for Windows' simplest screensaver
-            if process_exe is not None and "scrnsave.scr" in process_exe.lower():
-                if debug:
-                    print("[DEBUG]   - Screensaver detected via scrnsave.scr (Blank screensaver)")
                 return True
         except ImportError:
             if debug:
