@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Window monitoring module for cat-window-watcher."""
 
+import os
 import platform
 import subprocess
 
@@ -311,8 +312,6 @@ class WindowMonitor:
                     print(f"[DEBUG]   - Process ID: {pid}")
 
                     if process_exe is not None:
-                        import os
-
                         process_name = os.path.basename(process_exe)
                         print(f"[DEBUG]   - Process name: {process_name}")
                         print(f"[DEBUG]   - Process executable: {process_exe}")
