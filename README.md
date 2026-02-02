@@ -35,6 +35,16 @@ The cat is watching you!
 - **Configurable Score Values**: Set custom score increments/decrements for each pattern
 - **Cross-Platform Compatibility**: Works on Linux, macOS, and Windows
 - **Lightweight**: Checks window titles once per second, minimal resource usage
+- **Screensaver Detection**: Prevents score changes while screensaver is active
+
+### About Screensaver Detection
+
+This application detects when a screensaver is active and prevents score changes during that time.
+
+**Detection Method**: Treats windows with empty titles as screensavers.
+
+This practical and simple approach provides higher reliability than complex platform-specific implementations.
+Note that special applications without window titles may also be treated as screensavers.
 
 ## Look and Feel
 
