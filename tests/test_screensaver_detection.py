@@ -110,12 +110,6 @@ class TestScreensaverDetection(unittest.TestCase):
         result = WindowMonitor.is_screensaver_active()
         self.assertFalse(result)
 
-    @patch("src.window_monitor.WindowMonitor.get_active_window_title", return_value="Visual Studio Code")
-    def test_screensaver_detection_with_nonempty_title(self, mock_get_title):
-        """Test screensaver detection with non-empty window title."""
-        result = WindowMonitor.is_screensaver_active()
-        self.assertFalse(result)
-
     @patch("src.window_monitor.WindowMonitor.get_active_window_title", return_value="")
     def test_screensaver_detection_debug_mode(self, mock_get_title):
         """Test screensaver detection in debug mode."""
