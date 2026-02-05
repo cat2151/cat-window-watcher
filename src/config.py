@@ -58,6 +58,11 @@ class Config:
         self.default_transparency = 1.0
         self.window_x = None
         self.window_y = None
+        self.game_playing_detection = {
+            "enabled": False,
+            "process_names": [],
+            "check_interval_seconds": 60,
+        }
 
         # Load configuration and print initial success message
         self.load_config(print_success=True)
@@ -98,6 +103,7 @@ class Config:
         self.window_x = settings["window_x"]
         self.window_y = settings["window_y"]
         self.window_patterns = settings["window_patterns"]
+        self.game_playing_detection = settings["game_playing_detection"]
         self._last_modified = settings["_last_modified"]
 
         # Print configuration values to console if verbose mode is enabled
@@ -313,6 +319,17 @@ class Config:
             bool: True if screensaver detection debug mode is enabled, False otherwise
         """
         return self.debug_screensaver_detection
+
+    def get_game_playing_detection(self):
+        """Get game_playing_detection settings.
+
+        Returns:
+            dict: Game playing detection settings with keys:
+                  - enabled (bool): Whether game detection is enabled
+                  - process_names (list): List of process names to detect
+                  - check_interval_seconds (int): Check interval when game is playing
+        """
+        return self.game_playing_detection
 
     def print_config(self, context: str = ""):
         """Print all configuration values to console.

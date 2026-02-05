@@ -22,6 +22,73 @@ class TestWindowMonitor(unittest.TestCase):
         title = WindowMonitor.get_active_window_title()
         self.assertIsInstance(title, str)
 
+    def test_get_active_window_process_name_returns_string(self):
+        """Test that get_active_window_process_name returns a string."""
+        process_name = WindowMonitor.get_active_window_process_name()
+        self.assertIsInstance(process_name, str)
+
+    @patch("platform.system")
+    def test_process_name_unsupported_platform(self, mock_system):
+        """Test handling of unsupported platform for process name."""
+        mock_system.return_value = "Unknown"
+
+        # The exception is caught and returns empty string
+        process_name = WindowMonitor.get_active_window_process_name()
+        self.assertEqual(process_name, "")
+
+    @patch("subprocess.run")
+    @patch("platform.system")
+    def test_linux_process_name_success(self, mock_system, mock_run):
+        """Test Linux process name detection using xdotool and ps."""
+        mock_system.return_value = "Linux"
+
+        def run_side_effect(*args, **kwargs):
+            cmd = args[0]
+            result = MagicMock()
+            if "getactivewindow" in cmd:
+                result.stdout = "12345678\n"
+            elif "getwindowpid" in cmd:
+                result.stdout = "9999\n"
+            elif "ps" in cmd:
+                result.stdout = "firefox\n"
+            return result
+
+        mock_run.side_effect = run_side_effect
+        process_name = WindowMonitor.get_active_window_process_name()
+        self.assertEqual(process_name, "firefox")
+
+    @patch("subprocess.run")
+    @patch("platform.system")
+    def test_linux_process_name_failure(self, mock_system, mock_run):
+        """Test Linux process name detection when tools fail."""
+        mock_system.return_value = "Linux"
+        mock_run.side_effect = FileNotFoundError()
+
+        process_name = WindowMonitor.get_active_window_process_name()
+        self.assertEqual(process_name, "")
+
+    @patch("subprocess.run")
+    @patch("platform.system")
+    def test_macos_process_name_success(self, mock_system, mock_run):
+        """Test macOS process name detection using AppleScript."""
+        mock_system.return_value = "Darwin"
+        mock_result = MagicMock()
+        mock_result.stdout = "Safari\n"
+        mock_run.return_value = mock_result
+
+        process_name = WindowMonitor.get_active_window_process_name()
+        self.assertEqual(process_name, "Safari")
+
+    @patch("subprocess.run")
+    @patch("platform.system")
+    def test_macos_process_name_failure(self, mock_system, mock_run):
+        """Test macOS process name detection when AppleScript fails."""
+        mock_system.return_value = "Darwin"
+        mock_run.side_effect = Exception("AppleScript error")
+
+        process_name = WindowMonitor.get_active_window_process_name()
+        self.assertEqual(process_name, "")
+
     @patch("platform.system")
     def test_unsupported_platform(self, mock_system):
         """Test handling of unsupported platform."""

@@ -13,6 +13,10 @@ except ImportError:
     from window_behavior import WindowBehaviorManager
 
 
+# Conversion constant for time units
+SECONDS_TO_MILLISECONDS = 1000
+
+
 class ScoreDisplay:
     """Tkinter GUI for displaying score."""
 
@@ -29,6 +33,8 @@ class ScoreDisplay:
         self.window_monitor = window_monitor
         self.config = config
         self.update_interval = update_interval
+        self.default_update_interval = update_interval  # Store original interval
+        self.is_game_playing = False  # Track game playing state
 
         # Track previous score for color changes
         self._previous_score = score_tracker.get_score()
@@ -125,6 +131,31 @@ class ScoreDisplay:
 
             # Update always_on_top setting if it changed
             self.behavior_manager.apply_always_on_top()
+
+        # Check for game playing detection
+        game_detection = self.config.get_game_playing_detection()
+
+        if game_detection["enabled"] and game_detection["process_names"]:
+            # Get active process name only when we have processes to match against
+            process_name = self.window_monitor.get_active_window_process_name()
+
+            # Check if the current process matches any configured game process
+            is_game_playing_now = process_name in game_detection["process_names"]
+
+            # Handle transition into game playing mode
+            if is_game_playing_now and not self.is_game_playing:
+                # Entering game playing mode - switch to longer interval
+                self.is_game_playing = True
+                self.update_interval = game_detection["check_interval_seconds"] * SECONDS_TO_MILLISECONDS
+                print(
+                    f"Game detected ({process_name}), switching to {game_detection['check_interval_seconds']} second check interval"
+                )
+            # Handle transition out of game playing mode
+            elif not is_game_playing_now and self.is_game_playing:
+                # Exiting game playing mode - switch back to normal interval
+                self.is_game_playing = False
+                self.update_interval = self.default_update_interval
+                print(f"Game ended, switching back to {self.default_update_interval // 1000} second check interval")
 
         # Get current window title
         window_title = self.window_monitor.get_active_window_title()

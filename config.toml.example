@@ -109,6 +109,16 @@ flow_mode_fade_rate_percent_per_second = 20
 # window_x = 100
 # window_y = 100
 
+# Game playing detection - reduce check frequency when playing games
+# This feature is inspired by the fighting-game-button-challenge repository
+# When enabled and a matching game process is detected, the app will check
+# at a longer interval (e.g., 60 seconds instead of 1 second) until the game ends
+# This reduces resource usage and allows you to focus on gameplay without frequent checks
+[game_playing_detection]
+enabled = false  # Set to true to enable game detection
+process_names = ["StreetFighter6.exe", "SF6.exe"]  # List of game process names to detect
+check_interval_seconds = 60  # Check interval in seconds when game is detected (default: 60)
+
 # Window patterns define regex patterns to match window titles
 # and the score change when that window becomes active
 

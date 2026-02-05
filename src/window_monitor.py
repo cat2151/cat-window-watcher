@@ -152,3 +152,143 @@ class WindowMonitor:
                 return ""
         except Exception:
             return ""
+
+    @staticmethod
+    def get_active_window_process_name():
+        """Get the process name of the currently active window.
+
+        Returns:
+            str: Process name of active window, or empty string if unable to get
+
+        Raises:
+            NotImplementedError: If platform is not supported
+        """
+        system = platform.system()
+
+        try:
+            if system == "Linux":
+                return WindowMonitor._get_active_window_process_name_linux()
+            elif system == "Darwin":  # macOS
+                return WindowMonitor._get_active_window_process_name_macos()
+            elif system == "Windows":
+                return WindowMonitor._get_active_window_process_name_windows()
+            else:
+                raise NotImplementedError(f"Platform '{system}' is not supported")
+        except Exception as e:
+            print(f"Warning: Failed to get active window process name: {e}")
+            return ""
+
+    @staticmethod
+    def _get_active_window_process_name_linux():
+        """Get active window process name on Linux.
+
+        Returns:
+            str: Process name
+        """
+        try:
+            # Get window ID
+            result = subprocess.run(
+                ["xdotool", "getactivewindow"],
+                capture_output=True,
+                text=True,
+                check=True,
+                timeout=1,
+            )
+            window_id = result.stdout.strip()
+
+            # Get PID from window ID
+            result = subprocess.run(
+                ["xdotool", "getwindowpid", window_id],
+                capture_output=True,
+                text=True,
+                check=True,
+                timeout=1,
+            )
+            pid = result.stdout.strip()
+
+            # Get process name from PID
+            result = subprocess.run(
+                ["ps", "-p", pid, "-o", "comm="],
+                capture_output=True,
+                text=True,
+                check=True,
+                timeout=1,
+            )
+            return result.stdout.strip()
+        except Exception:
+            return ""
+
+    @staticmethod
+    def _get_active_window_process_name_macos():
+        """Get active window process name on macOS using AppleScript.
+
+        Returns:
+            str: Process name
+        """
+        try:
+            script = 'tell application "System Events" to get name of first application process whose frontmost is true'
+            result = subprocess.run(
+                ["osascript", "-e", script],
+                capture_output=True,
+                text=True,
+                check=True,
+                timeout=1,
+            )
+            return result.stdout.strip()
+        except Exception:
+            return ""
+
+    @staticmethod
+    def _get_active_window_process_name_windows():
+        """Get active window process name on Windows.
+
+        Returns:
+            str: Process name
+        """
+        try:
+            import psutil
+            import win32gui
+            import win32process
+
+            hwnd = win32gui.GetForegroundWindow()
+            _, pid = win32process.GetWindowThreadProcessId(hwnd)
+            process = psutil.Process(pid)
+            return process.name()
+        except ImportError:
+            # Fallback: try using PowerShell
+            # Use Windows API via Add-Type to get the foreground window process
+            try:
+                script = r"""$signature = @"
+using System;
+using System.Runtime.InteropServices;
+public static class NativeMethods {
+    [DllImport("user32.dll")]
+    public static extern IntPtr GetForegroundWindow();
+
+    [DllImport("user32.dll")]
+    public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+}
+"@
+
+Add-Type -TypeDefinition $signature -PassThru | Out-Null
+$hwnd = [NativeMethods]::GetForegroundWindow()
+if ($hwnd -ne [IntPtr]::Zero) {
+    $pid = 0
+    [NativeMethods]::GetWindowThreadProcessId($hwnd, [ref]$pid) | Out-Null
+    if ($pid -ne 0) {
+        (Get-Process -Id $pid).ProcessName
+    }
+}
+"""
+                result = subprocess.run(
+                    ["powershell", "-Command", script],
+                    capture_output=True,
+                    text=True,
+                    check=True,
+                    timeout=2,
+                )
+                return result.stdout.strip()
+            except Exception:
+                return ""
+        except Exception:
+            return ""
