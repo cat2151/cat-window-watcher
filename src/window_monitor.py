@@ -256,8 +256,16 @@ class WindowMonitor:
             return process.name()
         except ImportError:
             # Fallback: try using PowerShell
+            # Simplified script that gets foreground window process in steps
             try:
-                script = "(Get-Process | Where-Object {$_.MainWindowHandle -eq (Get-Process | Where-Object {$_.MainWindowHandle -ne 0} | Select-Object -First 1).MainWindowHandle}).ProcessName"
+                script = (
+                    "Add-Type -AssemblyName System.Windows.Forms; "
+                    "$hwnd = [System.Windows.Forms.Form]::ActiveForm; "
+                    "if ($hwnd) { "
+                    "    $pid = (Get-Process | Where-Object {$_.MainWindowHandle -eq $hwnd.Handle}).Id; "
+                    "    (Get-Process -Id $pid).ProcessName "
+                    "}"
+                )
                 result = subprocess.run(
                     ["powershell", "-Command", script],
                     capture_output=True,

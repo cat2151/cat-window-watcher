@@ -13,6 +13,10 @@ except ImportError:
     from window_behavior import WindowBehaviorManager
 
 
+# Conversion constant for time units
+SECONDS_TO_MILLISECONDS = 1000
+
+
 class ScoreDisplay:
     """Tkinter GUI for displaying score."""
 
@@ -142,7 +146,7 @@ class ScoreDisplay:
             if is_game_playing_now and not self.is_game_playing:
                 # Entering game playing mode - switch to longer interval
                 self.is_game_playing = True
-                self.update_interval = game_detection["check_interval_seconds"] * 1000  # Convert to milliseconds
+                self.update_interval = game_detection["check_interval_seconds"] * SECONDS_TO_MILLISECONDS
                 print(
                     f"Game detected ({process_name}), switching to {game_detection['check_interval_seconds']} second check interval"
                 )
