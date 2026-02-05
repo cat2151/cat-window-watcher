@@ -192,4 +192,22 @@ class ConfigLoader:
             )
         settings["window_patterns"] = window_patterns
 
+        # Game playing detection
+        game_playing_detection = config_data.get("game_playing_detection", {})
+        enabled = game_playing_detection.get("enabled", False)
+        self.validator.validate_boolean(enabled, "game_playing_detection.enabled")
+        process_names = game_playing_detection.get("process_names", [])
+        if not isinstance(process_names, list):
+            raise ValueError("game_playing_detection.process_names must be a list")
+        check_interval_seconds = game_playing_detection.get("check_interval_seconds", 60)
+        self.validator.validate_non_negative_integer(
+            check_interval_seconds, "game_playing_detection.check_interval_seconds"
+        )
+
+        settings["game_playing_detection"] = {
+            "enabled": enabled,
+            "process_names": process_names,
+            "check_interval_seconds": check_interval_seconds,
+        }
+
         return settings
