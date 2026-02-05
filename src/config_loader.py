@@ -199,10 +199,14 @@ class ConfigLoader:
         process_names = game_playing_detection.get("process_names", [])
         if not isinstance(process_names, list):
             raise ValueError("game_playing_detection.process_names must be a list")
+        if not all(isinstance(name, str) for name in process_names):
+            raise ValueError("game_playing_detection.process_names must be a list of strings")
         check_interval_seconds = game_playing_detection.get("check_interval_seconds", 60)
         self.validator.validate_non_negative_integer(
             check_interval_seconds, "game_playing_detection.check_interval_seconds"
         )
+        if check_interval_seconds <= 0:
+            raise ValueError("game_playing_detection.check_interval_seconds must be greater than 0")
 
         settings["game_playing_detection"] = {
             "enabled": enabled,

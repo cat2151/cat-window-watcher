@@ -135,8 +135,8 @@ class ScoreDisplay:
         # Check for game playing detection
         game_detection = self.config.get_game_playing_detection()
 
-        if game_detection["enabled"]:
-            # Get active process name
+        if game_detection["enabled"] and game_detection["process_names"]:
+            # Get active process name only when we have processes to match against
             process_name = self.window_monitor.get_active_window_process_name()
 
             # Check if the current process matches any configured game process

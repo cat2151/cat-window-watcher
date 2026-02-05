@@ -256,16 +256,30 @@ class WindowMonitor:
             return process.name()
         except ImportError:
             # Fallback: try using PowerShell
-            # Simplified script that gets foreground window process in steps
+            # Use Windows API via Add-Type to get the foreground window process
             try:
-                script = (
-                    "Add-Type -AssemblyName System.Windows.Forms; "
-                    "$hwnd = [System.Windows.Forms.Form]::ActiveForm; "
-                    "if ($hwnd) { "
-                    "    $pid = (Get-Process | Where-Object {$_.MainWindowHandle -eq $hwnd.Handle}).Id; "
-                    "    (Get-Process -Id $pid).ProcessName "
-                    "}"
-                )
+                script = r"""$signature = @"
+using System;
+using System.Runtime.InteropServices;
+public static class NativeMethods {
+    [DllImport("user32.dll")]
+    public static extern IntPtr GetForegroundWindow();
+
+    [DllImport("user32.dll")]
+    public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+}
+"@
+
+Add-Type -TypeDefinition $signature -PassThru | Out-Null
+$hwnd = [NativeMethods]::GetForegroundWindow()
+if ($hwnd -ne [IntPtr]::Zero) {
+    $pid = 0
+    [NativeMethods]::GetWindowThreadProcessId($hwnd, [ref]$pid) | Out-Null
+    if ($pid -ne 0) {
+        (Get-Process -Id $pid).ProcessName
+    }
+}
+"""
                 result = subprocess.run(
                     ["powershell", "-Command", script],
                     capture_output=True,

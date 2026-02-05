@@ -203,6 +203,56 @@ score = 1
         finally:
             Path(config_path).unlink()
 
+    def test_game_detection_zero_interval(self):
+        """Test that zero check_interval_seconds raises error."""
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".toml", delete=False) as f:
+            f.write(
+                """
+[game_playing_detection]
+enabled = true
+process_names = ["game.exe"]
+check_interval_seconds = 0
+
+[[window_patterns]]
+description = "Test"
+regex = "test"
+score = 1
+"""
+            )
+            f.flush()
+            config_path = f.name
+
+        try:
+            with self.assertRaises(SystemExit):
+                Config(config_path)
+        finally:
+            Path(config_path).unlink()
+
+    def test_game_detection_process_names_with_non_string(self):
+        """Test that process_names with non-string elements raises error."""
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".toml", delete=False) as f:
+            f.write(
+                """
+[game_playing_detection]
+enabled = true
+process_names = ["game.exe", 123, "another.exe"]
+check_interval_seconds = 60
+
+[[window_patterns]]
+description = "Test"
+regex = "test"
+score = 1
+"""
+            )
+            f.flush()
+            config_path = f.name
+
+        try:
+            with self.assertRaises(SystemExit):
+                Config(config_path)
+        finally:
+            Path(config_path).unlink()
+
 
 if __name__ == "__main__":
     unittest.main()
