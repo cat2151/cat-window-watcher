@@ -1,4 +1,4 @@
-Last updated: 2026-02-02
+Last updated: 2026-02-06
 
 # 開発状況生成プロンプト（開発者向け）
 
@@ -207,6 +207,7 @@ Last updated: 2026-02-02
 - README.md
 - _config.yml
 - config.toml.example
+- docs/game-detection-guide.md
 - examples/README.ja.md
 - examples/README.md
 - examples/example1_productivity.ja.toml
@@ -251,7 +252,9 @@ Last updated: 2026-02-02
 - issue-notes/73.md
 - issue-notes/75.md
 - issue-notes/77.md
+- issue-notes/78.md
 - issue-notes/8.md
+- issue-notes/80.md
 - issue-notes/9.md
 - pytest.ini
 - ruff.toml
@@ -271,6 +274,7 @@ Last updated: 2026-02-02
 - src/window_monitor.py
 - tests/test_config.py
 - tests/test_dummy.py
+- tests/test_game_detection.py
 - tests/test_gui.py
 - tests/test_score_colors.py
 - tests/test_score_tracker.py
@@ -278,21 +282,6 @@ Last updated: 2026-02-02
 - tests/test_window_monitor.py
 
 ## 現在のオープンIssues
-## [Issue #77](../issue-notes/77.md): （人力）スクリーンセーバー検知ができているか、検証する
-[issue-notes/77.md](https://github.com/cat2151/cat-window-watcher/blob/main/issue-notes/77.md)
-
-...
-ラベル: 
---- issue-notes/77.md の内容 ---
-
-```markdown
-# issue （人力）スクリーンセーバー検知ができているか、検証する #77
-[issues #77](https://github.com/cat2151/cat-window-watcher/issues/77)
-
-
-
-```
-
 ## [Issue #26](../issue-notes/26.md): ドッグフーディングする
 [issue-notes/26.md](https://github.com/cat2151/cat-window-watcher/blob/main/issue-notes/26.md)
 
@@ -377,18 +366,6 @@ has_recent_human_commit=false
 {% endraw %}
 ```
 
-### .github/actions-tmp/issue-notes/7.md
-```md
-{% raw %}
-# issue issue note生成できるかのtest用 #7
-[issues #7](https://github.com/cat2151/github-actions/issues/7)
-
-- 生成できた
-- closeとする
-
-{% endraw %}
-```
-
 ### issue-notes/6.md
 ```md
 {% raw %}
@@ -400,45 +377,39 @@ has_recent_human_commit=false
 {% endraw %}
 ```
 
-### issue-notes/77.md
-```md
-{% raw %}
-# issue （人力）スクリーンセーバー検知ができているか、検証する #77
-[issues #77](https://github.com/cat2151/cat-window-watcher/issues/77)
-
-
-
-{% endraw %}
-```
-
 ## 最近の変更（過去7日間）
 ### コミット履歴:
-143edd4 Add issue note for #77 [auto]
-314ee0e Merge pull request #76 from cat2151/copilot/investigate-screensaver-recognition-failure
-3227835 Remove redundant scrnsave.scr check (already covered by .scr detection)
-d9ddf3e Focus investigation on scrnsave.scr (Blank screensaver) detection
-7b091c7 Move os import to top of file following Python conventions
-35b5557 Refactor Windows process detection logic to eliminate code duplication
-1ed1209 Add comprehensive tests for .scr process detection and fix existing test mocks
-c1a8ccf Enhance Windows screensaver detection with process name check and improved debug output
-dd969da Initial plan
+9c272e8 Merge pull request #81 from cat2151/copilot/add-check-loop-for-street-fighter-6
+2cb5bb6 Address PR review comments: add validation, optimize checks, fix PowerShell, add tests
+c154ce7 Add comprehensive documentation for game detection feature
+56a934d Complete implementation - all tests passing and security check passed
+4a0700a Address code review comments - improve PowerShell script and add conversion constant
+e462421 Add game playing detection with 1-minute interval for SF6
+fb4094a Initial plan
+919f4ac Add issue note for #80 [auto]
+647ad4b Auto-translate README.ja.md to README.md [auto]
+dbc14c3 Merge pull request #79 from cat2151/copilot/implement-screensaver-detection-fix
 
 ### 変更されたファイル:
+README.ja.md
+README.md
 config.toml.example
+docs/game-detection-guide.md
 generated-docs/development-status-generated-prompt.md
 generated-docs/development-status.md
 generated-docs/project-overview-generated-prompt.md
 generated-docs/project-overview.md
-issue-notes/73.md
-issue-notes/75.md
 issue-notes/77.md
+issue-notes/78.md
+issue-notes/80.md
 src/config.py
 src/config_loader.py
 src/gui.py
 src/window_monitor.py
-tests/test_config.py
+tests/test_game_detection.py
 tests/test_screensaver_detection.py
+tests/test_window_monitor.py
 
 
 ---
-Generated at: 2026-02-02 07:06:09 JST
+Generated at: 2026-02-06 07:08:06 JST

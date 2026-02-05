@@ -1,4 +1,4 @@
-Last updated: 2026-02-02
+Last updated: 2026-02-06
 
 
 # プロジェクト概要生成プロンプト（来訪者向け）
@@ -98,6 +98,16 @@ The cat is watching you!
 - **設定可能なスコア値**: 各パターンに対してカスタムなスコア増減量を設定
 - **クロスプラットフォーム対応**: Linux、macOS、Windowsで動作
 - **軽量**: 1秒に1回ウィンドウタイトルをチェック、最小限のリソース使用量
+- **スクリーンセーバー検知**: スクリーンセーバー作動中はスコアを変更しない
+
+### スクリーンセーバー検知について
+
+このアプリケーションはスクリーンセーバーが作動中かどうかを検知し、作動中はスコアを変更しません。
+
+**検知方法**: ウィンドウタイトルが空文字列の場合、スクリーンセーバーとして扱います。
+
+この実用的でシンプルなアプローチにより、複雑なプラットフォーム固有の実装よりも高い信頼性を実現しています。
+ただし、ウィンドウタイトルを持たない特殊なアプリケーションもスクリーンセーバーとして扱われる可能性があることにご注意ください。
 
 ## 見た目
 
@@ -392,6 +402,8 @@ pip install pywin32
 📖 README.md
 📄 _config.yml
 📄 config.toml.example
+📁 docs/
+  📖 game-detection-guide.md
 📁 examples/
   📖 README.ja.md
   📖 README.md
@@ -438,7 +450,9 @@ pip install pywin32
   📖 73.md
   📖 75.md
   📖 77.md
+  📖 78.md
   📖 8.md
+  📖 80.md
   📖 9.md
 📄 pytest.ini
 📄 ruff.toml
@@ -460,6 +474,7 @@ pip install pywin32
 📁 tests/
   📄 test_config.py
   📄 test_dummy.py
+  📄 test_game_detection.py
   📄 test_gui.py
   📄 test_score_colors.py
   📄 test_score_tracker.py
@@ -476,6 +491,7 @@ pip install pywin32
 .vscode/settings.json
 README.ja.md
 README.md
+docs/game-detection-guide.md
 examples/README.ja.md
 examples/README.md
 issue-notes/11.md
@@ -502,7 +518,6 @@ issue-notes/48.md
 issue-notes/50.md
 issue-notes/53.md
 issue-notes/55.md
-issue-notes/57.md
 
 上記の情報を基に、プロンプトで指定された形式でプロジェクト概要を生成してください。
 特に以下の点を重視してください：
@@ -514,4 +529,4 @@ issue-notes/57.md
 
 
 ---
-Generated at: 2026-02-02 07:06:09 JST
+Generated at: 2026-02-06 07:08:05 JST

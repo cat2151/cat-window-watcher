@@ -1,21 +1,31 @@
-Last updated: 2026-02-02
+Last updated: 2026-02-06
 
 # Project Overview
 
 ## プロジェクト概要
-- ユーザーのアクティブなウィンドウを監視し、作業内容に応じてリアルタイムでスコアを増減させるツールです。
-- 生産的な活動に報奨を与え、非生産的な活動を抑制するように設定することで、集中力の向上をサポートします。
-- シンプルなGUI、正規表現ベースの柔軟な設定、クロスプラットフォーム対応を特徴とする軽量なアプリケーションです。
+- ユーザーのアクティブなウィンドウを監視し、作業内容に基づいて生産性スコアを調整するツールです。
+- GitHubでの作業でスコアが上がり、SNS閲覧で下がるなど、正規表現で定義可能なルールで動作します。
+- シンプルなTkinter GUIでスコアと現在の活動を表示し、クロスプラットフォームで動作する軽量なアプリケーションです。
 
 ## 技術スタック
-- フロントエンド: Tkinter (Pythonの標準GUIライブラリで、シンプルかつ軽量なユーザーインターフェースを提供), AppleScript (macOSでウィンドウ情報を取得するために利用), Windows API (Windowsでウィンドウ情報を取得するために利用)
-- 音楽・オーディオ: 該当なし
-- 開発ツール: Git (バージョン管理システム), Ruff (Pythonコードのフォーマットとリンティングツール), EditorConfig (異なるIDEやエディタ間でのコードスタイル統一), Pre-commit (コミット前に自動でコードチェックを行うフック管理ツール), VS Code (開発環境の推奨設定)
-- テスト: unittest (Python標準のユニットテストフレームワーク), pytest (高度なテスト機能とシンプルな記述を提供するPythonテストフレームワーク)
-- ビルドツール: TOML (設定ファイルを記述するためのシンプルで読みやすいマークアップ言語)
-- 言語機能: Python 3.12+ (プロジェクトの主要なプログラミング言語)
-- 自動化・CI/CD: Pre-commit (コミット前の自動化チェック)
-- 開発標準: Ruff (コードフォーマットとリンティングによるコード品質の維持)
+- フロントエンド: **Python Tkinter** (Pythonの標準GUIライブラリで、シンプルでクリーンなユーザーインターフェースを提供します)
+- 音楽・オーディオ: (該当する技術はありません)
+- 開発ツール:
+    - **Git**: ソースコードのバージョン管理に使用。
+    - **ruff**: Pythonコードの高速なフォーマッターおよびリンターとして、コード品質と一貫性を保ちます。
+    - **unittest**: Python標準のテストフレームワークで、各種モジュールの単体テストを実行します。
+    - **pytest**: Pythonのテストフレームワークで、柔軟なテストの記述と実行を可能にします。
+    - **TOML**: アプリケーションの設定ファイル形式として採用されており、人間が読みやすく、扱いやすい構造を提供します。
+    - **.editorconfig**: 複数の開発者やエディタ間でのコーディングスタイルの一貫性を保証します。
+- テスト: **Python unittest**, **pytest** (上記「開発ツール」を参照)
+- ビルドツール: **Pythonスクリプト実行** (Pythonインタプリタにより直接スクリプトが実行されます)
+- 言語機能: **Python 3.12以上** (アプリケーションの基盤となるプログラミング言語バージョン)
+    - **プラットフォーム連携**:
+        - **xdotool / xprop**: Linux環境でアクティブウィンドウ情報を取得するために使用されます。
+        - **AppleScript**: macOS環境でアクティブウィンドウ情報を取得するために組み込みで利用されます。
+        - **pywin32 (オプション)**: Windows環境でより強力なウィンドウ操作と互換性を提供するために利用されるPython拡張です。
+- 自動化・CI/CD: **pre-commit**: コミット前にコードのフォーマットやリンティングを自動的に実行し、品質基準を維持します。
+- 開発標準: **ruff**, **.editorconfig** (上記「開発ツール」を参照)
 
 ## ファイル階層ツリー
 ```
@@ -29,6 +39,8 @@ Last updated: 2026-02-02
 📖 README.md
 📄 _config.yml
 📄 config.toml.example
+📁 docs/
+  📖 game-detection-guide.md
 📁 examples/
   📖 README.ja.md
   📖 README.md
@@ -75,7 +87,9 @@ Last updated: 2026-02-02
   📖 73.md
   📖 75.md
   📖 77.md
+  📖 78.md
   📖 8.md
+  📖 80.md
   📖 9.md
 📄 pytest.ini
 📄 ruff.toml
@@ -97,6 +111,7 @@ Last updated: 2026-02-02
 📁 tests/
   📄 test_config.py
   📄 test_dummy.py
+  📄 test_game_detection.py
   📄 test_gui.py
   📄 test_score_colors.py
   📄 test_score_tracker.py
@@ -105,129 +120,109 @@ Last updated: 2026-02-02
 ```
 
 ## ファイル詳細説明
-- **`.editorconfig`**: 異なるIDEやエディタ間で、インデントスタイル、文字コードなどのコーディングスタイルを統一するための設定ファイルです。
-- **`.gitignore`**: Gitがバージョン管理の対象としないファイルやディレクトリ（例: ビルド生成物、ログファイル）を指定するファイルです。
-- **`.pre-commit-config.yaml`**: Gitコミット前に自動的に実行されるフック（コードフォーマットやリンティングなど）を設定するためのファイルです。
-- **`.vscode/settings.json`**: Visual Studio Codeエディタにおけるプロジェクト固有の設定を定義します。
-- **`LICENSE`**: プロジェクトのソフトウェアライセンス情報が記載されています。
-- **`README.ja.md`, `README.md`**: プロジェクトの目的、機能、インストール方法、使用方法などを説明するドキュメント（日本語版と英語版）。
-- **`_config.yml`**: GitHub Pagesなどの静的サイトジェネレータでドキュメントサイトを構築する際の設定ファイルとして使用されることがあります。
-- **`config.toml.example`**: ユーザーがアプリケーションの設定を行うためのテンプレートファイルです。これをコピーして`config.toml`を作成し編集します。
-- **`examples/`**: さまざまな使用シナリオに対応する設定例のファイル群を格納しているディレクトリです。
-    - **`examples/README.ja.md`, `examples/README.md`**: `examples`ディレクトリの内容を説明するドキュメント。
-    - **`examples/example*.toml`**: 生産性追跡、勉強時間、ウィンドウの挙動設定などの具体的な設定例ファイル。
-- **`pytest.ini`**: Pythonのテストフレームワークであるpytestの設定ファイルです。テストの実行方法やオプションを定義します。
-- **`ruff.toml`**: Pythonコードのフォーマットとリンティングを行うRuffツールの設定ファイルです。コード品質と一貫性を保ちます。
-- **`src/__init__.py`**: `src`ディレクトリがPythonパッケージであることを示すファイルです。
-- **`src/__main__.py`**: `python -m src`のようにモジュールとして実行された際のエントリポイントとなるファイルです。
-- **`src/config.py`**: アプリケーションのグローバル設定値を保持し、アクセスするためのモジュールです。
-- **`src/config_loader.py`**: TOML形式の設定ファイル（`config.toml`）を読み込み、解析するロジックをカプセル化したモジュールです。
-- **`src/config_validator.py`**: 読み込まれた設定値が有効な形式であり、アプリケーションが正しく動作するための要件を満たしているかを検証するモジュールです。
-- **`src/constants.py`**: アプリケーション全体で使用される固定値や定数を一元的に定義するモジュールです。
-- **`src/flow_state_manager.py`**: ユーザーの集中状態（フロー状態）を管理し、それに応じてウィンドウの透明度を変化させるなどの挙動を制御するモジュールです。
-- **`src/gui.py`**: PythonのTkinterライブラリを使用して、スコア表示やステータス表示などのユーザーインターフェースを構築・管理するモジュールです。
-- **`src/main.py`**: アプリケーションの主要なエントリポイントであり、設定の読み込み、GUIの初期化、メインの監視ループのオーケストレーションを行います。
-- **`src/score_calculator.py`**: 現在のアクティブウィンドウタイトルと設定されたパターンに基づいて、スコアの増減値を計算するロジックを含むモジュールです。
-- **`src/score_tracker.py`**: アプリケーションの現在のスコア値を追跡し、スコアのリセットやデフォルトスコアの適用など、スコアに関連する状態管理を行うモジュールです。
-- **`src/status_formatter.py`**: GUIに表示される、現在マッチしているウィンドウ情報やスコア変動に関するステータス文字列を整形するモジュールです。
-- **`src/window_behavior.py`**: アプリケーションのGUIウィンドウが持つ動的な挙動（常に最前面表示、マウス接近時の移動、透明度変更など）を実装・管理するモジュールです。
-- **`src/window_monitor.py`**: 現在アクティブなウィンドウのタイトルを、オペレーティングシステム（Linux, macOS, Windows）に依存しない方法で取得する機能を提供するモジュールです。
-- **`tests/`**: アプリケーションの各コンポーネントの機能と正確性を検証するためのテストコードを格納するディレクトリです。
-    - **`tests/test_config.py`**: 設定関連モジュールの単体テスト。
-    - **`tests/test_dummy.py`**: 初期設定や簡単なテストに使用されるダミーのテストファイル。
-    - **`tests/test_gui.py`**: GUIモジュールの機能に関するテスト。
-    - **`tests/test_score_colors.py`**: スコアの増減による表示色の変化を検証するテスト。
-    - **`tests/test_score_tracker.py`**: スコア追跡ロジックの正確性を検証するテスト。
-    - **`tests/test_screensaver_detection.py`**: スクリーンセーバーがアクティブな場合の挙動をテスト（実装されている場合）。
-    - **`tests/test_window_monitor.py`**: ウィンドウ監視機能のテスト。
+- **.editorconfig**: エディタのコードスタイル設定を定義し、プロジェクト全体のコードの一貫性を維持します。
+- **.gitignore**: Gitがバージョン管理の対象外とするファイルやディレクトリを指定します。
+- **.pre-commit-config.yaml**: コミット前に自動的に実行されるフック（例: コード整形、リンティング）の設定を定義します。
+- **.vscode/settings.json**: Visual Studio Codeのワークスペース固有の設定を格納し、開発環境を統一します。
+- **LICENSE**: プロジェクトのライセンス情報が記述されたファイルです。
+- **README.ja.md, README.md**: プロジェクトの目的、機能、使用方法、設定例などを日本語と英語で説明するメインドキュメントです。
+- **_config.yml**: GitHub Pagesなどの静的サイトジェネレータの設定ファイルである可能性があります。
+- **config.toml.example**: アプリケーションの動作をカスタマイズするための設定ファイルのサンプルです。ウィンドウパターンやスコア調整、UI挙動などのオプションが含まれます。
+- **docs/game-detection-guide.md**: ゲームアプリケーションの検知に関する特定のガイドラインや実装上の注意点などを説明するドキュメントです。
+- **examples/**: 様々なユースケースに対応する設定ファイル（TOML形式）の具体例と、その説明（READMEファイル）が格納されています。
+- **generated-docs/**: 自動生成されたドキュメントやレポートを格納するためのディレクトリです。
+- **issue-notes/**: 開発中の課題や特定のIssueに関する詳細なメモ、調査結果、解決策などをまとめたドキュメント群です。
+- **pytest.ini**: Pythonのテストフレームワークであるpytestの動作設定を定義するファイルです。
+- **ruff.toml**: Pythonコードのリンターおよびフォーマッターであるruffの設定を定義するファイルです。
+- **src/__init__.py**: `src`ディレクトリがPythonパッケージであることを示します。
+- **src/__main__.py**: `python -m src`のようにモジュールとして実行された際のエントリポイントとなるファイルです。
+- **src/config.py**: TOML形式の設定ファイルを読み込み、アプリケーション全体で利用可能な設定オブジェクトとして提供します。設定のデフォルト値適用や基本的なバリデーションも担当します。
+- **src/config_loader.py**: `config.toml`ファイルから生の設定データを読み込む具体的なロジックを実装します。
+- **src/config_validator.py**: 読み込まれた設定データの構造と値がアプリケーションの要件を満たしているかを検証します。
+- **src/constants.py**: アプリケーション全体で共通して使用される定数（例: デフォルト値、マジックナンバーなど）を定義します。
+- **src/flow_state_manager.py**: ユーザーの「フロー状態」（集中状態）を管理し、それに基づいてGUIウィンドウの透明度を制御するロジックを提供します。
+- **src/gui.py**: PythonのTkinterライブラリを使用して、現在のスコアやアクティビティを表示するユーザーインターフェースを構築・管理します。
+- **src/main.py**: アプリケーションのメインエントリポイントです。設定の読み込み、GUIの初期化、ウィンドウ監視とスコア更新のループ開始など、主要なコンポーネントの連携を調整します。
+- **src/score_calculator.py**: アクティブなウィンドウタイトルと設定された正規表現パターンを比較し、それに基づいてスコアの増減量を計算する中心的なロジックを提供します。
+- **src/score_tracker.py**: `window_monitor`から取得したウィンドウタイトルを`score_calculator`に渡し、全体のスコアをリアルタイムで追跡・更新します。スコアのリセットや履歴管理も行う可能性があります。
+- **src/status_formatter.py**: 現在のスコアやマッチしたウィンドウパターン、スコアの変化量などを、GUIに表示するために整形されたテキスト形式に変換します。
+- **src/window_behavior.py**: ウィンドウの最前面表示設定、マウス接近時の自動移動、スコア減少時の最前面化など、GUIウィンドウの動的な挙動を管理します。
+- **src/window_monitor.py**: Linux、macOS、Windowsといった異なるオペレーティングシステムに対応した方法で、現在アクティブなウィンドウのタイトルを取得する役割を担います。
+- **tests/**: プロジェクトの各モジュールや機能に対する単体テストコードを格納するディレクトリです。アプリケーションの品質と信頼性を保証するために使用されます。
 
 ## 関数詳細説明
-- **`main.main()`**:
-    - 役割: アプリケーションの起動と主要な処理フローを管理するエントリポイント。
-    - 機能: 設定ファイルの読み込み、GUIの初期化、定期的なウィンドウ監視とスコア更新のループを開始します。
-- **`config_loader.load_config(config_path: str)`**:
-    - 役割: 指定されたパスからTOML形式の設定ファイルを読み込む。
-    - 引数: `config_path` (str) - 設定ファイルのパス。
-    - 戻り値: 読み込んだ設定データを含む辞書。
-    - 機能: ファイルが存在しない場合や解析エラーが発生した場合のハンドリングも行います。
-- **`config_validator.validate_config(config_data: dict)`**:
-    - 役割: 読み込まれた設定データがアプリケーションの期待する形式と要件を満たしているかを検証する。
-    - 引数: `config_data` (dict) - 読み込まれた設定データ。
-    - 戻り値: 検証済みの設定データ（必要に応じてデフォルト値が適用される場合あり）。
-    - 機能: 不正な設定値や不足している必須項目を特定し、適切なエラーまたは警告を発します。
-- **`window_monitor.get_active_window_title()`**:
-    - 役割: 現在フォーカスされているアクティブなウィンドウのタイトルを取得する。
+- **main.py::main()**:
+    - 役割: アプリケーションの起動エントリポイント。設定をロードし、GUIコンポーネントとスコア監視ループを初期化・開始します。
+    - 引数: なし。コマンドライン引数で設定ファイルのパスを受け取ることがあります。
+    - 戻り値: なし。
+- **config.py::load_app_config(config_path=None)**:
+    - 役割: 指定されたパスからTOML設定ファイルを読み込み、アプリケーション全体で使用される設定オブジェクトを生成します。デフォルト値の適用や読み込み後のバリデーションも行います。
+    - 引数: `config_path` (str, optional): 設定ファイルのパス。指定がない場合はデフォルトパスを使用。
+    - 戻り値: (dict): 読み込まれたアプリケーション設定。
+- **gui.py::GUI.__init__(self, root, config, score_tracker, flow_state_manager, window_behavior)**:
+    - 役割: Tkinter GUIウィンドウを初期化し、スコア表示ラベル、ステータス表示、ウィンドウのサイズと位置、色などの視覚要素を設定します。主要なロジックコンポーネントへの参照を持ちます。
+    - 引数: `root` (tkinter.Tk), `config` (dict), `score_tracker` (ScoreTracker), `flow_state_manager` (FlowStateManager), `window_behavior` (WindowBehavior)。
+    - 戻り値: なし。
+- **gui.py::GUI.update_display(self)**:
+    - 役割: 1秒ごとに実行され、`window_monitor`からウィンドウタイトルを取得し、`score_tracker`でスコアを更新し、`status_formatter`で整形されたテキストをGUIに表示します。`flow_state_manager`や`window_behavior`と連携してウィンドウの透明度や位置も調整します。
+    - 引数: `self`。
+    - 戻り値: なし。
+- **gui.py::GUI.start_update_loop(self)**:
+    - 役割: GUIの表示更新を定期的に（通常1秒ごと）開始するためのタイマーまたはスケジューラを設定します。
+    - 引数: `self`。
+    - 戻り値: なし。
+- **window_monitor.py::get_active_window_title()**:
+    - 役割: 現在アクティブな（フォーカスされている）ウィンドウのタイトル文字列を、OS固有のAPIやツール（Linuxの`xdotool`、macOSのAppleScript、Windows APIなど）を使用して取得します。
     - 引数: なし。
-    - 戻り値: アクティブなウィンドウのタイトル (str)。取得できない場合は空文字列。
-    - 機能: Linux, macOS, Windowsそれぞれで適切なOSネイティブAPIやツールを使用してウィンドウタイトルをクロスプラットフォームで取得します。
-- **`score_tracker.update_score(window_title: str)`**:
-    - 役割: 現在のアクティブウィンドウタイトルに基づいてスコアを更新する。
-    - 引数: `window_title` (str) - 現在アクティブなウィンドウのタイトル。
-    - 戻り値: スコアの変化量 (int) と、マッチしたパターンの説明 (str)。
-    - 機能: 内部で`score_calculator`を呼び出し、スコアを計算し、現在のスコアを管理・更新します。設定されたリセットロジックなども適用します。
-- **`score_tracker.get_current_score()`**:
-    - 役割: 現在のスコア値を取得する。
-    - 引数: なし。
-    - 戻り値: 現在のスコア (int)。
-    - 機能: `score_tracker`が保持する最新のスコアを返します。
-- **`score_calculator.calculate_score_change(window_title: str, config: dict, current_score: int, self_window_title: str)`**:
-    - 役割: 指定されたウィンドウタイトルと設定に基づいて、スコアの増減量を計算する。
-    - 引数: `window_title` (str), `config` (dict), `current_score` (int), `self_window_title` (str)。
-    - 戻り値: 計算されたスコアの変化量 (int) と、マッチしたパターンの説明 (str)。
-    - 機能: 正規表現マッチング、デフォルトスコア適用モード、マイルドペナルティモード、自己ウィンドウスコアなど、複雑なスコア計算ロジックを処理します。
-- **`gui.init_gui(root: tk.Tk, score_tracker, config: dict, window_behavior_manager)`**:
-    - 役割: TkinterのメインウィンドウとUI要素を初期化する。
-    - 引数: `root` (tk.Tk), `score_tracker`, `config` (dict), `window_behavior_manager`。
+    - 戻り値: (str): アクティブウィンドウのタイトル。取得できなかった場合は空文字列。
+- **score_tracker.py::ScoreTracker.__init__(self, config, score_calculator)**:
+    - 役割: スコア追跡ロジックを初期化します。設定オブジェクトとスコア計算を担当する`score_calculator`への参照を保持します。
+    - 引数: `config` (dict), `score_calculator` (ScoreCalculator)。
     - 戻り値: なし。
-    - 機能: スコア表示ラベル、ステータス表示ラベルなどを配置し、ウィンドウの初期設定（位置、透明度など）を適用します。
-- **`gui.update_gui()`**:
-    - 役割: 定期的にGUIを更新し、最新のスコアとステータスを表示する。
-    - 引数: なし。
+- **score_tracker.py::ScoreTracker.update_score(self, window_title)**:
+    - 役割: 与えられたウィンドウタイトルを基に`score_calculator`を使ってスコアの変化量を決定し、現在の累積スコアを更新します。30分ごとのリセット機能なども管理します。
+    - 引数: `window_title` (str): 現在アクティブなウィンドウのタイトル。
+    - 戻り値: (int): 更新されたスコア。
+- **score_tracker.py::ScoreTracker.get_current_status(self)**:
+    - 役割: 現在のスコア値と、最後にマッチしたウィンドウパターンの説明（またはマッチしなかった旨のメッセージ）を返します。
+    - 引数: `self`。
+    - 戻り値: (tuple): (int スコア, str ステータス説明)。
+- **score_calculator.py::calculate_score_change(window_title, config)**:
+    - 役割: 設定された正規表現パターンとスコア値のリストに基づき、与えられたウィンドウタイトルがどのパターンにマッチするかを判定し、対応するスコア変化量を決定します。
+    - 引数: `window_title` (str), `config` (dict)。
+    - 戻り値: (int): スコアの変化量。
+- **flow_state_manager.py::update_flow_state(self, current_score_change)**:
+    - 役割: 直近のスコア変化量に基づいてユーザーの集中状態（フロー状態）を判断し、ウィンドウの透明度を徐々に変更するかどうかを決定・管理します。
+    - 引数: `current_score_change` (int): 直近のスコア増減量。
+    - 戻り値: (float): 計算されたウィンドウの現在の透明度（0.0～1.0）。
+- **window_behavior.py::manage_always_on_top(self, is_score_decreasing)**:
+    - 役割: 設定に基づいてウィンドウを常に最前面に表示するか、またはスコア減少時のみ最前面に表示するかを管理します。
+    - 引数: `is_score_decreasing` (bool): スコアが現在減少中であるかどうかのフラグ。
     - 戻り値: なし。
-    - 機能: `score_tracker`から最新のスコアを取得し、`status_formatter`で整形されたメッセージと共にGUIに反映させます。フロー状態に応じたウィンドウのフェード処理などもトリガーします。
-- **`window_behavior.apply_always_on_top(window: tk.Tk, config: dict)`**:
-    - 役割: ウィンドウの「常に最前面表示」設定を適用または解除する。
-    - 引数: `window` (tk.Tk), `config` (dict)。
+- **window_behavior.py::handle_mouse_proximity(self)**:
+    - 役割: マウスカーソルがGUIウィンドウの一定距離内に近づいたときに、ウィンドウを自動的に最背面に移動させ、離れたときに最前面に戻す機能を処理します。
+    - 引数: `self`。
     - 戻り値: なし。
-    - 機能: `config`で設定された`always_on_top`や`always_on_top_while_score_decreasing`に基づいて、ウィンドウの最前面表示を制御します。
-- **`window_behavior.handle_mouse_proximity(window: tk.Tk, config: dict)`**:
-    - 役割: マウスカーソルがウィンドウに近づいたときに、ウィンドウを最背面または最前面に移動させる挙動を管理する。
-    - 引数: `window` (tk.Tk), `config` (dict)。
-    - 戻り値: なし。
-    - 機能: `hide_on_mouse_proximity`が有効な場合に、マウスとウィンドウの距離を監視し、ウィンドウのZオーダーを調整します。
-- **`window_behavior.set_window_transparency(window: tk.Tk, alpha: float)`**:
-    - 役割: ウィンドウの透明度を設定する。
-    - 引数: `window` (tk.Tk), `alpha` (float) - 透明度 (0.0=完全に透明, 1.0=完全に不透明)。
-    - 戻り値: なし。
-    - 機能: OSの機能を利用してウィンドウの不透明度を変更します。
-- **`flow_state_manager.update_flow_state(score_change: int)`**:
-    - 役割: スコアの変化に基づいてユーザーのフロー状態（集中状態）を更新し、関連する挙動（ウィンドウのフェードなど）を制御する。
-    - 引数: `score_change` (int) - 前回のスコア変化量。
-    - 戻り値: なし。
-    - 機能: スコアが継続的に上昇している場合にフロー状態とみなし、ウィンドウの透明化を開始・進行させます。
-- **`status_formatter.format_status_message(last_matched_description: str, last_window_title: str, last_score_change: int)`**:
-    - 役割: GUIに表示するステータス文字列を整形する。
-    - 引数: `last_matched_description` (str), `last_window_title` (str), `last_score_change` (int)。
-    - 戻り値: 整形されたステータス文字列 (str)。
-    - 機能: マッチしたパターンの説明、ウィンドウタイトル、スコアの変化量などを用いて、ユーザーに分かりやすいメッセージを作成します。
 
 ## 関数呼び出し階層ツリー
 ```
-main.py
-└── main()
-    ├── config_loader.load_config()
-    ├── config_validator.validate_config()
-    ├── gui.init_gui()
-    │   └── gui.update_gui() (定期的に呼び出される)
-    │       ├── window_monitor.get_active_window_title()
-    │       ├── score_tracker.update_score()
-    │       │   └── score_calculator.calculate_score_change()
-    │       ├── status_formatter.format_status_message()
-    │       ├── flow_state_manager.update_flow_state()
-    │       ├── window_behavior.apply_always_on_top()
-    │       ├── window_behavior.handle_mouse_proximity()
-    │       └── window_behavior.set_window_transparency()
-    └── score_tracker.get_current_score()
+main()
+├── config.load_app_config()
+│   └── config_loader.load_config()
+│   └── config_validator.validate_config()
+├── gui.GUI(config, score_tracker, flow_state_manager, window_behavior)  (初期化)
+│   ├── gui.GUI.update_display()  (定期的に呼び出される)
+│   │   ├── window_monitor.get_active_window_title()
+│   │   ├── score_tracker.update_score()
+│   │   │   └── score_calculator.calculate_score_change()
+│   │   ├── score_tracker.get_current_status()
+│   │   ├── flow_state_manager.update_flow_state()
+│   │   ├── window_behavior.manage_always_on_top()
+│   │   └── window_behavior.handle_mouse_proximity()
+│   └── gui.GUI.start_update_loop()
+├── score_tracker.ScoreTracker(config, score_calculator)  (初期化)
+├── flow_state_manager.FlowStateManager(config)  (初期化)
+└── window_behavior.WindowBehavior(gui_window, config)  (初期化)
 
 ---
-Generated at: 2026-02-02 07:06:38 JST
+Generated at: 2026-02-06 07:08:41 JST
