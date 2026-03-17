@@ -1,0 +1,479 @@
+#!/usr/bin/env python3
+"""Tests for score tracker module - patterns, config updates, and mild penalty mode."""
+
+import unittest
+from pathlib import Path
+
+try:
+    from src.score_tracker import ScoreTracker
+except ImportError:
+    import sys
+
+    sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+    from score_tracker import ScoreTracker
+
+# Use module path derived from the actual import so patch() works in all environments.
+_SCORE_TRACKER_DATETIME_PATH = f"{ScoreTracker.__module__}.datetime"
+
+
+class TestGitHubWindowTitlePatterns(unittest.TestCase):
+    """Test cases specifically for GitHub window title pattern matching.
+
+    Tests the improved regex pattern that matches both:
+    1. Traditional "github" embedded in titles
+    2. GitHub page format: "Content · owner/repo · GitHub"
+    """
+
+    def setUp(self):
+        """Set up test fixtures with improved GitHub pattern."""
+        self.patterns = [
+            {
+                "regex": "github|· GitHub$",
+                "score": 10,
+                "description": "GitHub",
+            },
+        ]
+        self.tracker = ScoreTracker(self.patterns, default_score=0)
+
+    def test_traditional_github_lowercase(self):
+        """Test matching traditional github.com URLs."""
+        score_changed, matched = self.tracker.update("github.com")
+        self.assertTrue(score_changed)
+        self.assertIsNotNone(matched)
+        self.assertEqual(matched["description"], "GitHub")
+        self.assertEqual(self.tracker.get_score(), 10)
+
+    def test_traditional_github_mixed_case(self):
+        """Test matching GitHub with mixed case."""
+        score_changed, matched = self.tracker.update("GitHub - Profile")
+        self.assertTrue(score_changed)
+        self.assertIsNotNone(matched)
+        self.assertEqual(self.tracker.get_score(), 10)
+
+    def test_pull_requests_page(self):
+        """Test matching 'Pull requests · owner/repo · GitHub' format."""
+        score_changed, matched = self.tracker.update("Pull requests · cat2151/cat-window-watcher · GitHub")
+        self.assertTrue(score_changed)
+        self.assertIsNotNone(matched)
+        self.assertEqual(matched["description"], "GitHub")
+        self.assertEqual(self.tracker.get_score(), 10)
+
+    def test_code_page(self):
+        """Test matching 'Code · owner/repo · GitHub' format."""
+        score_changed, matched = self.tracker.update("Code · microsoft/vscode · GitHub")
+        self.assertTrue(score_changed)
+        self.assertIsNotNone(matched)
+        self.assertEqual(self.tracker.get_score(), 10)
+
+    def test_issues_page(self):
+        """Test matching 'Issues · owner/repo · GitHub' format."""
+        score_changed, matched = self.tracker.update("Issues · facebook/react · GitHub")
+        self.assertTrue(score_changed)
+        self.assertIsNotNone(matched)
+        self.assertEqual(self.tracker.get_score(), 10)
+
+    def test_repo_at_branch_format(self):
+        """Test matching 'owner/repo at branch · GitHub' format."""
+        score_changed, matched = self.tracker.update("cat2151/cat-window-watcher at main · GitHub")
+        self.assertTrue(score_changed)
+        self.assertIsNotNone(matched)
+        self.assertEqual(self.tracker.get_score(), 10)
+
+    def test_actions_page(self):
+        """Test matching 'Actions · owner/repo · GitHub' format."""
+        score_changed, matched = self.tracker.update("Actions · torvalds/linux · GitHub")
+        self.assertTrue(score_changed)
+        self.assertIsNotNone(matched)
+        self.assertEqual(self.tracker.get_score(), 10)
+
+    def test_specific_pr_title(self):
+        """Test matching specific PR title format."""
+        score_changed, matched = self.tracker.update(
+            "Add login feature · Pull Request #42 · octocat/Hello-World · GitHub"
+        )
+        self.assertTrue(score_changed)
+        self.assertIsNotNone(matched)
+        self.assertEqual(self.tracker.get_score(), 10)
+
+    def test_file_path_format(self):
+        """Test matching file path format."""
+        score_changed, matched = self.tracker.update("src/utils/helpers.js at main · octocat/Hello-World · GitHub")
+        self.assertTrue(score_changed)
+        self.assertIsNotNone(matched)
+        self.assertEqual(self.tracker.get_score(), 10)
+
+    def test_non_github_not_matched(self):
+        """Test that non-GitHub pages are not matched."""
+        score_changed, matched = self.tracker.update("Random Window Title")
+        self.assertFalse(score_changed)
+        self.assertIsNone(matched)
+        self.assertEqual(self.tracker.get_score(), 0)
+
+    def test_non_github_ending_pattern(self):
+        """Test that other sites with similar ending don't match."""
+        # This should NOT match because it doesn't end with "· GitHub"
+        score_changed, matched = self.tracker.update("Some Page · Other Site")
+        self.assertFalse(score_changed)
+        self.assertIsNone(matched)
+        self.assertEqual(self.tracker.get_score(), 0)
+
+    def test_multiple_github_pages_accumulate_score(self):
+        """Test that browsing multiple GitHub pages accumulates score."""
+        self.tracker.update("Pull requests · cat2151/cat-window-watcher · GitHub")
+        self.assertEqual(self.tracker.get_score(), 10)
+
+        self.tracker.update("Code · microsoft/vscode · GitHub")
+        self.assertEqual(self.tracker.get_score(), 20)
+
+        self.tracker.update("github.com")
+        self.assertEqual(self.tracker.get_score(), 30)
+
+
+class TestConfigUpdate(unittest.TestCase):
+    """Test cases for ScoreTracker configuration updates."""
+
+    def test_update_config_changes_patterns(self):
+        """Test that update_config changes window patterns."""
+        initial_patterns = [
+            {"regex": "github", "score": 10, "description": "GitHub"},
+        ]
+        tracker = ScoreTracker(initial_patterns, default_score=0)
+
+        # Test with initial pattern
+        tracker.update("GitHub - Profile")
+        self.assertEqual(tracker.get_score(), 10)
+
+        # Update configuration with new patterns
+        new_patterns = [
+            {"regex": "twitter", "score": -5, "description": "Twitter"},
+            {"regex": "facebook", "score": -3, "description": "Facebook"},
+        ]
+        tracker.update_config(new_patterns, 0)
+
+        # Old pattern should no longer match
+        score_changed, matched = tracker.update("GitHub - Profile")
+        self.assertFalse(score_changed)
+        self.assertIsNone(matched)
+        self.assertEqual(tracker.get_score(), 10)  # Score unchanged
+
+        # New pattern should match
+        tracker.update("Twitter - Feed")
+        self.assertEqual(tracker.get_score(), 5)  # 10 + (-5)
+
+    def test_update_config_changes_default_score(self):
+        """Test that update_config changes default_score."""
+        patterns = [
+            {"regex": "github", "score": 10, "description": "GitHub"},
+        ]
+        tracker = ScoreTracker(patterns, default_score=-1)
+
+        # Test with initial default score
+        tracker.update("Random Window")
+        self.assertEqual(tracker.get_score(), -1)
+
+        # Update configuration with new default score
+        tracker.update_config(patterns, 5)
+
+        # New default score should apply
+        tracker.update("Another Random Window")
+        self.assertEqual(tracker.get_score(), 4)  # -1 + 5
+
+    def test_update_config_preserves_score(self):
+        """Test that update_config preserves accumulated score."""
+        patterns = [
+            {"regex": "github", "score": 10, "description": "GitHub"},
+        ]
+        tracker = ScoreTracker(patterns, default_score=0)
+
+        # Accumulate some score
+        tracker.update("GitHub - Profile")
+        tracker.update("GitHub - Issues")
+        self.assertEqual(tracker.get_score(), 20)
+
+        # Update configuration
+        new_patterns = [
+            {"regex": "twitter", "score": -5, "description": "Twitter"},
+        ]
+        tracker.update_config(new_patterns, 0)
+
+        # Score should be preserved
+        self.assertEqual(tracker.get_score(), 20)
+
+    def test_update_config_applies_immediately(self):
+        """Test that updated config applies immediately on next update."""
+        patterns = [
+            {"regex": "github", "score": 10, "description": "GitHub"},
+        ]
+        tracker = ScoreTracker(patterns, default_score=0)
+
+        # Update configuration
+        new_patterns = [
+            {"regex": "vscode", "score": 15, "description": "VS Code"},
+        ]
+        tracker.update_config(new_patterns, -2)
+
+        # New pattern should apply immediately
+        tracker.update("VSCode - Editor")
+        self.assertEqual(tracker.get_score(), 15)
+
+        # New default score should apply immediately
+        tracker.update("Random Window")
+        self.assertEqual(tracker.get_score(), 13)  # 15 + (-2)
+
+
+class TestMildPenaltyMode(unittest.TestCase):
+    """Test cases for mild penalty mode functionality."""
+
+    def setUp(self):
+        """Set up test fixtures."""
+        self.patterns = [
+            {"regex": "github", "score": 10, "description": "GitHub"},
+            {"regex": "twitter|x\\.com", "score": -5, "description": "Twitter/X"},
+            {"regex": "youtube", "score": -7, "description": "YouTube"},
+        ]
+
+    def test_mild_penalty_mode_disabled(self):
+        """Test that mild penalty mode does not affect scores when disabled."""
+        tracker = ScoreTracker(
+            self.patterns,
+            default_score=-1,
+            mild_penalty_mode=False,
+            mild_penalty_start_hour=22,
+            mild_penalty_end_hour=23,
+        )
+
+        # Negative scores should apply normally
+        tracker.update("Twitter Feed")
+        self.assertEqual(tracker.get_score(), -5)
+
+        tracker.update("YouTube Video")
+        self.assertEqual(tracker.get_score(), -12)  # -5 + (-7)
+
+    def test_mild_penalty_mode_enabled_during_hours(self):
+        """Test that mild penalty mode limits negative scores to -1 during specified hours."""
+        from datetime import datetime
+        from unittest.mock import patch
+
+        tracker = ScoreTracker(
+            self.patterns,
+            default_score=-1,
+            mild_penalty_mode=True,
+            mild_penalty_start_hour=22,
+            mild_penalty_end_hour=23,
+        )
+
+        # Mock datetime to return hour 22 (within mild penalty hours)
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 1, 22, 30)  # 22:30
+
+            # Negative scores should be limited to -1
+            tracker.update("Twitter Feed")
+            self.assertEqual(tracker.get_score(), -1)
+
+            tracker.update("YouTube Video")
+            self.assertEqual(tracker.get_score(), -2)  # -1 + (-1)
+
+            # Positive scores should not be affected
+            tracker.update("GitHub")
+            self.assertEqual(tracker.get_score(), 8)  # -2 + 10
+
+    def test_mild_penalty_mode_outside_hours(self):
+        """Test that mild penalty mode does not affect scores outside specified hours."""
+        from datetime import datetime
+        from unittest.mock import patch
+
+        tracker = ScoreTracker(
+            self.patterns,
+            default_score=-1,
+            mild_penalty_mode=True,
+            mild_penalty_start_hour=22,
+            mild_penalty_end_hour=23,
+        )
+
+        # Mock datetime to return hour 10 (outside mild penalty hours)
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 0)  # 10:00
+
+            # Negative scores should apply normally
+            tracker.update("Twitter Feed")
+            self.assertEqual(tracker.get_score(), -5)
+
+            tracker.update("YouTube Video")
+            self.assertEqual(tracker.get_score(), -12)  # -5 + (-7)
+
+    def test_mild_penalty_mode_with_default_score(self):
+        """Test that mild penalty mode applies to default score during specified hours."""
+        from datetime import datetime
+        from unittest.mock import patch
+
+        tracker = ScoreTracker(
+            self.patterns,
+            default_score=-3,
+            mild_penalty_mode=True,
+            mild_penalty_start_hour=22,
+            mild_penalty_end_hour=23,
+        )
+
+        # Mock datetime to return hour 22
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 1, 22, 0)  # 22:00
+
+            # Default score should be limited to -1
+            tracker.update("Random Window")
+            self.assertEqual(tracker.get_score(), -1)
+
+            tracker.update("Another Random Window")
+            self.assertEqual(tracker.get_score(), -2)  # -1 + (-1)
+
+    def test_mild_penalty_mode_time_range_boundaries(self):
+        """Test mild penalty mode at time range boundaries."""
+        from datetime import datetime
+        from unittest.mock import patch
+
+        tracker = ScoreTracker(
+            self.patterns,
+            default_score=-1,
+            mild_penalty_mode=True,
+            mild_penalty_start_hour=22,
+            mild_penalty_end_hour=23,
+        )
+
+        # Test at start hour (22:00) - should apply mild penalty
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 1, 22, 0)
+            tracker.reset_score()
+            tracker.update("Twitter Feed")
+            self.assertEqual(tracker.get_score(), -1)
+
+        # Test at end hour (23:59) - should apply mild penalty
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 1, 23, 59)
+            tracker.reset_score()
+            tracker.update("Twitter Feed")
+            self.assertEqual(tracker.get_score(), -1)
+
+        # Test just before start hour (21:59) - should not apply mild penalty
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 1, 21, 59)
+            tracker.reset_score()
+            tracker.update("Twitter Feed")
+            self.assertEqual(tracker.get_score(), -5)
+
+        # Test just after end hour (00:00 next day) - should not apply mild penalty
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 2, 0, 0)
+            tracker.reset_score()
+            tracker.update("Twitter Feed")
+            self.assertEqual(tracker.get_score(), -5)
+
+    def test_mild_penalty_mode_wrapped_time_range(self):
+        """Test mild penalty mode with time range that wraps around midnight."""
+        from datetime import datetime
+        from unittest.mock import patch
+
+        # Time range: 23:00 - 01:00 (wraps around midnight)
+        tracker = ScoreTracker(
+            self.patterns,
+            default_score=-1,
+            mild_penalty_mode=True,
+            mild_penalty_start_hour=23,
+            mild_penalty_end_hour=1,
+        )
+
+        # Test at 23:30 - should apply mild penalty
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 1, 23, 30)
+            tracker.reset_score()
+            tracker.update("Twitter Feed")
+            self.assertEqual(tracker.get_score(), -1)
+
+        # Test at 00:30 - should apply mild penalty
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 2, 0, 30)
+            tracker.reset_score()
+            tracker.update("Twitter Feed")
+            self.assertEqual(tracker.get_score(), -1)
+
+        # Test at 01:00 - should apply mild penalty
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 2, 1, 0)
+            tracker.reset_score()
+            tracker.update("Twitter Feed")
+            self.assertEqual(tracker.get_score(), -1)
+
+        # Test at 02:00 - should not apply mild penalty
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 2, 2, 0)
+            tracker.reset_score()
+            tracker.update("Twitter Feed")
+            self.assertEqual(tracker.get_score(), -5)
+
+        # Test at 22:00 - should not apply mild penalty
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 1, 22, 0)
+            tracker.reset_score()
+            tracker.update("Twitter Feed")
+            self.assertEqual(tracker.get_score(), -5)
+
+    def test_mild_penalty_mode_update_config(self):
+        """Test that update_config changes mild penalty mode settings."""
+        tracker = ScoreTracker(
+            self.patterns,
+            default_score=-1,
+            mild_penalty_mode=False,
+            mild_penalty_start_hour=22,
+            mild_penalty_end_hour=23,
+        )
+
+        from datetime import datetime
+        from unittest.mock import patch
+
+        # Mock datetime to return hour 22
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 1, 22, 30)
+
+            # Initially, mild penalty mode is disabled
+            tracker.update("Twitter Feed")
+            self.assertEqual(tracker.get_score(), -5)
+
+            # Update config to enable mild penalty mode
+            tracker.update_config(
+                self.patterns,
+                default_score=-1,
+                mild_penalty_mode=True,
+                mild_penalty_start_hour=22,
+                mild_penalty_end_hour=23,
+            )
+
+            # Now mild penalty should apply
+            tracker.update("YouTube Video")
+            self.assertEqual(tracker.get_score(), -6)  # -5 + (-1)
+
+    def test_mild_penalty_mode_does_not_affect_positive_scores(self):
+        """Test that mild penalty mode only affects negative scores."""
+        from datetime import datetime
+        from unittest.mock import patch
+
+        tracker = ScoreTracker(
+            self.patterns,
+            default_score=5,
+            mild_penalty_mode=True,
+            mild_penalty_start_hour=22,
+            mild_penalty_end_hour=23,
+        )
+
+        # Mock datetime to return hour 22
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
+            mock_datetime.now.return_value = datetime(2024, 1, 1, 22, 30)
+
+            # Positive scores should not be affected
+            tracker.update("GitHub")
+            self.assertEqual(tracker.get_score(), 10)
+
+            # Positive default score should not be affected
+            tracker.update("Random Window")
+            self.assertEqual(tracker.get_score(), 15)  # 10 + 5
+
+
+if __name__ == "__main__":
+    unittest.main()
