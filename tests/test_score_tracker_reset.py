@@ -12,6 +12,9 @@ except ImportError:
     sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
     from score_tracker import ScoreTracker
 
+# Use module path derived from the actual import so patch() works in all environments.
+_SCORE_TRACKER_DATETIME_PATH = f"{ScoreTracker.__module__}.datetime"
+
 
 class TestResetScoreEvery30Minutes(unittest.TestCase):
     """Test cases for reset score every 30 minutes functionality."""
@@ -35,7 +38,7 @@ class TestResetScoreEvery30Minutes(unittest.TestCase):
         )
 
         # Mock datetime to return 10:29
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 29)
             tracker.update("GitHub")
             self.assertEqual(tracker.get_score(), 10)
@@ -57,7 +60,7 @@ class TestResetScoreEvery30Minutes(unittest.TestCase):
         )
 
         # Mock datetime to return 10:29
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 29)
             tracker.update("GitHub")
             self.assertEqual(tracker.get_score(), 10)
@@ -79,7 +82,7 @@ class TestResetScoreEvery30Minutes(unittest.TestCase):
         )
 
         # Mock datetime to return 10:59
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 59)
             tracker.update("GitHub")
             self.assertEqual(tracker.get_score(), 10)
@@ -101,7 +104,7 @@ class TestResetScoreEvery30Minutes(unittest.TestCase):
         )
 
         # Mock datetime to return 10:15
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 15)
             tracker.update("GitHub")
             self.assertEqual(tracker.get_score(), 10)
@@ -128,7 +131,7 @@ class TestResetScoreEvery30Minutes(unittest.TestCase):
         )
 
         # Start at 9:45 (second half of hour 9)
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 9, 45)
             tracker.update("GitHub")
             self.assertEqual(tracker.get_score(), 10)
@@ -150,7 +153,7 @@ class TestResetScoreEvery30Minutes(unittest.TestCase):
         )
 
         # Accumulate negative score
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 15)
             tracker.update("Twitter Feed")
             tracker.update("Twitter Feed")
@@ -173,7 +176,7 @@ class TestResetScoreEvery30Minutes(unittest.TestCase):
         )
 
         # Start at 23:50 (second half of hour 23)
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 23, 50)
             tracker.update("GitHub")
             self.assertEqual(tracker.get_score(), 10)
@@ -195,7 +198,7 @@ class TestResetScoreEvery30Minutes(unittest.TestCase):
         )
 
         # Build up score without reset
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 29)
             tracker.update("GitHub")
             self.assertEqual(tracker.get_score(), 10)
@@ -224,7 +227,7 @@ class TestResetScoreEvery30Minutes(unittest.TestCase):
         )
 
         # Build up score
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 29)
             tracker.update("GitHub")
             self.assertEqual(tracker.get_score(), 10)
@@ -252,7 +255,7 @@ class TestResetScoreEvery30Minutes(unittest.TestCase):
             reset_score_every_30_minutes=True,
         )
 
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             # Time slot 1: 10:00-10:29
             mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 15)
             tracker.update("GitHub")
@@ -279,7 +282,7 @@ class TestResetScoreEvery30Minutes(unittest.TestCase):
             reset_score_every_30_minutes=True,
         )
 
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             # Build up mixed score
             mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 15)
             tracker.update("GitHub")  # +10

@@ -12,6 +12,9 @@ except ImportError:
     sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
     from score_tracker import ScoreTracker
 
+# Use module path derived from the actual import so patch() works in all environments.
+_SCORE_TRACKER_DATETIME_PATH = f"{ScoreTracker.__module__}.datetime"
+
 
 class TestSelfWindowScore(unittest.TestCase):
     """Test cases for self-window score functionality."""
@@ -254,7 +257,7 @@ class TestSelfWindowScore(unittest.TestCase):
         )
 
         # Mock datetime to return hour 22 (within mild penalty hours)
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 22, 30)  # 22:30
 
             # Negative self_window_score should be limited to -1
@@ -266,7 +269,7 @@ class TestSelfWindowScore(unittest.TestCase):
             self.assertEqual(tracker.get_score(), -2)  # -1 + (-1)
 
         # Mock datetime to return hour 10 (outside mild penalty hours)
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 0)  # 10:00
 
             tracker.reset_score()
@@ -291,7 +294,7 @@ class TestSelfWindowScore(unittest.TestCase):
         )
 
         # Mock datetime to return hour 22 (within mild penalty hours)
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 22, 30)
 
             # Positive self_window_score should not be affected by mild penalty
@@ -316,7 +319,7 @@ class TestElapsedSecondsTracking(unittest.TestCase):
 
         # Mock datetime in src.score_tracker so that initialization time and
         # elapsed-time calculation use the same fixed timestamp.
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 0, 0)
             tracker = ScoreTracker(self.patterns, default_score=0)
             elapsed = tracker.get_current_window_elapsed_seconds()
@@ -330,19 +333,19 @@ class TestElapsedSecondsTracking(unittest.TestCase):
         tracker = None
 
         # Start with GitHub window; initialize tracker under mocked datetime
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 0, 0)
             tracker = ScoreTracker(self.patterns, default_score=0)
             tracker.update("GitHub - Repository")
 
         # Check elapsed after 5 seconds
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 0, 5)
             elapsed = tracker.get_current_window_elapsed_seconds()
             self.assertEqual(elapsed, 5)
 
         # Check elapsed after 30 seconds
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 0, 30)
             elapsed = tracker.get_current_window_elapsed_seconds()
             self.assertEqual(elapsed, 30)
@@ -353,30 +356,30 @@ class TestElapsedSecondsTracking(unittest.TestCase):
         from unittest.mock import patch
 
         # Initialize tracker and start with GitHub window at 10:00:00
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 0, 0)
             tracker = ScoreTracker(self.patterns, default_score=0)
             tracker.update("GitHub - Repository")
 
         # Check elapsed after 10 seconds (at 10:00:10)
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 0, 10)
             elapsed = tracker.get_current_window_elapsed_seconds()
             self.assertEqual(elapsed, 10)
 
         # Change to Twitter window at 10:00:15
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 0, 15)
             tracker.update("Twitter - Feed")
 
         # Elapsed should reset and be close to 0
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 0, 15)
             elapsed = tracker.get_current_window_elapsed_seconds()
             self.assertEqual(elapsed, 0)
 
         # Check elapsed for new window after 7 seconds (at 10:00:22)
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 0, 22)
             elapsed = tracker.get_current_window_elapsed_seconds()
             self.assertEqual(elapsed, 7)
@@ -387,20 +390,20 @@ class TestElapsedSecondsTracking(unittest.TestCase):
         from unittest.mock import patch
 
         # Start with GitHub window at 10:00:00
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 0, 0)
             tracker = ScoreTracker(self.patterns, default_score=0)
             tracker.update("GitHub - Repository")
 
         # Same window at 10:00:05
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 0, 5)
             tracker.update("GitHub - Repository")
             elapsed = tracker.get_current_window_elapsed_seconds()
             self.assertEqual(elapsed, 5)
 
         # Same window again at 10:00:10
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 0, 10)
             tracker.update("GitHub - Repository")
             elapsed = tracker.get_current_window_elapsed_seconds()
@@ -412,24 +415,24 @@ class TestElapsedSecondsTracking(unittest.TestCase):
         from unittest.mock import patch
 
         # Start with GitHub Repository at 10:00:00
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 0, 0)
             tracker = ScoreTracker(self.patterns, default_score=0)
             tracker.update("GitHub - Repository")
 
         # Check elapsed after 10 seconds
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 0, 10)
             elapsed = tracker.get_current_window_elapsed_seconds()
             self.assertEqual(elapsed, 10)
 
         # Change to GitHub Issues (different window, same pattern) at 10:00:15
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 0, 15)
             tracker.update("GitHub - Issues")
 
         # Elapsed should reset even though pattern is the same
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 0, 15)
             elapsed = tracker.get_current_window_elapsed_seconds()
             self.assertEqual(elapsed, 0)

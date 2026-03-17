@@ -12,6 +12,9 @@ except ImportError:
     sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
     from score_tracker import ScoreTracker
 
+# Use module path derived from the actual import so patch() works in all environments.
+_SCORE_TRACKER_DATETIME_PATH = f"{ScoreTracker.__module__}.datetime"
+
 
 class TestGitHubWindowTitlePatterns(unittest.TestCase):
     """Test cases specifically for GitHub window title pattern matching.
@@ -260,7 +263,7 @@ class TestMildPenaltyMode(unittest.TestCase):
         )
 
         # Mock datetime to return hour 22 (within mild penalty hours)
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 22, 30)  # 22:30
 
             # Negative scores should be limited to -1
@@ -288,7 +291,7 @@ class TestMildPenaltyMode(unittest.TestCase):
         )
 
         # Mock datetime to return hour 10 (outside mild penalty hours)
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 10, 0)  # 10:00
 
             # Negative scores should apply normally
@@ -312,7 +315,7 @@ class TestMildPenaltyMode(unittest.TestCase):
         )
 
         # Mock datetime to return hour 22
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 22, 0)  # 22:00
 
             # Default score should be limited to -1
@@ -336,28 +339,28 @@ class TestMildPenaltyMode(unittest.TestCase):
         )
 
         # Test at start hour (22:00) - should apply mild penalty
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 22, 0)
             tracker.reset_score()
             tracker.update("Twitter Feed")
             self.assertEqual(tracker.get_score(), -1)
 
         # Test at end hour (23:59) - should apply mild penalty
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 23, 59)
             tracker.reset_score()
             tracker.update("Twitter Feed")
             self.assertEqual(tracker.get_score(), -1)
 
         # Test just before start hour (21:59) - should not apply mild penalty
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 21, 59)
             tracker.reset_score()
             tracker.update("Twitter Feed")
             self.assertEqual(tracker.get_score(), -5)
 
         # Test just after end hour (00:00 next day) - should not apply mild penalty
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 2, 0, 0)
             tracker.reset_score()
             tracker.update("Twitter Feed")
@@ -378,35 +381,35 @@ class TestMildPenaltyMode(unittest.TestCase):
         )
 
         # Test at 23:30 - should apply mild penalty
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 23, 30)
             tracker.reset_score()
             tracker.update("Twitter Feed")
             self.assertEqual(tracker.get_score(), -1)
 
         # Test at 00:30 - should apply mild penalty
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 2, 0, 30)
             tracker.reset_score()
             tracker.update("Twitter Feed")
             self.assertEqual(tracker.get_score(), -1)
 
         # Test at 01:00 - should apply mild penalty
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 2, 1, 0)
             tracker.reset_score()
             tracker.update("Twitter Feed")
             self.assertEqual(tracker.get_score(), -1)
 
         # Test at 02:00 - should not apply mild penalty
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 2, 2, 0)
             tracker.reset_score()
             tracker.update("Twitter Feed")
             self.assertEqual(tracker.get_score(), -5)
 
         # Test at 22:00 - should not apply mild penalty
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 22, 0)
             tracker.reset_score()
             tracker.update("Twitter Feed")
@@ -426,7 +429,7 @@ class TestMildPenaltyMode(unittest.TestCase):
         from unittest.mock import patch
 
         # Mock datetime to return hour 22
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 22, 30)
 
             # Initially, mild penalty mode is disabled
@@ -460,7 +463,7 @@ class TestMildPenaltyMode(unittest.TestCase):
         )
 
         # Mock datetime to return hour 22
-        with patch("src.score_tracker.datetime") as mock_datetime:
+        with patch(_SCORE_TRACKER_DATETIME_PATH) as mock_datetime:
             mock_datetime.now.return_value = datetime(2024, 1, 1, 22, 30)
 
             # Positive scores should not be affected

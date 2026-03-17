@@ -5,65 +5,72 @@ import sys
 from pathlib import Path
 from unittest.mock import MagicMock
 
+_StatusFormatter = None
 MAX_WINDOW_TITLE_LENGTH = None
-get_status_text = None
 
 try:
     from src.config import Config  # noqa: F401
     from src.score_tracker import ScoreTracker  # noqa: F401
-
-    try:
-        from src.gui import MAX_WINDOW_TITLE_LENGTH, get_status_text
-    except (ImportError, ModuleNotFoundError):
-        pass
+    from src.status_formatter import MAX_WINDOW_TITLE_LENGTH
+    from src.status_formatter import StatusFormatter as _StatusFormatter
 except ImportError:
     sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+    from config import Config  # noqa: F401
+    from score_tracker import ScoreTracker  # noqa: F401
 
     try:
-        from gui import MAX_WINDOW_TITLE_LENGTH, get_status_text
-    except (ImportError, ModuleNotFoundError):
+        from status_formatter import MAX_WINDOW_TITLE_LENGTH
+        from status_formatter import StatusFormatter as _StatusFormatter
+    except ImportError:
         pass
 
-# If tkinter is not available and import failed, define the constant and function here
-# Note: This fallback is necessary for environments without tkinter (e.g., CI/headless systems)
-# where src.gui cannot be imported. The logic is intentionally duplicated to maintain
-# test functionality in these environments.
+# If status_formatter is not available, provide a standalone fallback constant.
+# This should not occur in normal environments since status_formatter has no heavy dependencies.
 if MAX_WINDOW_TITLE_LENGTH is None:
     MAX_WINDOW_TITLE_LENGTH = 40
 
-if get_status_text is None:
 
-    def get_status_text(matched_pattern, window_title, default_score, elapsed_seconds=0, flow_mode_seconds=0):
-        """Fallback implementation of get_status_text for testing without tkinter."""
-        # Format elapsed time - prioritize flow mode time if active
-        if flow_mode_seconds > 0:
-            elapsed_text = f" [フロー: {flow_mode_seconds}秒]"
-        elif elapsed_seconds > 0:
-            elapsed_text = f" [{elapsed_seconds}秒]"
-        else:
-            elapsed_text = ""
+def get_status_text(matched_pattern, window_title, default_score, elapsed_seconds=0, flow_mode_seconds=0):
+    """Thin wrapper around StatusFormatter.format_status_text for GUI tests.
 
-        if matched_pattern:
-            description = matched_pattern.get("description", "")
-            score_delta = matched_pattern.get("score", 0)
-            score_sign = "+" if score_delta >= 0 else ""
-            return f"{description} ({score_sign}{score_delta}){elapsed_text}"
-        else:
-            display_title = (
-                window_title[:MAX_WINDOW_TITLE_LENGTH] + "..."
-                if len(window_title) > MAX_WINDOW_TITLE_LENGTH
-                else window_title
+    Tests use this wrapper so they validate the production logic in StatusFormatter,
+    not a duplicated fallback. Falls back to a local implementation only when
+    status_formatter cannot be imported (should not occur in normal environments).
+    """
+    if _StatusFormatter is not None:
+        return _StatusFormatter.format_status_text(
+            matched_pattern, window_title, default_score, elapsed_seconds, flow_mode_seconds
+        )
+
+    # Emergency fallback (status_formatter unavailable)
+    if flow_mode_seconds > 0:
+        elapsed_text = f" [フロー: {flow_mode_seconds}秒]"
+    elif elapsed_seconds > 0:
+        elapsed_text = f" [{elapsed_seconds}秒]"
+    else:
+        elapsed_text = ""
+
+    if matched_pattern:
+        description = matched_pattern.get("description", "")
+        score_delta = matched_pattern.get("score", 0)
+        score_sign = "+" if score_delta >= 0 else ""
+        return f"{description} ({score_sign}{score_delta}){elapsed_text}"
+    else:
+        display_title = (
+            window_title[:MAX_WINDOW_TITLE_LENGTH] + "..."
+            if len(window_title) > MAX_WINDOW_TITLE_LENGTH
+            else window_title
+        )
+        if default_score != 0:
+            score_sign = "+" if default_score >= 0 else ""
+            score_text = f"({score_sign}{default_score})"
+            return (
+                f"No match: {display_title} {score_text}{elapsed_text}"
+                if display_title
+                else f"No match {score_text}{elapsed_text}"
             )
-            if default_score != 0:
-                score_sign = "+" if default_score >= 0 else ""
-                score_text = f"({score_sign}{default_score})"
-                return (
-                    f"No match: {display_title} {score_text}{elapsed_text}"
-                    if display_title
-                    else f"No match {score_text}{elapsed_text}"
-                )
-            else:
-                return f"{display_title}{elapsed_text}" if display_title else f"Watching...{elapsed_text}"
+        else:
+            return f"{display_title}{elapsed_text}" if display_title else f"Watching...{elapsed_text}"
 
 
 class MockScoreDisplay:
