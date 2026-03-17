@@ -1,4 +1,4 @@
-Last updated: 2026-02-06
+Last updated: 2026-03-18
 
 # 開発状況生成プロンプト（開発者向け）
 
@@ -105,11 +105,13 @@ Last updated: 2026-02-06
 ## プロジェクトのファイル一覧
 - .editorconfig
 - .github/actions-tmp/.github/workflows/call-callgraph.yml
+- .github/actions-tmp/.github/workflows/call-check-large-files.yml
 - .github/actions-tmp/.github/workflows/call-daily-project-summary.yml
 - .github/actions-tmp/.github/workflows/call-issue-note.yml
 - .github/actions-tmp/.github/workflows/call-rust-windows-check.yml
 - .github/actions-tmp/.github/workflows/call-translate-readme.yml
 - .github/actions-tmp/.github/workflows/callgraph.yml
+- .github/actions-tmp/.github/workflows/check-large-files.yml
 - .github/actions-tmp/.github/workflows/check-recent-human-commit.yml
 - .github/actions-tmp/.github/workflows/daily-project-summary.yml
 - .github/actions-tmp/.github/workflows/issue-note.yml
@@ -132,6 +134,9 @@ Last updated: 2026-02-06
 - .github/actions-tmp/.github_automation/callgraph/scripts/find-process-results.cjs
 - .github/actions-tmp/.github_automation/callgraph/scripts/generate-html-graph.cjs
 - .github/actions-tmp/.github_automation/callgraph/scripts/generateHTML.cjs
+- .github/actions-tmp/.github_automation/check-large-files/README.md
+- .github/actions-tmp/.github_automation/check-large-files/check-large-files.toml.default
+- .github/actions-tmp/.github_automation/check-large-files/scripts/check_large_files.py
 - .github/actions-tmp/.github_automation/check_recent_human_commit/scripts/check-recent-human-commit.cjs
 - .github/actions-tmp/.github_automation/project_summary/docs/daily-summary-setup.md
 - .github/actions-tmp/.github_automation/project_summary/prompts/development-status-prompt.md
@@ -188,7 +193,12 @@ Last updated: 2026-02-06
 - .github/actions-tmp/issue-notes/29.md
 - .github/actions-tmp/issue-notes/3.md
 - .github/actions-tmp/issue-notes/30.md
+- .github/actions-tmp/issue-notes/35.md
+- .github/actions-tmp/issue-notes/38.md
 - .github/actions-tmp/issue-notes/4.md
+- .github/actions-tmp/issue-notes/40.md
+- .github/actions-tmp/issue-notes/44.md
+- .github/actions-tmp/issue-notes/52.md
 - .github/actions-tmp/issue-notes/7.md
 - .github/actions-tmp/issue-notes/8.md
 - .github/actions-tmp/issue-notes/9.md
@@ -196,6 +206,7 @@ Last updated: 2026-02-06
 - .github/actions-tmp/package.json
 - .github/actions-tmp/src/main.js
 - .github/copilot-instructions.md
+- .github/workflows/call-check-large-files.yml
 - .github/workflows/call-daily-project-summary.yml
 - .github/workflows/call-issue-note.yml
 - .github/workflows/call-translate-readme.yml
@@ -255,6 +266,7 @@ Last updated: 2026-02-06
 - issue-notes/78.md
 - issue-notes/8.md
 - issue-notes/80.md
+- issue-notes/82.md
 - issue-notes/9.md
 - pytest.ini
 - ruff.toml
@@ -272,12 +284,28 @@ Last updated: 2026-02-06
 - src/status_formatter.py
 - src/window_behavior.py
 - src/window_monitor.py
+- tests/gui_mock_base.py
 - tests/test_config.py
+- tests/test_config_flow_mode.py
+- tests/test_config_mild_penalty.py
+- tests/test_config_self_window_proximity.py
+- tests/test_config_transparency.py
+- tests/test_config_window_position.py
 - tests/test_dummy.py
 - tests/test_game_detection.py
 - tests/test_gui.py
+- tests/test_gui_clipboard.py
+- tests/test_gui_flow_mode.py
+- tests/test_gui_score_colors.py
+- tests/test_gui_score_decreasing.py
+- tests/test_gui_status_label.py
+- tests/test_gui_transparency.py
 - tests/test_score_colors.py
 - tests/test_score_tracker.py
+- tests/test_score_tracker_flow.py
+- tests/test_score_tracker_patterns.py
+- tests/test_score_tracker_reset.py
+- tests/test_score_tracker_self_window.py
 - tests/test_screensaver_detection.py
 - tests/test_window_monitor.py
 
@@ -379,19 +407,16 @@ has_recent_human_commit=false
 
 ## 最近の変更（過去7日間）
 ### コミット履歴:
-9c272e8 Merge pull request #81 from cat2151/copilot/add-check-loop-for-street-fighter-6
-2cb5bb6 Address PR review comments: add validation, optimize checks, fix PowerShell, add tests
-c154ce7 Add comprehensive documentation for game detection feature
-56a934d Complete implementation - all tests passing and security check passed
-4a0700a Address code review comments - improve PowerShell script and add conversion constant
-e462421 Add game playing detection with 1-minute interval for SF6
-fb4094a Initial plan
-919f4ac Add issue note for #80 [auto]
-647ad4b Auto-translate README.ja.md to README.md [auto]
-dbc14c3 Merge pull request #79 from cat2151/copilot/implement-screensaver-detection-fix
+d74b90f Merge pull request #84 from cat2151/copilot/refactor-large-test-files
+942bd0d PRレビューコメントに基づく修正: gui_mock_base.pyのimport修正、status_formatter使用、patch動的パス化
+b1a648d テストファイルを分割: test_gui.py を複数の小さなファイルにリファクタリング
+2da74cf テストファイルの分割: test_score_tracker.py を5ファイルに分割
+49bf41c refactor: split test_config.py (2410 lines) into 6 smaller files
+a9c4c29 Initial plan
+91b9758 CI
 
 ### 変更されたファイル:
-README.ja.md
+.github/workflows/call-check-large-files.yml
 README.md
 config.toml.example
 docs/game-detection-guide.md
@@ -399,17 +424,34 @@ generated-docs/development-status-generated-prompt.md
 generated-docs/development-status.md
 generated-docs/project-overview-generated-prompt.md
 generated-docs/project-overview.md
-issue-notes/77.md
-issue-notes/78.md
 issue-notes/80.md
+issue-notes/82.md
 src/config.py
 src/config_loader.py
 src/gui.py
 src/window_monitor.py
+tests/gui_mock_base.py
+tests/test_config.py
+tests/test_config_flow_mode.py
+tests/test_config_mild_penalty.py
+tests/test_config_self_window_proximity.py
+tests/test_config_transparency.py
+tests/test_config_window_position.py
 tests/test_game_detection.py
-tests/test_screensaver_detection.py
+tests/test_gui.py
+tests/test_gui_clipboard.py
+tests/test_gui_flow_mode.py
+tests/test_gui_score_colors.py
+tests/test_gui_score_decreasing.py
+tests/test_gui_status_label.py
+tests/test_gui_transparency.py
+tests/test_score_tracker.py
+tests/test_score_tracker_flow.py
+tests/test_score_tracker_patterns.py
+tests/test_score_tracker_reset.py
+tests/test_score_tracker_self_window.py
 tests/test_window_monitor.py
 
 
 ---
-Generated at: 2026-02-06 07:08:06 JST
+Generated at: 2026-03-18 07:11:38 JST

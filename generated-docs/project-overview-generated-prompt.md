@@ -1,4 +1,4 @@
-Last updated: 2026-02-06
+Last updated: 2026-03-18
 
 
 # プロジェクト概要生成プロンプト（来訪者向け）
@@ -453,6 +453,7 @@ pip install pywin32
   📖 78.md
   📖 8.md
   📖 80.md
+  📖 82.md
   📖 9.md
 📄 pytest.ini
 📄 ruff.toml
@@ -472,12 +473,28 @@ pip install pywin32
   📄 window_behavior.py
   📄 window_monitor.py
 📁 tests/
+  📄 gui_mock_base.py
   📄 test_config.py
+  📄 test_config_flow_mode.py
+  📄 test_config_mild_penalty.py
+  📄 test_config_self_window_proximity.py
+  📄 test_config_transparency.py
+  📄 test_config_window_position.py
   📄 test_dummy.py
   📄 test_game_detection.py
   📄 test_gui.py
+  📄 test_gui_clipboard.py
+  📄 test_gui_flow_mode.py
+  📄 test_gui_score_colors.py
+  📄 test_gui_score_decreasing.py
+  📄 test_gui_status_label.py
+  📄 test_gui_transparency.py
   📄 test_score_colors.py
   📄 test_score_tracker.py
+  📄 test_score_tracker_flow.py
+  📄 test_score_tracker_patterns.py
+  📄 test_score_tracker_reset.py
+  📄 test_score_tracker_self_window.py
   📄 test_screensaver_detection.py
   📄 test_window_monitor.py
 
@@ -529,4 +546,4 @@ issue-notes/55.md
 
 
 ---
-Generated at: 2026-02-06 07:08:05 JST
+Generated at: 2026-03-18 07:11:38 JST
